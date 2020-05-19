@@ -19,7 +19,7 @@ import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sEQE_Analysis_template_v2
+import sEQE_Analysis_template
 import seaborn
 import serial
 import xlrd
@@ -42,7 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set up the user interface from Designer
 
-        self.ui = sEQE_Analysis_template_v2.Ui_MainWindow()
+        self.ui = sEQE_Analysis_template.Ui_MainWindow()
         self.ui.setupUi(self)
 
 
