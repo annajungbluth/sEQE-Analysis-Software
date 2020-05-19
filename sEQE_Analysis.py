@@ -179,23 +179,50 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Handle EL Plot Buttons
 
-        self.ui.plotELButton_1.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL1, self.ui.stopPlot_EL1, 0))
-        self.ui.plotELButton_2.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL2, self.ui.stopPlot_EL2, 1))
-        self.ui.plotELButton_3.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL_EQE, self.ui.startPlot_EQE, self.ui.stopPlot_EQE, 2))
+        self.ui.plotELButton_1.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL1, self.ui.stopPlot_EL1, 0)) # Plot EL
+        self.ui.plotELButton_2.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL2, self.ui.stopPlot_EL2, 1)) # Plot Abs
+        self.ui.plotELButton_3.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL_EQE, self.ui.startPlot_EQE, self.ui.stopPlot_EQE, 2)) # Plot EQE
 
         # Handle Fit Buttons
 
-        self.ui.fitButton_EL1.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL1, self.ui.stopPlot_EL1, 0, fit=True))
-        self.ui.fitButton_EL2.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL2, self.ui.stopPlot_EL2, 1, fit=True))
-        self.ui.fitButton_EL3.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL_EQE, self.ui.startPlot_EQE, self.ui.stopPlot_EQE, 2, fit=True))
+        self.ui.fitButton_EL1.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL1, self.ui.stopPlot_EL1, 0, fit=True)) # Fit EL
+        self.ui.fitButton_EL2.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL2, self.ui.stopPlot_EL2, 1, fit=True)) # Fit Abs
+        self.ui.fitButton_EL3.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL_EQE, self.ui.startPlot_EQE, self.ui.stopPlot_EQE, 2, fit=True)) # Fit EQE
 
         # Handle Intersection Button
 
         self.ui.intersectionButton.clicked.connect(lambda: self.intersection())
 
-        # Hancle Clear EL Plot Button
+        # Handle Clear EL Plot Button
 
         self.ui.clearButton_EL.clicked.connect(lambda: self.clear_EL_plot())
+
+
+        ##### Page 5 - Extended Fits
+
+        self.S_i = self.ui.Huang_Rhys.value()
+        self.hbarw_i = self.ui.vib_Energy.value()
+
+        # Handle Import EQE Buttons
+
+        self.ui.browseButton_extraFit.clicked.connect(lambda: self.writeText(self.ui.textBox_xF1, 'xF1'))
+
+        # Handle Fit Button
+
+        self.ui.extraFitButton.clicked.connect(lambda: self.pre_fit_EQE(self.data_xFit_1, self.ui.startExtraPlot, self.ui.stopExtraPlot, self.ui.startExtraFit, self.ui.stopExtraFit, self.ui.startExtraFitPlot, self.ui.stopExtraFitPlot, self.ui.textBox_xF1, self.ui.textBox_xF2, self.ui.textBox_xF3, 'x1'))
+
+        # Handle Heat Map Button
+
+        self.ui.extraHeatButton.clicked.connect(lambda: self.heatMap(self.data_xFit_1, self.ui.startExtraPlot, self.ui.stopExtraPlot, self.ui.extraStartStart, self.ui.extraStartStop, self.ui.extraStopStart, self.ui.extraStopStop, self.ui.textBox_xF1, self.ui.textBox_xF2, self.ui.textBox_xF3, 'x1'))
+
+        # Handle Clear Extra Fit Button
+
+        self.ui.clearButton_extraFit.clicked.connect(self.clear_EQE_fit_plot)
+
+
+
+
+
 
 
         # Import Photodiode Calibration Files
@@ -340,6 +367,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
             elif textBox_no == 'el2':
                 self.EL_EQE = pd.DataFrame.from_csv((file_))
+
+
+            # For extra fit files
+
+            elif textBox_no == 'xF1':
+                self.data_xFit_1 = pd.DataFrame.from_csv(file_)
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -782,6 +816,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def plot_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no):
 
+       file_no_list = np.arange(0, 10, 1)
+
        startE = startE.value() # Pick start energy
        stopE = stopE.value() # Pick stop energy
 
@@ -798,36 +834,65 @@ class MainWindow(QtWidgets.QMainWindow):
            label_ = self.pick_EQE_Label(label_Box, filename_Box)
            color_ = self.pick_EQE_Color(color_Box, file_no)
 
-           try:
-#               init_values = [1, 0.1, 1]
-               best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit) # , p0 = init_values
+           if (str(file_no)).isnumeric():
 
-               print('f [eV^2]: ', best_vals[0])
-               print('l [eV]: ',  best_vals[1])
-               print('Ect [eV]: ',  best_vals[2])
+               try:
+                   best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit) # , p0 = init_values
 
-               diff = stopFit - startFit # Find difference between start and stop fit energy
+                   print('f [eV^2]: ', best_vals[0])
+                   print('l [eV]: ',  best_vals[1])
+                   print('Ect [eV]: ',  best_vals[2])
 
-               x_gaussian = linspace(startPlotFit, stopPlotFit, 50) # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
-               y_gaussian = []
+                   diff = stopFit - startFit # Find difference between start and stop fit energy
 
-               for value in x_gaussian:
-                    y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
+                   x_gaussian = linspace(startPlotFit, stopPlotFit, 50) # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
+                   y_gaussian = []
 
-               # self.ax3.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
-               # plt.draw()
-               # self.ax3.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
-               # plt.draw()
-               self.ax6.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
-               plt.draw()
-               self.ax6.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
-               plt.draw()
+                   for value in x_gaussian:
+                        y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
-           except:
-               print('Optimal Parameters not found.')
-               return False
+                   # self.ax3.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
+                   # plt.draw()
+                   # self.ax3.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
+                   # plt.draw()
+                   self.ax6.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
+                   plt.draw()
+                   self.ax6.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
+                   plt.draw()
 
-           return True
+               except:
+                   print('Optimal Parameters not found.')
+                   return False
+
+               return True
+
+           elif file_no == 'x1':
+
+               try:
+                   best_vals, covar = curve_fit(self.MLJ_theory, energy_fit, eqe_fit)
+
+                   print('f [eV^2]: ', best_vals[0])
+                   print('l [eV]: ', best_vals[1])
+                   print('Ect [eV]: ', best_vals[2])
+
+                   diff = stopFit - startFit  # Find difference between start and stop fit energy
+
+                   x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
+                   y_MLJ_theory = []
+
+                   for value in x_MLJ_theory:
+                       y_MLJ_theory.append(self.MLJ_theory(value, best_vals[0], best_vals[1], best_vals[2]))
+
+                   self.ax6.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                   plt.draw()
+                   self.ax6.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                   plt.draw()
+
+               except:
+                   print('Optimal Parameters not found.')
+                   return False
+
+               return True
 
        else:
            return False
@@ -860,6 +925,8 @@ class MainWindow(QtWidgets.QMainWindow):
             f_df = []
             l_df = []
             Ect_df = []
+            S_df = []
+            hw_df = []
 
             x = float(startStartE)
             y = float(stopStartE)
@@ -880,17 +947,36 @@ class MainWindow(QtWidgets.QMainWindow):
                         wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startE, stopE, 1)
                         wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, start, stop, 1)
 
-                        try:
-                           best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
+                        if (str(file_no)).isnumeric():
 
-                           start_df.append(start)
-                           stop_df.append(stop)
-                           f_df.append(best_vals[0])
-                           l_df.append(best_vals[1])
-                           Ect_df.append(best_vals[2])
+                            try:
+                               best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
 
-                        except:
-                           print('Optimal Parameters not found.')
+                               start_df.append(start)
+                               stop_df.append(stop)
+                               f_df.append(best_vals[0])
+                               l_df.append(best_vals[1])
+                               Ect_df.append(best_vals[2])
+
+                            except:
+                               print('Optimal Parameters not found.')
+
+                        elif file_no == 'x1':
+
+                            try:
+                                best_vals, covar = curve_fit(self.MLJ_Theory, energy_fit, eqe_fit)
+
+                                start_df.append(start)
+                                stop_df.append(stop)
+                                f_df.append(best_vals[0])
+                                l_df.append(best_vals[1])
+                                Ect_df.append(best_vals[2])
+                                S_df.append(best_vals[3])
+                                hw_df.append(best_vals[4])
+
+                            except:
+                                print('Optimal Parameters not found.')
+
 
             parameter_df = pd.DataFrame({'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df}) # Create a dataFrame with all results
 
@@ -898,29 +984,41 @@ class MainWindow(QtWidgets.QMainWindow):
             print('Average l : ', parameter_df['l'].mean(), ' Standard Dev : ', parameter_df['l'].std())
             print('Average CT : ', parameter_df['Ect'].mean(), ' Standard Dev : ', parameter_df['Ect'].std())
 
+
             f_df = parameter_df.pivot('Stop', 'Start', 'f') # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
             l_df = parameter_df.pivot('Stop', 'Start', 'l')
             Ect_df = parameter_df.pivot('Stop', 'Start', 'Ect')
 
-            plt.figure() # Create a new figure
-            self.ax5 = seaborn.heatmap(f_df) # Create the heat map
-            plt.xlabel('Inital Energy Value [eV]', fontsize=17, fontweight='medium')
-            plt.ylabel('Final Energy Value [eV]', fontsize=17, fontweight='medium')
-            plt.title('f', fontsize=17, fontweight='medium')
+            if len(f_df) != 0:
+                plt.figure() # Create a new figure
+                self.ax5 = seaborn.heatmap(f_df) # Create the heat map
+                plt.xlabel('Inital Energy Value [eV]', fontsize=17, fontweight='medium')
+                plt.ylabel('Final Energy Value [eV]', fontsize=17, fontweight='medium')
+                plt.title('f', fontsize=17, fontweight='medium')
+                plt.show()
+            else:
+                print('No fitting oscillator strengths determined.')
 
-            plt.figure()
-            self.ax6 = seaborn.heatmap(l_df)
-            plt.xlabel('Inital Energy Value [eV]', fontsize=17, fontweight='medium')
-            plt.ylabel('Final Energy Value [eV]', fontsize=17, fontweight='medium')
-            plt.title('$\lambda$', fontsize=17, fontweight='medium')
+            if len(l_df) != 0:
+                plt.figure()
+                self.ax6 = seaborn.heatmap(l_df)
+                plt.xlabel('Inital Energy Value [eV]', fontsize=17, fontweight='medium')
+                plt.ylabel('Final Energy Value [eV]', fontsize=17, fontweight='medium')
+                plt.title('$\lambda$', fontsize=17, fontweight='medium')
+                plt.show()
+            else:
+                print('No fitting reorganization energies determined.')
 
-            plt.figure()
-            self.ax7 = seaborn.heatmap(Ect_df)
-            plt.xlabel('Inital Energy Value [eV]', fontsize=17, fontweight='medium')
-            plt.ylabel('Final Energy Value [eV]', fontsize=17, fontweight='medium')
-            plt.title('Charge Transfer State Energy', fontsize=17, fontweight='medium')
+            if len(l_df) != 0:
+                plt.figure()
+                self.ax7 = seaborn.heatmap(Ect_df)
+                plt.xlabel('Inital Energy Value [eV]', fontsize=17, fontweight='medium')
+                plt.ylabel('Final Energy Value [eV]', fontsize=17, fontweight='medium')
+                plt.title('Charge Transfer State Energy', fontsize=17, fontweight='medium')
+                plt.show()
+            else:
+                print('No fitting CT state energies determined.')
 
-            plt.show()
 
 
 # -----------------------------------------------------------------------------------------------------------
@@ -928,8 +1026,19 @@ class MainWindow(QtWidgets.QMainWindow):
     ### Gaussian fitting function
 
     def gaussian(self, E, f, l, Ect):
-        return (f/(E * math.sqrt(4 * 3.141 * l * 290 * self.k))) * exp(-(Ect + l - E)**2 / (4 * l * self.k * 290))
+        return (f/(E * math.sqrt(4 * math.pi * l * 290 * self.k))) * exp(-(Ect + l - E)**2 / (4 * l * self.k * 290))
 
+    ### MLJ Theory fitting function
+
+    def MLJ_Theory_test(self, E, f, l_o, Ect): # Double check if this equation is correct
+        return (f/(E * math.sqrt(4 * math.pi * l_o * 290 * self.k))) \
+               * nsum(lambda n: (math.exp(-self.S_i) * self.S_i **n / (math.factorial(n))) \
+               * exp(-(Ect + l_o - E + n*self.hbarw_i)**2 / (4 * l_o * self.k * 290)), [0, 5])
+
+    def MLJ_Theory(self, E, f, l_o, Ect, S_i, hbarw_i): # Double check if this equation is correct
+        return (f/(E * math.sqrt(4 * math.pi * l_o * 290 * self.k))) \
+               * nsum(lambda n: (math.exp(-S_i) * S_i **n / (math.factorial(n))) \
+               * exp(-(Ect + l_o - E + n*hbarw_i)**2 / (4 * l_o * self.k * 290)), [0, 5])
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -1056,19 +1165,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
             diff = stopFit - startFit  # Find difference between start and stop fit energy
             x_gaussian = linspace(startFit, stopFit + diff, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
-            y_gaussian = []
 
             try:
-                if data_no == 0:
-                    y_fit_smooth = savgol_filter(y_fit, 51, 3)
-                    y_fit_smooth = [x for x in y_fit_smooth]
-                    log_y_fit = [math.log(x) for x in y_fit]
+                if data_no == 0: # EL Data
+                    y_gaussian = []
+                    #y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
+                    #y_fit_smooth = [x for x in y_fit_smooth]
+                    #log_y_fit = [math.log(x) for x in y_fit]
                     #self.plot_EL_EQE(energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
                     best_vals, covar = curve_fit(self.gaussian_EL, energy_fit, y_fit)
                     for value in x_gaussian:
                         y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
 
-                elif data_no == 1:
+                elif data_no == 1: # EQE Data
+                    y_gaussian = []
                     best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit)
                     for value in x_gaussian:
                         y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
@@ -1078,6 +1188,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 print('Ect [eV]: ', best_vals[2])
 
                 self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                plt.legend()
                 plt.draw()
 
             except:
