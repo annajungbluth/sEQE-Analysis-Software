@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1156</width>
-    <height>1028</height>
+    <width>1183</width>
+    <height>1065</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,8 +22,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1161</width>
-      <height>1001</height>
+      <width>1191</width>
+      <height>1021</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -39,7 +39,7 @@
         <x>20</x>
         <y>30</y>
         <width>20</width>
-        <height>801</height>
+        <height>871</height>
        </rect>
       </property>
       <property name="orientation">
@@ -51,7 +51,7 @@
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>1091</width>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -59,126 +59,92 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-     <widget class="QWidget" name="gridLayoutWidget">
+     <widget class="Line" name="line_28">
+      <property name="geometry">
+       <rect>
+        <x>1140</x>
+        <y>30</y>
+        <width>20</width>
+        <height>871</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_25">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>890</y>
+        <width>1121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="exportButton">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>920</y>
+        <width>401</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Export EQE Data</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="clearButton">
+      <property name="geometry">
+       <rect>
+        <x>1000</x>
+        <y>920</y>
+        <width>151</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Clear Plot</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_3">
       <property name="geometry">
        <rect>
         <x>40</x>
         <y>40</y>
-        <width>1071</width>
-        <height>781</height>
+        <width>1101</width>
+        <height>854</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="15" column="4">
-        <layout class="QVBoxLayout" name="verticalLayout_17">
-         <item>
-          <widget class="QTextEdit" name="textBox_10"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_10">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="9" column="2">
-        <layout class="QVBoxLayout" name="verticalLayout_9">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QCheckBox" name="Range3_Si_button">
-             <property name="text">
-              <string>Si Diode</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="Range3_InGaAs_button">
-             <property name="text">
-              <string>InGaAs Diode</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_222">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="textBox_5"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_5">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="1">
-        <widget class="Line" name="line_50">
+      <layout class="QGridLayout" name="gridLayout_24">
+       <item row="4" column="2">
+        <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
-       <item row="6" column="4">
-        <layout class="QVBoxLayout" name="verticalLayout_7">
-         <item>
-          <widget class="QTextEdit" name="textBox_4"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_4">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="6">
-        <widget class="Line" name="line_23">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="4">
-        <widget class="Line" name="line_19">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
+       <item row="2" column="5">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <widget class="QTextEdit" name="textBox_2"/>
@@ -197,443 +163,8 @@
          </item>
         </layout>
        </item>
-       <item row="12" column="9">
-        <widget class="Line" name="line_35">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="3">
-        <widget class="Line" name="line_56">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="9">
-        <widget class="Line" name="line_31">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Range 3 :      </string>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="2">
-        <widget class="Line" name="line_17">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="11">
-        <widget class="Line" name="line_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="3">
-        <widget class="Line" name="line_13">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Range 5 :      </string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0">
-        <widget class="Line" name="line_11">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="11">
-        <widget class="Line" name="line_15">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Range 4 :      </string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="4">
-        <widget class="Line" name="line_14">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="Line" name="line_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="4">
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Range 1 :     </string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="3">
-        <widget class="Line" name="line_8">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="2">
-        <widget class="Line" name="line_7">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="2">
-        <widget class="Line" name="line_12">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="Line" name="line_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_7">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Data File : </string>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="0">
-        <widget class="Line" name="line_16">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="Line" name="line_21">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="Line" name="line_22">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_6">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Reference File : </string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="4">
-        <widget class="Line" name="line_9">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="3">
-        <widget class="Line" name="line_18">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="11">
-        <widget class="Line" name="line_20">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="11">
-        <widget class="Line" name="line_10">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Range 2 :      </string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="Line" name="line_24">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="Line" name="line_49">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="Line" name="line_41">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="9">
-        <widget class="Line" name="line_33">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="Line" name="line_39">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="9">
-        <widget class="Line" name="line_37">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="1">
-        <widget class="Line" name="line_45">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="1">
-        <widget class="Line" name="line_47">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="Line" name="line_54">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="Line" name="line_43">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="Line" name="line_52">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="3">
-        <widget class="Line" name="line_58">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="3">
-        <widget class="Line" name="line_60">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="5">
-        <widget class="Line" name="line_53">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="11">
-        <widget class="Line" name="line_42">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="6">
-        <widget class="Line" name="line_82">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="stop_1">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Range [nm] :    </string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QCheckBox" name="Range1_Si_button">
-             <property name="text">
-              <string>Si Diode</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="Range1_InGaAs_button">
-             <property name="text">
-              <string>InGaAs Diode</string>
-             </property>
-             <property name="autoExclusive">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_217">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="textBox_1"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_1">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="12" column="11">
-        <widget class="QCheckBox" name="exportBox_4">
+       <item row="2" column="9">
+        <widget class="QCheckBox" name="exportBox_1">
          <property name="layoutDirection">
           <enum>Qt::RightToLeft</enum>
          </property>
@@ -642,7 +173,7 @@
          </property>
         </widget>
        </item>
-       <item row="12" column="4">
+       <item row="8" column="5">
         <layout class="QVBoxLayout" name="verticalLayout_14">
          <item>
           <widget class="QTextEdit" name="textBox_8"/>
@@ -661,248 +192,85 @@
          </item>
         </layout>
        </item>
-       <item row="15" column="2">
-        <layout class="QVBoxLayout" name="verticalLayout_16">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_22">
-           <item>
-            <widget class="QCheckBox" name="Range5_Si_button">
-             <property name="text">
-              <string>Si Diode</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="Range5_InGaAs_button">
-             <property name="text">
-              <string>InGaAs Diode</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_286">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="textBox_9"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_9">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item row="6" column="9">
+        <widget class="QCheckBox" name="exportBox_3">
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="12" column="2">
-        <layout class="QVBoxLayout" name="verticalLayout_12">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_21">
-           <item>
-            <widget class="QCheckBox" name="Range4_Si_button">
-             <property name="text">
-              <string>Si Diode</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="Range4_InGaAs_button">
-             <property name="text">
-              <string>InGaAs Diode</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_224">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="textBox_7"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_7">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="6" column="2">
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QCheckBox" name="Range2_Si_button">
-             <property name="text">
-              <string>Si Diode</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="Range2_InGaAs_button">
-             <property name="text">
-              <string>InGaAs Diode</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_220">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="textBox_3"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_3">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="9" column="4">
-        <layout class="QVBoxLayout" name="verticalLayout_10">
-         <item>
-          <widget class="QTextEdit" name="textBox_6"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="browseButton_6">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Select</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="9">
-        <widget class="Line" name="line_66">
+       <item row="0" column="2">
+        <widget class="Line" name="line_355">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
-       <item row="6" column="6">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item row="0" column="7">
+        <widget class="QLabel" name="stop_1">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Range (nm) :    </string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="Line" name="line_441">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="5">
+        <layout class="QVBoxLayout" name="verticalLayout_17">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QDoubleSpinBox" name="startNM_2">
-             <property name="decimals">
-              <number>0</number>
-             </property>
-             <property name="minimum">
-              <double>360.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>1800.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="Line" name="line_62">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="stopNM_2">
-             <property name="decimals">
-              <number>0</number>
-             </property>
-             <property name="minimum">
-              <double>360.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>1800.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>1800.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QTextEdit" name="textBox_10"/>
          </item>
          <item>
-          <widget class="Line" name="line_48">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="calculateButton_2">
+          <widget class="QPushButton" name="browseButton_10">
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Calculate EQE</string>
+            <string>Select</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="12" column="6">
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_6">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Reference File : </string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="Line" name="line_356">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="7">
         <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -967,14 +335,119 @@
          </item>
         </layout>
        </item>
-       <item row="11" column="6">
-        <widget class="Line" name="line_80">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="0" column="9">
+        <widget class="QLabel" name="stop_2">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Export ?</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="6">
+       <item row="10" column="3">
+        <layout class="QVBoxLayout" name="verticalLayout_16">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_22">
+           <item>
+            <widget class="QCheckBox" name="Range5_Si_button">
+             <property name="text">
+              <string>Si Diode</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Range5_InGaAs_button">
+             <property name="text">
+              <string>InGaAs Diode</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_286">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="textBox_9"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_9">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="8">
+        <widget class="Line" name="line_358">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Range 2 :      </string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="9">
+        <widget class="QCheckBox" name="exportBox_4">
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="5">
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <item>
+          <widget class="QTextEdit" name="textBox_6"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_6">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="7">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -1039,50 +512,61 @@
          </item>
         </layout>
        </item>
-       <item row="12" column="5">
-        <widget class="Line" name="line_86">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="5">
-        <widget class="Line" name="line_83">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="6">
-        <widget class="Line" name="line_78">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="6">
-        <widget class="Line" name="line_40">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
+       <item row="2" column="3">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QCheckBox" name="Range1_Si_button">
+             <property name="text">
+              <string>Si Diode</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Range1_InGaAs_button">
+             <property name="text">
+              <string>InGaAs Diode</string>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_217">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="textBox_1"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_1">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="0" column="5">
-        <widget class="Line" name="line_59">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="5">
-        <widget class="Line" name="line_84">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="11">
-        <widget class="QLabel" name="stop_2">
+        <widget class="QLabel" name="label_7">
          <property name="font">
           <font>
            <pointsize>13</pointsize>
@@ -1091,31 +575,18 @@
           </font>
          </property>
          <property name="text">
-          <string>Export ?</string>
+          <string>Data File : </string>
          </property>
         </widget>
        </item>
-       <item row="2" column="11">
-        <widget class="QCheckBox" name="exportBox_1">
-         <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
-         </property>
-         <property name="text">
-          <string/>
+       <item row="0" column="6">
+        <widget class="Line" name="line_357">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
-       <item row="6" column="11">
-        <widget class="QCheckBox" name="exportBox_2">
-         <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="6">
+       <item row="6" column="7">
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -1180,34 +651,59 @@
          </item>
         </layout>
        </item>
-       <item row="9" column="11">
-        <widget class="QCheckBox" name="exportBox_3">
-         <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
          </property>
          <property name="text">
-          <string/>
+          <string>Range 3 :      </string>
          </property>
         </widget>
        </item>
-       <item row="15" column="11">
-        <widget class="QCheckBox" name="exportBox_5">
-         <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="5">
-        <widget class="Line" name="line_85">
+       <item row="1" column="7">
+        <widget class="Line" name="line_443">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="15" column="6">
+       <item row="1" column="9">
+        <widget class="Line" name="line_444">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="Line" name="line_442">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Range 1 :     </string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="Line" name="line_438">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="7">
         <layout class="QVBoxLayout" name="verticalLayout_18">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -1270,82 +766,558 @@
          </item>
         </layout>
        </item>
-       <item row="0" column="9">
-        <widget class="Line" name="line_61">
+       <item row="4" column="3">
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QCheckBox" name="Range2_Si_button">
+             <property name="text">
+              <string>Si Diode</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Range2_InGaAs_button">
+             <property name="text">
+              <string>InGaAs Diode</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_220">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="textBox_3"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_3">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="2">
+        <widget class="Line" name="line_445">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
+       <item row="4" column="7">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QDoubleSpinBox" name="startNM_2">
+             <property name="decimals">
+              <number>0</number>
+             </property>
+             <property name="minimum">
+              <double>360.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>1800.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_62">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="stopNM_2">
+             <property name="decimals">
+              <number>0</number>
+             </property>
+             <property name="minimum">
+              <double>360.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>1800.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1800.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_48">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="calculateButton_2">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Calculate EQE</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="8">
+        <widget class="Line" name="line_448">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6">
+        <widget class="Line" name="line_447">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="5">
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QTextEdit" name="textBox_4"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_4">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="4">
+        <widget class="Line" name="line_446">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Range 4 :      </string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="9">
+        <widget class="QCheckBox" name="exportBox_2">
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QCheckBox" name="Range3_Si_button">
+             <property name="text">
+              <string>Si Diode</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Range3_InGaAs_button">
+             <property name="text">
+              <string>InGaAs Diode</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_222">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="textBox_5"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_5">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="10" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Range 5 :      </string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="3">
+        <layout class="QVBoxLayout" name="verticalLayout_12">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_21">
+           <item>
+            <widget class="QCheckBox" name="Range4_Si_button">
+             <property name="text">
+              <string>Si Diode</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Range4_InGaAs_button">
+             <property name="text">
+              <string>InGaAs Diode</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_224">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="textBox_7"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton_7">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="2">
+        <widget class="Line" name="line_9">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="6">
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="Line" name="line_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="8">
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="9">
+        <widget class="QCheckBox" name="exportBox_5">
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="8">
+        <widget class="Line" name="line_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="8">
+        <widget class="Line" name="line_12">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="8">
+        <widget class="Line" name="line_16">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="Line" name="line_13">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="4">
+        <widget class="Line" name="line_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="6">
+        <widget class="Line" name="line_7">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="6">
+        <widget class="Line" name="line_11">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="4">
+        <widget class="Line" name="line_10">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="6">
+        <widget class="Line" name="line_15">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="4">
+        <widget class="Line" name="line_14">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5">
+        <widget class="Line" name="line_19">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="9">
+        <widget class="Line" name="line_21">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="Line" name="line_22">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="9">
+        <widget class="Line" name="line_33">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="Line" name="line_17">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="Line" name="line_18">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="Line" name="line_23">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="7">
+        <widget class="Line" name="line_20">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="5">
+        <widget class="Line" name="line_24">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="7">
+        <widget class="Line" name="line_31">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="Line" name="line_35">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="3">
+        <widget class="Line" name="line_37">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="5">
+        <widget class="Line" name="line_39">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="7">
+        <widget class="Line" name="line_40">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="9">
+        <widget class="Line" name="line_41">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="Line" name="line_42">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="3">
+        <widget class="Line" name="line_43">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="5">
+        <widget class="Line" name="line_45">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="7">
+        <widget class="Line" name="line_47">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="9">
+        <widget class="Line" name="line_49">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
       </layout>
-     </widget>
-     <widget class="Line" name="line_28">
-      <property name="geometry">
-       <rect>
-        <x>1110</x>
-        <y>30</y>
-        <width>20</width>
-        <height>801</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_25">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>820</y>
-        <width>1091</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="exportButton">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>870</y>
-        <width>401</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Export EQE Data</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="clearButton">
-      <property name="geometry">
-       <rect>
-        <x>970</x>
-        <y>870</y>
-        <width>151</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Clear Plot</string>
-      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
@@ -1357,8 +1329,8 @@
        <rect>
         <x>40</x>
         <y>43</y>
-        <width>1071</width>
-        <height>781</height>
+        <width>1101</width>
+        <height>851</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_6">
@@ -1749,7 +1721,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Range [nm] :</string>
+          <string>Range (nm) :</string>
          </property>
         </widget>
        </item>
@@ -2958,7 +2930,7 @@
         <x>20</x>
         <y>30</y>
         <width>20</width>
-        <height>801</height>
+        <height>871</height>
        </rect>
       </property>
       <property name="orientation">
@@ -2968,10 +2940,10 @@
      <widget class="Line" name="line_34">
       <property name="geometry">
        <rect>
-        <x>1110</x>
+        <x>1140</x>
         <y>30</y>
         <width>20</width>
-        <height>801</height>
+        <height>871</height>
        </rect>
       </property>
       <property name="orientation">
@@ -2983,7 +2955,7 @@
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>1091</width>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -2995,8 +2967,8 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>820</y>
-        <width>1091</width>
+        <y>890</y>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -3008,7 +2980,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>870</y>
+        <y>920</y>
         <width>271</width>
         <height>51</height>
        </rect>
@@ -3028,8 +3000,8 @@
      <widget class="QPushButton" name="plotEQEButton_Energy">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>870</y>
+        <x>550</x>
+        <y>920</y>
         <width>221</width>
         <height>51</height>
        </rect>
@@ -3049,8 +3021,8 @@
      <widget class="QCheckBox" name="normalizeBox">
       <property name="geometry">
        <rect>
-        <x>880</x>
-        <y>880</y>
+        <x>910</x>
+        <y>930</y>
         <width>231</width>
         <height>31</height>
        </rect>
@@ -3071,8 +3043,8 @@
      <widget class="Line" name="line_64">
       <property name="geometry">
        <rect>
-        <x>870</x>
-        <y>860</y>
+        <x>900</x>
+        <y>910</y>
         <width>251</width>
         <height>20</height>
        </rect>
@@ -3084,8 +3056,8 @@
      <widget class="QDoubleSpinBox" name="normalizeNM">
       <property name="geometry">
        <rect>
-        <x>1020</x>
-        <y>880</y>
+        <x>1050</x>
+        <y>930</y>
         <width>81</width>
         <height>27</height>
        </rect>
@@ -3109,8 +3081,8 @@
      <widget class="Line" name="line_65">
       <property name="geometry">
        <rect>
-        <x>860</x>
-        <y>870</y>
+        <x>890</x>
+        <y>920</y>
         <width>20</width>
         <height>51</height>
        </rect>
@@ -3122,8 +3094,8 @@
      <widget class="Line" name="line_67">
       <property name="geometry">
        <rect>
-        <x>1110</x>
-        <y>870</y>
+        <x>1140</x>
+        <y>920</y>
         <width>20</width>
         <height>51</height>
        </rect>
@@ -3135,8 +3107,8 @@
      <widget class="Line" name="line_79">
       <property name="geometry">
        <rect>
-        <x>870</x>
-        <y>910</y>
+        <x>900</x>
+        <y>960</y>
         <width>251</width>
         <height>20</height>
        </rect>
@@ -3150,548 +3122,331 @@
      <attribute name="title">
       <string>Fit CT States</string>
      </attribute>
-     <widget class="QWidget" name="gridLayoutWidget_3">
+     <widget class="Line" name="line_202">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>20</y>
+        <width>1121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_210">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>850</y>
+        <width>1121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_214">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>20</width>
+        <height>831</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_215">
+      <property name="geometry">
+       <rect>
+        <x>1140</x>
+        <y>30</y>
+        <width>20</width>
+        <height>831</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="clearButton_2">
+      <property name="geometry">
+       <rect>
+        <x>970</x>
+        <y>890</y>
+        <width>181</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Clear Plot</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_7">
       <property name="geometry">
        <rect>
         <x>40</x>
         <y>40</y>
-        <width>1071</width>
+        <width>1101</width>
         <height>811</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="13" column="11">
-        <layout class="QVBoxLayout" name="verticalLayout_25">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="0" column="3">
-            <widget class="Line" name="line_256">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="startStart_5">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="startStop_5">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_27">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Start :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="Line" name="line_257">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_28">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Stop :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line_258">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="stopStart_5">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QDoubleSpinBox" name="stopStop_5">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="Line" name="line_259">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_323">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+      <layout class="QGridLayout" name="gridLayout_20">
+       <item row="6" column="12">
+        <layout class="QGridLayout" name="gridLayout_28">
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="Temperature_3">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="heatButton_5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_61">
            <property name="font">
             <font>
              <pointsize>12</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Heat Map</string>
+            <string>Temp. (K) : </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_205">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="9" column="7">
-        <widget class="Line" name="line_275">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="Line" name="line_304">
+       <item row="5" column="4">
+        <widget class="Line" name="line_259">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="11" column="11">
-        <layout class="QVBoxLayout" name="verticalLayout_23">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="3">
-            <widget class="Line" name="line_236">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="startStart_4">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="startStop_4">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_23">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Start :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="Line" name="line_237">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_24">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Stop :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line_240">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="stopStart_4">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QDoubleSpinBox" name="stopStop_4">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="Line" name="line_241">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_321">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="heatButton_4">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Heat Map</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="1">
-        <widget class="Line" name="line_244">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="10">
-        <widget class="Line" name="line_296">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="12">
-        <layout class="QVBoxLayout" name="verticalLayout_27"/>
-       </item>
-       <item row="7" column="10">
-        <widget class="Line" name="line_277">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="6">
-        <widget class="QTextEdit" name="textBox_f3"/>
-       </item>
-       <item row="7" column="0">
-        <widget class="QPushButton" name="browseFitButton_2">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="4">
-        <widget class="QTextEdit" name="textBox_f5"/>
-       </item>
-       <item row="6" column="4">
-        <widget class="Line" name="line_206">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="Line" name="line_204">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="6">
-        <widget class="Line" name="line_205">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="4">
-        <widget class="QTextEdit" name="textBox_f2"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="Line" name="line_209">
+       <item row="5" column="8">
+        <widget class="Line" name="line_261">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
        <item row="7" column="6">
-        <widget class="QTextEdit" name="textBox_f6"/>
-       </item>
-       <item row="7" column="2">
-        <widget class="QTextEdit" name="textBox_f4"/>
-       </item>
-       <item row="3" column="1">
-        <widget class="Line" name="line_213">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="8">
-        <widget class="Line" name="line_218">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="Line" name="line_219">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="Line" name="line_238">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="Line" name="line_239">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="Line" name="line_246">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="3">
-        <widget class="Line" name="line_252">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="Line" name="line_253">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="5">
         <widget class="Line" name="line_271">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="7">
-        <widget class="Line" name="line_272">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="5">
-        <widget class="Line" name="line_273">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="7">
-        <widget class="Line" name="line_276">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="8">
-        <widget class="Line" name="line_298">
-         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="Line" name="line_301">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="12">
-        <layout class="QVBoxLayout" name="verticalLayout_28"/>
-       </item>
-       <item row="9" column="12">
-        <layout class="QVBoxLayout" name="verticalLayout_29"/>
-       </item>
-       <item row="13" column="12">
-        <layout class="QVBoxLayout" name="verticalLayout_31"/>
-       </item>
-       <item row="1" column="11">
+       <item row="7" column="2">
         <widget class="Line" name="line_265">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="6" column="11">
-        <widget class="Line" name="line_300">
+       <item row="5" column="10">
+        <widget class="Line" name="line_262">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="11" column="12">
-        <layout class="QVBoxLayout" name="verticalLayout_30"/>
+       <item row="7" column="4">
+        <widget class="Line" name="line_268">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
-       <item row="3" column="11">
+       <item row="6" column="10">
+        <layout class="QVBoxLayout" name="verticalLayout_21">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="3">
+            <widget class="Line" name="line_247">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="startStart_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QDoubleSpinBox" name="startStop_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_29">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Start :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="Line" name="line_267">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_30">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Stop :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_269">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="stopStart_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="stopStop_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="Line" name="line_270">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_319">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="heatButton_3">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Heat Map</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="10">
         <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
           <layout class="QGridLayout" name="gridLayout_5">
@@ -3848,7 +3603,24 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="8">
+       <item row="2" column="4">
+        <widget class="QTextEdit" name="textBox_f2"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_13">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Data File :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="8">
         <layout class="QVBoxLayout" name="verticalLayout_13">
          <item>
           <layout class="QGridLayout" name="gridLayout_9">
@@ -4060,219 +3832,10 @@
          </item>
         </layout>
        </item>
-       <item row="7" column="8">
-        <layout class="QVBoxLayout" name="verticalLayout_15">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_10">
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_41">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Fit :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_42">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Plot :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="Line" name="line_227">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="startFit_2">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="Line" name="line_228">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="Line" name="line_266">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="startPlot_2">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line_284">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="stopPlot_2">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QDoubleSpinBox" name="stopFit_2">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QDoubleSpinBox" name="startFitPlot_2">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="4">
-            <widget class="QDoubleSpinBox" name="stopFitPlot_2">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="Line" name="line_367">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="Line" name="line_368">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_38">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Plot Fit :</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_309">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="gaussianFit_2">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Fit</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item row="2" column="2">
+        <widget class="QTextEdit" name="textBox_f1"/>
        </item>
-       <item row="7" column="11">
+       <item row="4" column="10">
         <layout class="QVBoxLayout" name="verticalLayout_19">
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
@@ -4429,24 +3992,72 @@
          </item>
         </layout>
        </item>
+       <item row="6" column="4">
+        <widget class="QTextEdit" name="textBox_f8"/>
+       </item>
        <item row="8" column="0">
-        <widget class="Line" name="line_208">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QPushButton" name="browseFitButton_4">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Select</string>
          </property>
         </widget>
        </item>
-       <item row="8" column="2">
-        <widget class="Line" name="line_203">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
+       <item row="10" column="12">
+        <layout class="QGridLayout" name="gridLayout_30">
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="Temperature_5">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_63">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Temp. (K) : </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_207">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
-       <item row="13" column="7">
-        <widget class="Line" name="line_283">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="10" column="0">
+        <widget class="QPushButton" name="browseFitButton_5">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Select</string>
          </property>
         </widget>
        </item>
@@ -4460,11 +4071,42 @@
           </font>
          </property>
          <property name="text">
-          <string>Range [eV] :</string>
+          <string>Range (eV) :</string>
          </property>
         </widget>
        </item>
-       <item row="13" column="8">
+       <item row="0" column="10">
+        <widget class="QLabel" name="label_18">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Heat Map Range (eV) :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_14">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Color :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6">
+        <widget class="QTextEdit" name="textBox_f3"/>
+       </item>
+       <item row="10" column="8">
         <layout class="QVBoxLayout" name="verticalLayout_24">
          <item>
           <layout class="QGridLayout" name="gridLayout_13">
@@ -4676,14 +4318,7 @@
          </item>
         </layout>
        </item>
-       <item row="10" column="11">
-        <widget class="Line" name="line_310">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
+       <item row="2" column="0">
         <widget class="QPushButton" name="browseFitButton_1">
          <property name="font">
           <font>
@@ -4695,687 +4330,123 @@
          </property>
         </widget>
        </item>
-       <item row="12" column="8">
-        <widget class="Line" name="line_315">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="4" column="4">
+        <widget class="QTextEdit" name="textBox_f5"/>
+       </item>
+       <item row="8" column="6">
+        <widget class="QTextEdit" name="textBox_f12"/>
+       </item>
+       <item row="0" column="12">
+        <widget class="QLabel" name="label_53">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Parameters : </string>
          </property>
         </widget>
        </item>
-       <item row="11" column="10">
-        <widget class="Line" name="line_280">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="3">
-        <widget class="Line" name="line_260">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="1">
-        <widget class="Line" name="line_262">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="10">
+       <item row="0" column="7">
         <widget class="Line" name="line_297">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
-       <item row="9" column="2">
-        <widget class="QTextEdit" name="textBox_f7"/>
-       </item>
-       <item row="10" column="4">
-        <widget class="Line" name="line_306">
+       <item row="7" column="0">
+        <widget class="Line" name="line_264">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="11" column="4">
-        <widget class="QTextEdit" name="textBox_f11"/>
+       <item row="5" column="12">
+        <widget class="Line" name="line_263">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
-       <item row="9" column="4">
-        <widget class="QTextEdit" name="textBox_f8"/>
+       <item row="7" column="8">
+        <widget class="Line" name="line_272">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_15">
+       <item row="4" column="0">
+        <widget class="QPushButton" name="browseFitButton_2">
          <property name="font">
           <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
+           <pointsize>12</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Label (optional) :</string>
+          <string>Select</string>
          </property>
         </widget>
        </item>
-       <item row="10" column="2">
-        <widget class="Line" name="line_305">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="11">
-        <widget class="Line" name="line_303">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7">
-        <widget class="Line" name="line_278">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="4">
-        <widget class="Line" name="line_207">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="8">
-        <layout class="QVBoxLayout" name="verticalLayout_20">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_11">
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_43">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Fit :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_44">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Plot :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="Line" name="line_229">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="startFit_3">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="Line" name="line_230">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="Line" name="line_285">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="startPlot_3">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line_287">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="stopPlot_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QDoubleSpinBox" name="stopFit_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QDoubleSpinBox" name="startFitPlot_3">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="4">
-            <widget class="QDoubleSpinBox" name="stopFitPlot_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="Line" name="line_365">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="Line" name="line_366">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_39">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Plot Fit :</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_318">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="gaussianFit_3">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Fit</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="9" column="10">
-        <widget class="Line" name="line_279">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="11">
-        <layout class="QVBoxLayout" name="verticalLayout_21">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="3">
-            <widget class="Line" name="line_247">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="startStart_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="startStop_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_29">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Start :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="Line" name="line_267">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_30">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Stop :</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="Line" name="line_269">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="stopStart_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QDoubleSpinBox" name="stopStop_3">
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="minimum">
-              <double>0.600000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>3.600000000000000</double>
-             </property>
-             <property name="value">
-              <double>3.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="Line" name="line_270">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line_319">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="heatButton_3">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Heat Map</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="8" column="8">
+       <item row="1" column="4">
         <widget class="Line" name="line_211">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="10" column="8">
-        <widget class="Line" name="line_308">
+       <item row="5" column="6">
+        <widget class="Line" name="line_260">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
-        <widget class="Line" name="line_212">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
+       <item row="4" column="12">
+        <layout class="QGridLayout" name="gridLayout_27">
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="Temperature_2">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_60">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Temp. (K) : </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_204">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
-       <item row="13" column="2">
-        <widget class="QTextEdit" name="textBox_f13"/>
-       </item>
-       <item row="11" column="6">
-        <widget class="QTextEdit" name="textBox_f12"/>
-       </item>
-       <item row="9" column="6">
-        <widget class="QTextEdit" name="textBox_f9"/>
-       </item>
-       <item row="9" column="0">
-        <widget class="QPushButton" name="browseFitButton_3">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="6">
-        <widget class="QTextEdit" name="textBox_f15"/>
-       </item>
-       <item row="11" column="2">
-        <widget class="QTextEdit" name="textBox_f10"/>
-       </item>
-       <item row="12" column="0">
-        <widget class="Line" name="line_311">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="11">
-        <widget class="Line" name="line_317">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="0">
-        <widget class="QPushButton" name="browseFitButton_5">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="4">
-        <widget class="QTextEdit" name="textBox_f14"/>
-       </item>
-       <item row="9" column="3">
-        <widget class="Line" name="line_255">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="6">
-        <widget class="Line" name="line_314">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="4">
-        <widget class="Line" name="line_313">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="5">
-        <widget class="Line" name="line_261">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="1">
-        <widget class="Line" name="line_216">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="6">
-        <widget class="Line" name="line_223">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="5">
-        <widget class="Line" name="line_268">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0">
-        <widget class="QPushButton" name="browseFitButton_4">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="Line" name="line_274">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="5">
-        <widget class="Line" name="line_264">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QTextEdit" name="textBox_f1"/>
-       </item>
-       <item row="13" column="10">
-        <widget class="Line" name="line_281">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_14">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Color  (optional) :</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="6">
-        <widget class="Line" name="line_307">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="7">
-        <widget class="Line" name="line_282">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="2">
-        <widget class="Line" name="line_312">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="Line" name="line_251">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="3">
-        <widget class="Line" name="line_263">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="8">
+       <item row="8" column="8">
         <layout class="QVBoxLayout" name="verticalLayout_22">
          <item>
           <layout class="QGridLayout" name="gridLayout_12">
@@ -5587,22 +4658,418 @@
          </item>
         </layout>
        </item>
-       <item row="0" column="11">
-        <widget class="QLabel" name="label_18">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Heat Map Range [eV] :</string>
+       <item row="8" column="10">
+        <layout class="QVBoxLayout" name="verticalLayout_23">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="3">
+            <widget class="Line" name="line_236">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="startStart_4">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QDoubleSpinBox" name="startStop_4">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Start :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="Line" name="line_237">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_24">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Stop :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_240">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="stopStart_4">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="stopStop_4">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="Line" name="line_241">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_321">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="heatButton_4">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Heat Map</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="8">
+        <layout class="QVBoxLayout" name="verticalLayout_20">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_43">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Fit :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_44">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Plot :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="Line" name="line_229">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="startFit_3">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="Line" name="line_230">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="Line" name="line_285">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="startPlot_3">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_287">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QDoubleSpinBox" name="stopPlot_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="stopFit_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QDoubleSpinBox" name="startFitPlot_3">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="4">
+            <widget class="QDoubleSpinBox" name="stopFitPlot_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="Line" name="line_365">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="Line" name="line_366">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_39">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Plot Fit :</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_318">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="gaussianFit_3">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Fit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="10" column="6">
+        <widget class="QTextEdit" name="textBox_f15"/>
+       </item>
+       <item row="1" column="10">
+        <widget class="Line" name="line_216">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_13">
+       <item row="3" column="6">
+        <widget class="Line" name="line_252">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="12">
+        <widget class="Line" name="line_256">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="Line" name="line_219">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QTextEdit" name="textBox_f7"/>
+       </item>
+       <item row="1" column="12">
+        <widget class="Line" name="line_218">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_15">
          <property name="font">
           <font>
            <pointsize>13</pointsize>
@@ -5611,84 +5078,875 @@
           </font>
          </property>
          <property name="text">
-          <string>Data File :</string>
+          <string>Label :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QTextEdit" name="textBox_f4"/>
+       </item>
+       <item row="4" column="6">
+        <widget class="QTextEdit" name="textBox_f6"/>
+       </item>
+       <item row="3" column="4">
+        <widget class="Line" name="line_251">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QPushButton" name="browseFitButton_3">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Select</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="Line" name="line_212">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="Line" name="line_257">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="8">
+        <widget class="Line" name="line_253">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="8">
+        <layout class="QVBoxLayout" name="verticalLayout_15">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_10">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_41">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Fit :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_42">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Plot :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="Line" name="line_227">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="startFit_2">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="Line" name="line_228">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="Line" name="line_266">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="startPlot_2">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_284">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QDoubleSpinBox" name="stopPlot_2">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="stopFit_2">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QDoubleSpinBox" name="startFitPlot_2">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="4">
+            <widget class="QDoubleSpinBox" name="stopFitPlot_2">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="Line" name="line_367">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="Line" name="line_368">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_38">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Plot Fit :</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_309">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="gaussianFit_2">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Fit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="8">
+        <widget class="Line" name="line_213">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="6">
+        <widget class="QTextEdit" name="textBox_f9"/>
+       </item>
+       <item row="8" column="4">
+        <widget class="QTextEdit" name="textBox_f11"/>
+       </item>
+       <item row="10" column="4">
+        <widget class="QTextEdit" name="textBox_f14"/>
+       </item>
+       <item row="10" column="2">
+        <widget class="QTextEdit" name="textBox_f13"/>
+       </item>
+       <item row="5" column="2">
+        <widget class="Line" name="line_258">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="10">
+        <layout class="QVBoxLayout" name="verticalLayout_25">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="3">
+            <widget class="Line" name="line_238">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="startStart_5">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QDoubleSpinBox" name="startStop_5">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_27">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Start :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="Line" name="line_239">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_28">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Stop :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="Line" name="line_244">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="stopStart_5">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="stopStop_5">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="minimum">
+              <double>0.600000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>3.600000000000000</double>
+             </property>
+             <property name="value">
+              <double>3.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="Line" name="line_246">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_323">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="heatButton_5">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Heat Map</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="12">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="Temperature_1">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_59">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Temp. (K) : </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_203">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="8" column="2">
+        <widget class="QTextEdit" name="textBox_f10"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="Line" name="line_209">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="Line" name="line_298">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="12">
+        <widget class="Line" name="line_281">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="8">
+        <widget class="Line" name="line_279">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="Line" name="line_275">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="10">
+        <widget class="Line" name="line_273">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="10">
+        <widget class="Line" name="line_255">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="Line" name="line_223">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="4">
+        <widget class="Line" name="line_277">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="12">
+        <widget class="Line" name="line_274">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="6">
+        <widget class="Line" name="line_278">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="Line" name="line_276">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="Line" name="line_282">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="10">
+        <widget class="Line" name="line_280">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="Line" name="line_283">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="Line" name="line_296">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="Line" name="line_208">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="12">
+        <layout class="QGridLayout" name="gridLayout_29">
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="Temperature_4">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_62">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Temp. (K) : </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_206">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="11">
+        <widget class="Line" name="line_300">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="Line" name="line_301">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="Line" name="line_303">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="Line" name="line_304">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="Line" name="line_305">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="Line" name="line_306">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="Line" name="line_307">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="Line" name="line_308">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="Line" name="line_310">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="3">
+        <widget class="Line" name="line_311">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="3">
+        <widget class="Line" name="line_312">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="5">
+        <widget class="Line" name="line_313">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="5">
+        <widget class="Line" name="line_314">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="5">
+        <widget class="Line" name="line_315">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="5">
+        <widget class="Line" name="line_317">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="Line" name="line_383">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="7">
+        <widget class="Line" name="line_384">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="7">
+        <widget class="Line" name="line_405">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="7">
+        <widget class="Line" name="line_406">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="7">
+        <widget class="Line" name="line_408">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="7">
+        <widget class="Line" name="line_415">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="9">
+        <widget class="Line" name="line_416">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="9">
+        <widget class="Line" name="line_417">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="9">
+        <widget class="Line" name="line_418">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="9">
+        <widget class="Line" name="line_419">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="9">
+        <widget class="Line" name="line_420">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="11">
+        <widget class="Line" name="line_423">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="11">
+        <widget class="Line" name="line_424">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="11">
+        <widget class="Line" name="line_432">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="11">
+        <widget class="Line" name="line_433">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="11">
+        <widget class="Line" name="line_434">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
       </layout>
-     </widget>
-     <widget class="Line" name="line_202">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>20</y>
-        <width>1091</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_210">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>850</y>
-        <width>1091</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_214">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>20</width>
-        <height>831</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_215">
-      <property name="geometry">
-       <rect>
-        <x>1110</x>
-        <y>30</y>
-        <width>20</width>
-        <height>831</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="clearButton_2">
-      <property name="geometry">
-       <rect>
-        <x>970</x>
-        <y>880</y>
-        <width>151</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Clear Plot</string>
-      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
@@ -5700,7 +5958,7 @@
        <rect>
         <x>40</x>
         <y>40</y>
-        <width>1071</width>
+        <width>1101</width>
         <height>421</height>
        </rect>
       </property>
@@ -5715,7 +5973,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Label (optional):</string>
+          <string>Label :</string>
          </property>
         </widget>
        </item>
@@ -5964,7 +6222,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Plot Range [eV] :</string>
+          <string>Plot Range (eV) :</string>
          </property>
         </widget>
        </item>
@@ -5978,7 +6236,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Fit Range [eV] :</string>
+          <string>Fit Range (eV) :</string>
          </property>
         </widget>
        </item>
@@ -6081,7 +6339,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Color (optional) :</string>
+          <string>Color :</string>
          </property>
         </widget>
        </item>
@@ -6431,7 +6689,7 @@
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>1091</width>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -6444,7 +6702,7 @@
        <rect>
         <x>30</x>
         <y>460</y>
-        <width>1091</width>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -6468,7 +6726,7 @@
      <widget class="Line" name="line_295">
       <property name="geometry">
        <rect>
-        <x>1110</x>
+        <x>1140</x>
         <y>30</y>
         <width>20</width>
         <height>441</height>
@@ -6481,9 +6739,9 @@
      <widget class="QPushButton" name="clearButton_EL">
       <property name="geometry">
        <rect>
-        <x>610</x>
+        <x>500</x>
         <y>500</y>
-        <width>151</width>
+        <width>211</width>
         <height>51</height>
        </rect>
       </property>
@@ -6499,74 +6757,13 @@
        <string>Clear Plot</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="intersectionButton">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>500</y>
-        <width>331</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Determine Intersection</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="scalePlot">
-      <property name="geometry">
-       <rect>
-        <x>1010</x>
-        <y>510</y>
-        <width>102</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>0</number>
-      </property>
-      <property name="minimum">
-       <double>0.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>10000000000000000000.000000000000000</double>
-      </property>
-      <property name="value">
-       <double>10000.000000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_35">
-      <property name="geometry">
-       <rect>
-        <x>870</x>
-        <y>510</y>
-        <width>121</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Scale Factor : </string>
-      </property>
-     </widget>
      <widget class="Line" name="line_351">
       <property name="geometry">
        <rect>
-        <x>1110</x>
+        <x>1140</x>
         <y>500</y>
         <width>20</width>
-        <height>51</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="orientation">
@@ -6576,9 +6773,9 @@
      <widget class="Line" name="line_352">
       <property name="geometry">
        <rect>
-        <x>857</x>
+        <x>797</x>
         <y>490</y>
-        <width>261</width>
+        <width>351</width>
         <height>20</height>
        </rect>
       </property>
@@ -6589,9 +6786,9 @@
      <widget class="Line" name="line_353">
       <property name="geometry">
        <rect>
-        <x>860</x>
-        <y>540</y>
-        <width>261</width>
+        <x>800</x>
+        <y>640</y>
+        <width>351</width>
         <height>20</height>
        </rect>
       </property>
@@ -6602,119 +6799,173 @@
      <widget class="Line" name="line_354">
       <property name="geometry">
        <rect>
-        <x>850</x>
+        <x>790</x>
         <y>500</y>
         <width>20</width>
-        <height>51</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
-     <widget class="QDoubleSpinBox" name="CT_State">
+     <widget class="QWidget" name="gridLayoutWidget_12">
       <property name="geometry">
        <rect>
-        <x>1010</x>
-        <y>590</y>
-        <width>101</width>
-        <height>27</height>
+        <x>810</x>
+        <y>510</y>
+        <width>330</width>
+        <height>131</height>
        </rect>
       </property>
-      <property name="decimals">
-       <number>2</number>
-      </property>
-      <property name="minimum">
-       <double>0.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>5.000000000000000</double>
-      </property>
-      <property name="value">
-       <double>1.500000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_36">
-      <property name="geometry">
-       <rect>
-        <x>870</x>
-        <y>590</y>
-        <width>121</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>CT Energy [eV] :</string>
-      </property>
-     </widget>
-     <widget class="Line" name="line_355">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>620</y>
-        <width>261</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_356">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>570</y>
-        <width>261</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_357">
-      <property name="geometry">
-       <rect>
-        <x>850</x>
-        <y>580</y>
-        <width>20</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_358">
-      <property name="geometry">
-       <rect>
-        <x>1110</x>
-        <y>580</y>
-        <width>20</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_31">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_80">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Parameters :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="Line" name="line_436">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <layout class="QGridLayout" name="gridLayout_32">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_36">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CT Energy (eV) :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QDoubleSpinBox" name="EL_Temperature">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="Line" name="line_437">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="CT_State">
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>5.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.500000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_67">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <italic>false</italic>
+            </font>
+           </property>
+           <property name="text">
+            <string>Temperature (K) :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="Line" name="line_439">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_35">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Scale Factor : </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="scalePlot">
+           <property name="decimals">
+            <number>0</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000000000000000.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>10000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_440">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
-      <string>Extended Fits</string>
+      <string>Extended Fits - MLJ Theory</string>
      </attribute>
      <widget class="Line" name="line_369">
       <property name="geometry">
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>1091</width>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -6738,7 +6989,7 @@
      <widget class="Line" name="line_371">
       <property name="geometry">
        <rect>
-        <x>1110</x>
+        <x>1140</x>
         <y>30</y>
         <width>21</width>
         <height>251</height>
@@ -6753,7 +7004,7 @@
        <rect>
         <x>30</x>
         <y>270</y>
-        <width>1091</width>
+        <width>1121</width>
         <height>20</height>
        </rect>
       </property>
@@ -6766,7 +7017,7 @@
        <rect>
         <x>40</x>
         <y>40</y>
-        <width>1071</width>
+        <width>1101</width>
         <height>231</height>
        </rect>
       </property>
@@ -6788,7 +7039,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Range [eV] :</string>
+          <string>Range (eV) :</string>
          </property>
         </widget>
        </item>
@@ -6853,7 +7104,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>0.600000000000000</double>
+              <double>1.140000000000000</double>
              </property>
             </widget>
            </item>
@@ -6872,7 +7123,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>3.600000000000000</double>
+              <double>1.540000000000000</double>
              </property>
             </widget>
            </item>
@@ -6902,7 +7153,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>0.600000000000000</double>
+              <double>1.200000000000000</double>
              </property>
             </widget>
            </item>
@@ -6928,7 +7179,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>3.600000000000000</double>
+              <double>2.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -6944,7 +7195,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>0.600000000000000</double>
+              <double>1.140000000000000</double>
              </property>
             </widget>
            </item>
@@ -6963,7 +7214,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>3.600000000000000</double>
+              <double>1.700000000000000</double>
              </property>
             </widget>
            </item>
@@ -7031,7 +7282,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Color  (optional) :</string>
+          <string>Color :</string>
          </property>
         </widget>
        </item>
@@ -7083,7 +7334,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Label (optional) :</string>
+          <string>Label :</string>
          </property>
         </widget>
        </item>
@@ -7125,7 +7376,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Heat Map Range [eV] :</string>
+          <string>Heat Map Range (eV) :</string>
          </property>
         </widget>
        </item>
@@ -7348,10 +7599,10 @@
      <widget class="QWidget" name="gridLayoutWidget_4">
       <property name="geometry">
        <rect>
-        <x>860</x>
-        <y>310</y>
-        <width>255</width>
-        <height>107</height>
+        <x>690</x>
+        <y>320</y>
+        <width>451</width>
+        <height>131</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_15">
@@ -7369,16 +7620,28 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="Line" name="line_410">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
-        <layout class="QGridLayout" name="gridLayout_24">
-         <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_33">
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="Huang_Rhys">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
           <widget class="QLabel" name="label_54">
            <property name="font">
             <font>
@@ -7386,14 +7649,26 @@
             </font>
            </property>
            <property name="text">
-            <string>Huang-Rhys (S_i) : </string>
+            <string>Huang-Rhys : </string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="Line" name="line_421">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="extra_Temperature">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>800.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>290.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -7405,33 +7680,19 @@
             </font>
            </property>
            <property name="text">
-            <string>Vib. Quanta (hw_i)  : </string>
+            <string>Vib. Quanta (eV)  : </string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="Line" name="line_422">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_65">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
            </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QDoubleSpinBox" name="Huang_Rhys">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
+           <property name="text">
+            <string>Temperature (K) :</string>
            </property>
           </widget>
          </item>
@@ -7447,23 +7708,51 @@
             <double>0.000000000000000</double>
            </property>
            <property name="maximum">
-            <double>1.000000000000000</double>
+            <double>10.000000000000000</double>
            </property>
            <property name="value">
             <double>0.165000000000000</double>
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_435">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="Line" name="line_422">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="Line" name="line_421">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
         </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="Line" name="line_410">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
      <widget class="QPushButton" name="clearButton_extraFit">
       <property name="geometry">
        <rect>
-        <x>660</x>
-        <y>300</y>
-        <width>141</width>
+        <x>400</x>
+        <y>310</y>
+        <width>211</width>
         <height>51</height>
        </rect>
       </property>
@@ -7479,15 +7768,58 @@
        <string>Clear Plot</string>
       </property>
      </widget>
-     <zorder>line_369</zorder>
-     <zorder>line_370</zorder>
-     <zorder>line_371</zorder>
-     <zorder>line_372</zorder>
-     <zorder>gridLayoutWidget_6</zorder>
-     <zorder>label_78</zorder>
-     <zorder>gridLayoutWidget_4</zorder>
-     <zorder>clearButton_extraFit</zorder>
-     <zorder>clearButton_extraFit</zorder>
+     <widget class="Line" name="line_373">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>300</y>
+        <width>471</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_374">
+      <property name="geometry">
+       <rect>
+        <x>1140</x>
+        <y>310</y>
+        <width>21</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_381">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>310</y>
+        <width>21</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_382">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>450</y>
+        <width>471</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -7496,7 +7828,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1156</width>
+     <width>1183</width>
      <height>25</height>
     </rect>
    </property>
