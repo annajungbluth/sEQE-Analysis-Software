@@ -847,9 +847,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
                    print('-'*80)
                    print('Temperature [T] (K) : ', self.T_CT)
-                   print('Oscillator Strength [f] (eV**2) : ', best_vals[0])
-                   print('Reorganization Energy [l] (eV) : ',  best_vals[1])
-                   print('CT State Energy [ECT] (eV) : ',  best_vals[2])
+                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
+                   print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'))
+                   print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'))
                    print('-'*80)
 
                    diff = stopFit - startFit # Find difference between start and stop fit energy
@@ -870,7 +870,7 @@ class MainWindow(QtWidgets.QMainWindow):
                    plt.draw()
 
                except:
-                   print('Optimal Parameters not found.')
+                   print('Optimal parameters not found.')
                    return False
 
                return True
@@ -886,9 +886,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
                    print('-'*80)
                    print('Temperature [T] (K) : ', self.T_x)
-                   print('Oscillator Strength [f] (eV**2) : ', best_vals[0])
-                   print('Reorganization Energy [l] (eV) : ', best_vals[1])
-                   print('CT State Energy [ECT] (eV) : ', best_vals[2])
+                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
+                   print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
+                   print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
                    print('-'*80)
 
                    diff = stopFit - startFit  # Find difference between start and stop fit energy
@@ -905,7 +905,7 @@ class MainWindow(QtWidgets.QMainWindow):
                    plt.draw()
 
                except:
-                   print('Optimal Parameters not found.')
+                   print('Optimal parameters not found.')
                    return False
 
                return True
@@ -941,8 +941,6 @@ class MainWindow(QtWidgets.QMainWindow):
             f_df = []
             l_df = []
             Ect_df = []
-            S_df = []
-            hw_df = []
 
             x = float(startStartE)
             y = float(stopStartE)
@@ -985,7 +983,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                l_df.append(best_vals[1])
                                Ect_df.append(best_vals[2])
                             except:
-                               print('Optimal Parameters not found.')
+                               print('Optimal parameters not found.')
 
                         elif file_no == 'x1': # For extended fitting with MLJ Theory
 
@@ -1002,7 +1000,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 l_df.append(best_vals[1])
                                 Ect_df.append(best_vals[2])
                             except:
-                                print('Optimal Parameters not found.')
+                                print('Optimal parameters not found.')
 
 
             parameter_df = pd.DataFrame({'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df}) # Create a dataFrame with all results
@@ -1014,9 +1012,9 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 print('Temperature [T] (K) : ', self.T_CT)
 
-            print('Average Oscillator Strength [f] (eV**2) : ', parameter_df['f'].mean(), ' Stdev : ', parameter_df['f'].std()) # Determine the average value and standard deviation
-            print('Average Reorganization Energy [l] (eV) : ', parameter_df['l'].mean(), ' Stdev : ', parameter_df['l'].std())
-            print('Average CT State Energy [ECT] (eV) : ', parameter_df['Ect'].mean(), ' Stdev : ', parameter_df['Ect'].std())
+            print('Average Oscillator Strength [f] (eV**2) : ', format(parameter_df['f'].mean(), '.6f'), ', Stdev : ', format(parameter_df['f'].std(), '.6f')) # Determine the average value and standard deviation
+            print('Average Reorganization Energy [l] (eV) : ', format(parameter_df['l'].mean(), '.6f'), ', Stdev : ', format(parameter_df['l'].std(), '.6f'))
+            print('Average CT State Energy [ECT] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), ', Stdev : ', format(parameter_df['Ect'].std(), '.6f'))
             print('-'*80)
 
 
@@ -1029,11 +1027,14 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(f_df) != 0:
                 plt.ion()
                 plt.figure() # Create a new figure
-                self.ax5 = seaborn.heatmap(f_df) # Create the heat map
-                plt.xlabel('Inital Energy Value (eV)', fontsize=15, fontweight='medium')
-                plt.ylabel('Final Energy Value (eV)', fontsize=15, fontweight='medium')
-                plt.title('Oscillator Strength ($eV^2$)', fontsize=15, fontweight='medium')
-                plt.tick_params(labelsize=13, direction='in', axis='both', which='major', length=8, width=2)
+                self.ax5 = seaborn.heatmap(f_df, xticklabels=3, yticklabels=3) # Create the heat map
+                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.title('Oscillator Strength ($eV^2$)', fontsize=17, fontweight='medium')
+                cbar = self.ax5.collections[0].colorbar
+                cbar.ax.tick_params(labelsize=15)
+                plt.yticks(rotation = 360)
+                plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
             else:
@@ -1042,11 +1043,14 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(l_df) != 0:
                 plt.ion()
                 plt.figure()
-                self.ax6 = seaborn.heatmap(l_df)
-                plt.xlabel('Inital Energy Value (eV)', fontsize=15, fontweight='medium')
-                plt.ylabel('Final Energy Value (eV)', fontsize=15, fontweight='medium')
-                plt.title('Reorganization Energy (eV)', fontsize=15, fontweight='medium')
-                plt.tick_params(labelsize=13, direction='in', axis='both', which='major', length=8, width=2)
+                self.ax6 = seaborn.heatmap(l_df, xticklabels=3, yticklabels=3)
+                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.title('Reorganization Energy (eV)', fontsize=17, fontweight='medium')
+                cbar = self.ax6.collections[0].colorbar
+                cbar.ax.tick_params(labelsize=15)
+                plt.yticks(rotation = 360)
+                plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
             else:
@@ -1055,16 +1059,18 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(l_df) != 0:
                 plt.ion()
                 plt.figure()
-                self.ax7 = seaborn.heatmap(Ect_df)
-                plt.xlabel('Inital Energy Value (eV)', fontsize=15, fontweight='medium')
-                plt.ylabel('Final Energy Value (eV)', fontsize=15, fontweight='medium')
-                plt.title('CT State Energy (eV)', fontsize=15, fontweight='medium')
-                plt.tick_params(labelsize=13, direction='in', axis='both', which='major', length=8, width=2)
+                self.ax7 = seaborn.heatmap(Ect_df, xticklabels=3, yticklabels=3)
+                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.title('CT State Energy (eV)', fontsize=17, fontweight='medium')
+                cbar = self.ax7.collections[0].colorbar
+                cbar.ax.tick_params(labelsize=15)
+                plt.yticks(rotation = 360)
+                plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
             else:
                 print('No fitting CT state energies determined.')
-
 
 
 # -----------------------------------------------------------------------------------------------------------
@@ -1247,9 +1253,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 print('-'*80)
                 print('Temperature [T] (K): ', self.T_EL)
-                print('Oscillator Strength [f] (eV**2) : ', best_vals[0])
-                print('Reorganization Energy [l] (eV) : ', best_vals[1])
-                print('CT State Energy [ECT] (eV) : ', best_vals[2])
+                print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
+                print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
+                print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
                 print('-'*80)
 
                 self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
@@ -1257,7 +1263,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 plt.draw()
 
             except:
-                print('Optimal Parameters not found.')
+                print('Optimal parameters not found.')
 
 # -----------------------------------------------------------------------------------------------------------
 
