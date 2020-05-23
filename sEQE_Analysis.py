@@ -799,12 +799,9 @@ class MainWindow(QtWidgets.QMainWindow):
         ok_plot_Fit = self.plot_fit_EQE(eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no)
 
         if ok_plot_Fit:
-#            self.ax3.legend()
-#            plt.show()
             self.ax6.legend()
             plt.show()
 #        else:
-#            plt.close()
 #            plt.close()
 
 # -----------------------------------------------------------------------------------------------------------
@@ -812,6 +809,8 @@ class MainWindow(QtWidgets.QMainWindow):
     ### Function to plot EQE data and gaussian fit 
 
     def plot_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no):
+
+       include_Disorder = False
 
        startE = startE.value() # Pick start energy
        stopE = stopE.value() # Pick stop energy
@@ -829,21 +828,51 @@ class MainWindow(QtWidgets.QMainWindow):
            label_ = self.pick_EQE_Label(label_Box, filename_Box)
            color_ = self.pick_EQE_Color(color_Box, file_no)
 
+
            if (str(file_no)).isnumeric(): # For Marcus theory fitting
 
                if file_no == 1:
                    self.T_CT = self.ui.Temperature_1.value()
+                   if self.ui.static_Disorder_1.isChecked():
+                       include_Disorder = True
+                       self.sig = self.ui.Disorder_1.value()
+
                elif file_no ==2:
                    self.T_CT = self.ui.Temperature_2.value()
+                   if self.ui.static_Disorder_2.isChecked():
+                       include_Disorder = True
+                       self.sig = self.ui.Disorder_2.value()
+
                elif file_no == 3:
                    self.T_CT = self.ui.Temperature_3.value()
+                   if self.ui.static_Disorder_3.isChecked():
+                       include_Disorder = True
+                       self.sig = self.ui.Disorder_3.value()
+
                elif file_no ==4:
                    self.T_CT = self.ui.Temperature_4.value()
+                   if self.ui.static_Disorder_4.isChecked():
+                       include_Disorder = True
+                       self.sig = self.ui.Disorder_4.value()
+
                elif file_no ==5:
                    self.T_CT = self.ui.Temperature_5.value()
+                   if self.ui.static_Disorder_5.isChecked():
+                       include_Disorder = True
+                       self.sig = self.ui.Disorder_5.value()
 
                try:
-                   best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit) # , p0 = init_values
+                   x_gaussian = linspace(startPlotFit, stopPlotFit,50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
+                   y_gaussian = []
+
+                   if include_Disorder:
+                       best_vals, covar = curve_fit(self.gaussian_disorder, energy_fit, eqe_fit) # , p0 = init_values
+                       for value in x_gaussian:
+                           y_gaussian.append(self.gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                   else:
+                       best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
+                       for value in x_gaussian:
+                           y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
                    print('-'*80)
                    print('Temperature [T] (K) : ', self.T_CT)
@@ -852,18 +881,6 @@ class MainWindow(QtWidgets.QMainWindow):
                    print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'))
                    print('-'*80)
 
-                   diff = stopFit - startFit # Find difference between start and stop fit energy
-
-                   x_gaussian = linspace(startPlotFit, stopPlotFit, 50) # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
-                   y_gaussian = []
-
-                   for value in x_gaussian:
-                        y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
-
-                   # self.ax3.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
-                   # plt.draw()
-                   # self.ax3.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
-                   # plt.draw()
                    self.ax6.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
                    plt.draw()
                    self.ax6.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
@@ -881,8 +898,22 @@ class MainWindow(QtWidgets.QMainWindow):
                self.hbarw_i = self.ui.vib_Energy.value()
                self.T_x = self.ui.extra_Temperature.value()
 
+               if self.ui.extra_static_Disorder.isChecked():
+                   include_Disorder = True
+                   self.sig_x = self.ui.extra_Disorder.value()
+
                try:
-                   best_vals, covar = curve_fit(self.MLJ_gaussian, energy_fit, eqe_fit)
+                   x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)
+                   y_MLJ_theory = []
+
+                   if include_Disorder:
+                       best_vals, covar = curve_fit(self.MLJ_gaussian_disorder, energy_fit, eqe_fit)
+                       for value in x_MLJ_theory:
+                           y_MLJ_theory.append(self.MLJ_gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                   else:
+                       best_vals, covar = curve_fit(self.MLJ_gaussian, energy_fit, eqe_fit)
+                       for value in x_MLJ_theory:
+                           y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
                    print('-'*80)
                    print('Temperature [T] (K) : ', self.T_x)
@@ -890,14 +921,6 @@ class MainWindow(QtWidgets.QMainWindow):
                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
                    print('-'*80)
-
-                   diff = stopFit - startFit  # Find difference between start and stop fit energy
-
-                   x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
-                   y_MLJ_theory = []
-
-                   for value in x_MLJ_theory:
-                       y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
                    self.ax6.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
                    plt.draw()
@@ -919,6 +942,8 @@ class MainWindow(QtWidgets.QMainWindow):
     ### Function to generate heat map of fitting values 
 
     def heatMap(self, eqe_df, startE, stopE, startStartE, startStopE, stopStartE, stopStopE, filename_Box, label_Box, color_Box, file_no):
+
+        include_Disorder = False
 
         startE = startE.value() # Pick start energy value
         stopE = stopE.value() # Pick stop energy value
@@ -965,40 +990,71 @@ class MainWindow(QtWidgets.QMainWindow):
 
                             if file_no == 1:
                                 self.T_CT = self.ui.Temperature_1.value()
+                                if self.ui.static_Disorder_1.isChecked():
+                                    include_Disorder = True
+                                    self.sig = self.ui.Disorder_1.value()
+
                             elif file_no == 2:
                                 self.T_CT = self.ui.Temperature_2.value()
+                                if self.ui.static_Disorder_2.isChecked():
+                                    include_Disorder = True
+                                    self.sig = self.ui.Disorder_2.value()
+
                             elif file_no == 3:
                                 self.T_CT = self.ui.Temperature_3.value()
+                                if self.ui.static_Disorder_3.isChecked():
+                                    include_Disorder = True
+                                    self.sig = self.ui.Disorder_3.value()
+
                             elif file_no == 4:
                                 self.T_CT = self.ui.Temperature_4.value()
+                                if self.ui.static_Disorder_4.isChecked():
+                                    include_Disorder = True
+                                    self.sig = self.ui.Disorder_4.value()
+
                             elif file_no == 5:
                                 self.T_CT = self.ui.Temperature_5.value()
+                                if self.ui.static_Disorder_5.isChecked():
+                                    include_Disorder = True
+                                    self.sig = self.ui.Disorder_5.value()
 
                             try:
-                               best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
-
-                               start_df.append(start)
-                               stop_df.append(stop)
-                               f_df.append(best_vals[0])
-                               l_df.append(best_vals[1])
-                               Ect_df.append(best_vals[2])
-                            except:
-                               print('Optimal parameters not found.')
-
-                        elif file_no == 'x1': # For extended fitting with MLJ Theory
-
-                            try:
-                                self.S_i = self.ui.Huang_Rhys.value()
-                                self.hbarw_i = self.ui.vib_Energy.value()
-                                self.T_x = self.ui.extra_Temperature.value()
-
-                                best_vals, covar = curve_fit(self.MLJ_gaussian, energy_fit, eqe_fit)
+                                if include_Disorder:
+                                    best_vals, covar = curve_fit(self.gaussian_disorder, energy_fit,eqe_fit)  # , p0 = init_values
+                                else:
+                                    best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
 
                                 start_df.append(start)
                                 stop_df.append(stop)
                                 f_df.append(best_vals[0])
                                 l_df.append(best_vals[1])
                                 Ect_df.append(best_vals[2])
+
+                            except:
+                               print('Optimal parameters not found.')
+
+                        elif file_no == 'x1': # For extended fitting with MLJ Theory
+
+                            self.S_i = self.ui.Huang_Rhys.value()
+                            self.hbarw_i = self.ui.vib_Energy.value()
+                            self.T_x = self.ui.extra_Temperature.value()
+
+                            if self.ui.extra_static_Disorder.isChecked():
+                                include_Disorder = True
+                                self.sig_x = self.ui.extra_Disorder.value()
+
+                            try:
+                                if include_Disorder:
+                                    best_vals, covar = curve_fit(self.MLJ_gaussian_disorder, energy_fit, eqe_fit)
+                                else:
+                                    best_vals, covar = curve_fit(self.MLJ_gaussian, energy_fit, eqe_fit)
+
+                                start_df.append(start)
+                                stop_df.append(stop)
+                                f_df.append(best_vals[0])
+                                l_df.append(best_vals[1])
+                                Ect_df.append(best_vals[2])
+
                             except:
                                 print('Optimal parameters not found.')
 
@@ -1087,6 +1143,20 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         return (f/(E * math.sqrt(4 * math.pi * l * self.T_CT * self.k))) * exp(-(Ect + l - E)**2 / (4 * l * self.k * self.T_CT))
 
+    ### Gaussian fitting function including disorder
+
+    def gaussian_disorder(self, E, f, l, Ect):
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        return (f/(E * math.sqrt(4 * math.pi * l * self.T_CT * self.k + 2 * self.sig**2))) * exp(-(Ect + l - E)**2 / (4 * l * self.k * self.T_CT + 2 * self.sig**2))
+
+    # -----------------------------------------------------------------------------------------------------------
+
     ### MLJ Theory fitting function
 
     def MLJ_gaussian(self, E, f, l_o, Ect): # Double check if this equation is correct
@@ -1103,6 +1173,25 @@ class MainWindow(QtWidgets.QMainWindow):
                     * (math.exp(-self.S_i) * self.S_i**n / math.factorial(n)) \
                     * exp(-(Ect + l_o - E + n*self.hbarw_i)**2 \
                     / (4 * l_o * self.k * self.T_x))
+            EQE += EQE_n
+        return EQE
+
+    ### MLJ Theory fitting function including disorder
+
+    def MLJ_gaussian_disorder(self, E, f, l_o, Ect): # Double check if this equation is correct
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        EQE = 0
+        for n in range(0, 6):
+            EQE_n = (f/(E * math.sqrt(4 * math.pi * l_o * self.T_x * self.k + 2 * self.sig_x**2))) \
+                    * (math.exp(-self.S_i) * self.S_i**n / math.factorial(n)) \
+                    * exp(-(Ect + l_o - E + n*self.hbarw_i)**2 \
+                    / (4 * l_o * self.k * self.T_x + 2 * self.sig_x**2))
             EQE += EQE_n
         return EQE
 
