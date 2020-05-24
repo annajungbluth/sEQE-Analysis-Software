@@ -7103,7 +7103,7 @@
        <item row="2" column="0">
         <layout class="QGridLayout" name="gridLayout_32">
          <item row="6" column="0">
-          <widget class="QCheckBox" name="static_Disorder_6">
+          <widget class="QCheckBox" name="static_Disorder_EL">
            <property name="font">
             <font>
              <pointsize>12</pointsize>

@@ -1217,12 +1217,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if data_no < 2: # EL data
 
             Energy = []
-
             scaleFactor = self.ui.scalePlot.value()
 
             if len(data_df) != 0: # Check that file is non-empty
 
                 for y in range(len(data_df['Wavelength'])): # Calculate energy values
+
                     Energy_val = (self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10, -9) * self.q)
                     Energy.append(Energy_val)
 
@@ -1231,13 +1231,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.Data_is_valid(data_df, startE, stopE) and self.StartStop_is_valid(startE, stopE):
 
                     EL_wave, EL_energy, EL_signal = self.compile_EL(data_df, startE, stopE, 1)
-
                     red_EL_scaled = [EL_signal[x] / (scaleFactor * EL_energy[x])  for x in range(len(EL_signal))] # Divide by energy to reduce
 
                     if data_no == 0: # EL Data
 
                         if not fit:
-
                             label_ = self.pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
                             #color_ = self.pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
                             color_ = '#1f77b4' # Blue
@@ -1245,10 +1243,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         elif fit:
                             self.fit_EL_EQE(EL_energy, red_EL_scaled, self.ui.startFit_EL1, self.ui.stopFit_EL1, 0)
-
-                        self.Red_EL_meas = pd.DataFrame() # For determining the intersect between abs and emission
-                        self.Red_EL_meas['Energy'] = EL_energy
-                        self.Red_EL_meas['EL'] = red_EL_scaled
 
                     elif data_no == 1: # Abs Data
 
@@ -1266,10 +1260,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         elif fit:
                             self.fit_EL_EQE(EL_energy, red_EL_abs_scaled, self.ui.startFit_EL2, self.ui.stopFit_EL2, 1)
 
-                        self.Red_EL_cal = pd.DataFrame() # For determining the intersect between abs and emission
-                        self.Red_EL_cal['Energy'] = EL_energy
-                        self.Red_EL_cal['EL'] = red_EL_abs_scaled
-
             else:
                 print('Please select a valid EL file.')
 
@@ -1278,13 +1268,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.Data_is_valid(data_df, startE, stopE) and self.StartStop_is_valid(startE, stopE):
 
                 self.Red_EQE_meas = pd.DataFrame() # For determining the intersect between abs and emission
-
                 EQE_wave, EQE_energy, EQE, EQE_log = self.compile_EQE(data_df, startE, stopE, 1)
-
                 red_EQE = [EQE[x] * EQE_energy[x] for x in range(len(EQE))]
 
                 if not fit:
-
                     label_ = self.pick_EQE_Label(self.ui.textBox_EL5, self.ui.textBox_EL4)
                     #color_ = self.pick_EQE_Color(self.ui.textBox_EL6, 100)
                     color_ = '#000000' # Black
@@ -1292,9 +1279,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 elif fit:
                     self.fit_EL_EQE(EQE_energy, red_EQE, self.ui.startFit_EQE, self.ui.stopFit_EQE, 1)
-
-                self.Red_EQE_meas['Energy'] = EQE_energy
-                self.Red_EQE_meas['EQE'] = red_EQE
 
     ### Function to plot any data
 
@@ -1310,6 +1294,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def fit_EL_EQE(self, energy, y, startE, stopE, data_no):
 
+        include_Disorder = False
+
         startFit = startE.value()
         stopFit = stopE.value()
 
@@ -1322,23 +1308,40 @@ class MainWindow(QtWidgets.QMainWindow):
 
             diff = stopFit - startFit  # Find difference between start and stop fit energy
             x_gaussian = linspace(startFit, stopFit + diff, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
+            y_gaussian = []
+
+            if self.ui.static_Disorder_EL.isChecked():
+                include_Disorder = True
+                self.sig_EL = self.ui.EL_Disorder.value()
 
             try:
                 if data_no == 0: # EL Data
-                    y_gaussian = []
-                    #y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
-                    #y_fit_smooth = [x for x in y_fit_smooth]
-                    #log_y_fit = [math.log(x) for x in y_fit]
-                    #self.plot_EL_EQE(energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
-                    best_vals, covar = curve_fit(self.gaussian_EL, energy_fit, y_fit)
-                    for value in x_gaussian:
-                        y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
 
-                elif data_no == 1: # EQE Data
-                    y_gaussian = []
-                    best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit)
-                    for value in x_gaussian:
-                        y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
+                    if include_Disorder:
+                        #y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
+                        #y_fit_smooth = [x for x in y_fit_smooth]
+                        #log_y_fit = [math.log(x) for x in y_fit]
+                        #self.plot_EL_EQE(energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
+                        best_vals, covar = curve_fit(self.gaussian_EL_disorder, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.CT_State.value()])
+                        for value in x_gaussian:
+                            y_gaussian.append(self.gaussian_EL_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+
+                    else:
+                        best_vals, covar = curve_fit(self.gaussian_EL, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.CT_State.value()])
+                        for value in x_gaussian:
+                            y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
+
+                elif data_no == 1: # EQE / Abs Data
+
+                    if include_Disorder:
+                        best_vals, covar = curve_fit(self.gaussian_EQE_disorder, energy_fit, y_fit)
+                        for value in x_gaussian:
+                            y_gaussian.append(self.gaussian_EQE_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                            
+                    else:
+                        best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit)
+                        for value in x_gaussian:
+                            y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
 
                 print('-'*80)
                 print('Temperature [T] (K): ', self.T_EL)
@@ -1359,16 +1362,56 @@ class MainWindow(QtWidgets.QMainWindow):
     ### Gaussian fitting function for reduced EL data
 
     def gaussian_EL(self, E, f, l, Ect):
-        Ect = self.ui.CT_State.value()
-        return (f / (math.sqrt(4 * 3.141 * l * self.T_EL * self.k))) * exp(-(Ect - l - E) ** 2 / (4 * l * self.k * self.T_EL))
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: reduced EL value
+        """
+
+        return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) * exp(-(Ect - l - E) ** 2 / (4 * l * self.k * self.T_EL))
+
+    ### Gaussian fitting function inlcuding disorder for reduced EL data
+
+    def gaussian_EL_disorder(self, E, f, l, Ect):
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: reduced EL value
+        """
+
+        return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL**2))) * exp(-(Ect - l - E) ** 2 / (4 * l * self.k * self.T_EL + 2 * self.sig_EL**2))
 
 # -----------------------------------------------------------------------------------------------------------
 
     ### Gaussian fitting function for reduced EQE data
 
     def gaussian_EQE(self, E, f, l, Ect):
-#        Ect = self.ui.CT_State.value()
-        return (f / (math.sqrt(4 * 3.141 * l * self.T_EL * self.k))) * exp(-(Ect + l - E) ** 2 / (4 * l * self.k * self.T_EL))
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: reduced EL value
+        """
+
+        return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) * exp(-(Ect + l - E) ** 2 / (4 * l * self.k * self.T_EL))
+
+    ### Gaussian fitting function for reduced EQE data
+
+    def gaussian_EQE_disorder(self, E, f, l, Ect):
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: reduced EL value
+        """
+
+        return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL**2))) * exp(-(Ect + l - E) ** 2 / (4 * l * self.k * self.T_EL + 2 * self.sig_EL**2))
 
 # -----------------------------------------------------------------------------------------------------------
 
