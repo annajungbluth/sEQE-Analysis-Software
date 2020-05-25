@@ -164,7 +164,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.clearButton_2.clicked.connect(self.clear_EQE_fit_plot)
 
 
-        ##### Page 4 - Fit EL and EQE
+        ##### Page 4 - Extended Fits - MLJ Theory
+
+        self.data_xFit_1 = []
+
+        self.S_i = self.ui.Huang_Rhys.value()
+        self.hbarw_i = self.ui.vib_Energy.value()
+
+        # Handle Import EQE Buttons
+
+        self.ui.browseButton_extraFit.clicked.connect(lambda: self.writeText(self.ui.textBox_xF1, 'xF1'))
+
+        # Handle Fit Button
+
+        self.ui.extraFitButton.clicked.connect(lambda: self.pre_fit_EQE(self.data_xFit_1, self.ui.startExtraPlot, self.ui.stopExtraPlot, self.ui.startExtraFit, self.ui.stopExtraFit, self.ui.startExtraFitPlot, self.ui.stopExtraFitPlot, self.ui.textBox_xF1, self.ui.textBox_xF2, self.ui.textBox_xF3, 'x1'))
+
+        # Handle Heat Map Button
+
+        self.ui.extraHeatButton.clicked.connect(lambda: self.heatMap(self.data_xFit_1, self.ui.startExtraPlot, self.ui.stopExtraPlot, self.ui.extraStartStart, self.ui.extraStartStop, self.ui.extraStopStart, self.ui.extraStopStop, self.ui.textBox_xF1, self.ui.textBox_xF2, self.ui.textBox_xF3, 'x1'))
+
+        # Handle Clear Extra Fit Button
+
+        self.ui.clearButton_extraFit.clicked.connect(self.clear_EQE_fit_plot)
+
+
+        ##### Page 5 - Fit EL and EQE
 
         self.EL = []
         self.EL_EQE = []
@@ -196,30 +220,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Handle Clear EL Plot Button
 
         self.ui.clearButton_EL.clicked.connect(lambda: self.clear_EL_plot())
-
-
-        ##### Page 5 - Extended Fits - MLJ Theory
-
-        self.data_xFit_1 = []
-
-        self.S_i = self.ui.Huang_Rhys.value()
-        self.hbarw_i = self.ui.vib_Energy.value()
-
-        # Handle Import EQE Buttons
-
-        self.ui.browseButton_extraFit.clicked.connect(lambda: self.writeText(self.ui.textBox_xF1, 'xF1'))
-
-        # Handle Fit Button
-
-        self.ui.extraFitButton.clicked.connect(lambda: self.pre_fit_EQE(self.data_xFit_1, self.ui.startExtraPlot, self.ui.stopExtraPlot, self.ui.startExtraFit, self.ui.stopExtraFit, self.ui.startExtraFitPlot, self.ui.stopExtraFitPlot, self.ui.textBox_xF1, self.ui.textBox_xF2, self.ui.textBox_xF3, 'x1'))
-
-        # Handle Heat Map Button
-
-        self.ui.extraHeatButton.clicked.connect(lambda: self.heatMap(self.data_xFit_1, self.ui.startExtraPlot, self.ui.stopExtraPlot, self.ui.extraStartStart, self.ui.extraStartStop, self.ui.extraStopStart, self.ui.extraStopStop, self.ui.textBox_xF1, self.ui.textBox_xF2, self.ui.textBox_xF3, 'x1'))
-
-        # Handle Clear Extra Fit Button
-
-        self.ui.clearButton_extraFit.clicked.connect(self.clear_EQE_fit_plot)
 
 
         # Import Photodiode Calibration Files
@@ -1315,44 +1315,83 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.sig_EL = self.ui.EL_Disorder.value()
 
             try:
-                if data_no == 0: # EL Data
 
-                    if include_Disorder:
-                        #y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
-                        #y_fit_smooth = [x for x in y_fit_smooth]
-                        #log_y_fit = [math.log(x) for x in y_fit]
-                        #self.plot_EL_EQE(energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
-                        best_vals, covar = curve_fit(self.gaussian_EL_disorder, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.CT_State.value()])
-                        for value in x_gaussian:
-                            y_gaussian.append(self.gaussian_EL_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                if self.ui.Gaussian_EL_EQE.isChecked(): # Marcus Theory Fitting
 
-                    else:
-                        best_vals, covar = curve_fit(self.gaussian_EL, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.CT_State.value()])
-                        for value in x_gaussian:
-                            y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
+                    if data_no == 0: # EL Data
+                        if include_Disorder: # Include Disorder in Fit
+                            #y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
+                            #y_fit_smooth = [x for x in y_fit_smooth]
+                            #log_y_fit = [math.log(x) for x in y_fit]
+                            #self.plot_EL_EQE(energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
+                            best_vals, covar = curve_fit(self.gaussian_EL_disorder, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
+                            for value in x_gaussian:
+                                y_gaussian.append(self.gaussian_EL_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                        else: # Without Disorder
+                            best_vals, covar = curve_fit(self.gaussian_EL, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
+                            for value in x_gaussian:
+                                y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
 
-                elif data_no == 1: # EQE / Abs Data
+                    elif data_no == 1: # EQE / Abs Data
+                        if include_Disorder:
+                            best_vals, covar = curve_fit(self.gaussian_EQE_disorder, energy_fit, y_fit)
+                            for value in x_gaussian:
+                                y_gaussian.append(self.gaussian_EQE_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                        else:
+                            best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit)
+                            for value in x_gaussian:
+                                y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
 
-                    if include_Disorder:
-                        best_vals, covar = curve_fit(self.gaussian_EQE_disorder, energy_fit, y_fit)
-                        for value in x_gaussian:
-                            y_gaussian.append(self.gaussian_EQE_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
-                            
-                    else:
-                        best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit)
-                        for value in x_gaussian:
-                            y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
+                    print('-'*80)
+                    print('Temperature [T] (K): ', self.T_EL)
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
+                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
+                    print('-'*80)
 
-                print('-'*80)
-                print('Temperature [T] (K): ', self.T_EL)
-                print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
-                print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
-                print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
-                print('-'*80)
+                    self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                    plt.legend()
+                    plt.draw()
 
-                self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
-                plt.legend()
-                plt.draw()
+                elif self.ui.MLJ_Gaussian_EL_EQE.isChecked():  # MLJ Theory Fitting
+
+                    print('yay')
+
+                    self.S_i_EL = self.ui.EL_Huang_Rhys.value()
+                    self.hbarw_i_EL = self.ui.EL_vib_Energy.value()
+
+                    if data_no == 0:  # EL Data
+                        if include_Disorder:
+                            best_vals, covar = curve_fit(self.MLJ_gaussian_EL_disorder, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
+                            for value in x_gaussian:
+                                y_gaussian.append(
+                                    self.MLJ_gaussian_EL_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                        else:
+                            best_vals, covar = curve_fit(self.MLJ_gaussian_EL, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
+                            for value in x_gaussian:
+                                y_gaussian.append(self.MLJ_gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
+
+                    elif data_no == 1:  # EQE / Abs Data
+                        if include_Disorder:
+                            best_vals, covar = curve_fit(self.MLJ_gaussian_EQE_disorder, energy_fit, y_fit)
+                            for value in x_gaussian:
+                                y_gaussian.append(
+                                    self.MLJ_gaussian_EQE_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                        else:
+                            best_vals, covar = curve_fit(self.MLJ_gaussian_EQE, energy_fit, y_fit)
+                            for value in x_gaussian:
+                                y_gaussian.append(self.MLJ_gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
+
+                    print('-' * 80)
+                    print('Temperature [T] (K): ', self.T_EL)
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
+                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
+                    print('-' * 80)
+
+                    self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',linestyle='--')
+                    plt.legend()
+                    plt.draw()
 
             except:
                 print('Optimal parameters not found.')
@@ -1385,6 +1424,48 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL**2))) * exp(-(Ect - l - E) ** 2 / (4 * l * self.k * self.T_EL + 2 * self.sig_EL**2))
 
+    # -----------------------------------------------------------------------------------------------------------
+
+    ### MLJ Theory fitting function for reduced EL data
+
+    def MLJ_gaussian_EL(self, E, f, l_o, Ect): # Double check if this equation is correct
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EL value
+        """
+        EL = 0
+        for n in range(0, 6):
+            EL_n = (f/(math.sqrt(4 * math.pi * l_o * self.T_EL * self.k))) \
+                    * (math.exp(-self.S_i_EL) * self.S_i_EL**n / math.factorial(n)) \
+                    * exp(-(Ect - E - l_o - n*self.hbarw_i_EL)**2 \
+                    / (4 * l_o * self.k * self.T_EL))
+            EL += EL_n
+        return EL
+
+    ### MLJ Theory fitting function including disorder for reduced EL data
+
+    def MLJ_gaussian_EL_disorder(self, E, f, l_o, Ect): # Double check if this equation is correct
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+
+        EL = 0
+        for n in range(0, 6):
+            EL_n = (f/(math.sqrt(4 * math.pi * l_o * self.T_EL * self.k + 2 * self.sig_EL**2))) \
+                    * (math.exp(-self.S_i_EL) * self.S_i_EL**n / math.factorial(n)) \
+                    * exp(-(Ect - E - l_o - n*self.hbarw_i_EL)**2 \
+                    / (4 * l_o * self.k * self.T_EL + 2 * self.sig_EL**2))
+            EL += EL_n
+        return EL
+
+
 # -----------------------------------------------------------------------------------------------------------
 
     ### Gaussian fitting function for reduced EQE data
@@ -1412,6 +1493,48 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL**2))) * exp(-(Ect + l - E) ** 2 / (4 * l * self.k * self.T_EL + 2 * self.sig_EL**2))
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    ### MLJ Theory fitting function
+
+    def MLJ_gaussian_EQE(self, E, f, l_o, Ect): # Double check if this equation is correct
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        EQE = 0
+        for n in range(0, 6):
+            EQE_n = (f/(math.sqrt(4 * math.pi * l_o * self.T_EL * self.k))) \
+                    * (math.exp(-self.S_i_EL) * self.S_i_EL**n / math.factorial(n)) \
+                    * exp(-(Ect - E + l_o + n*self.hbarw_i_EL)**2 \
+                    / (4 * l_o * self.k * self.T_EL))
+            EQE += EQE_n
+        return EQE
+
+    ### MLJ Theory fitting function including disorder
+
+    def MLJ_gaussian_EQE_disorder(self, E, f, l_o, Ect): # Double check if this equation is correct
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l_o: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+
+        EQE = 0
+        for n in range(0, 6):
+            EQE_n = (f/(math.sqrt(4 * math.pi * l_o * self.T_EL * self.k + 2 * self.sig_EL**2))) \
+                    * (math.exp(-self.S_i_EL) * self.S_i_EL**n / math.factorial(n)) \
+                    * exp(-(Ect - E + l_o + n*self.hbarw_i_EL)**2 \
+                    / (4 * l_o * self.k * self.T_EL + 2 * self.sig_EL**2))
+            EQE += EQE_n
+        return EQE
+
 
 # -----------------------------------------------------------------------------------------------------------
 
