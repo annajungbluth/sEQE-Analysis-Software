@@ -3256,7 +3256,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>
@@ -4148,7 +4148,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>
@@ -4595,7 +4595,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>
@@ -5859,7 +5859,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>
@@ -6170,7 +6170,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>
@@ -7087,7 +7087,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>
@@ -8023,7 +8023,7 @@
         <x>800</x>
         <y>510</y>
         <width>341</width>
-        <height>311</height>
+        <height>317</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -8323,7 +8323,7 @@
             <double>10.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.065000000000000</double>
            </property>
           </widget>
          </item>

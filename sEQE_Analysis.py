@@ -876,14 +876,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
                    print('-'*80)
                    print('Temperature [T] (K) : ', self.T_CT)
-                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
-                   print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'))
-                   print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'))
+                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
+                   print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
+                   print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
                    print('-'*80)
 
                    self.ax6.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
                    plt.draw()
-                   self.ax6.plot(x_gaussian, y_gaussian, linewidth = 2, label = 'Gaussian Fit', color = '#000000', linestyle = '--')
+                   if include_Disorder:
+                       self.ax6.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                   else:
+                       self.ax6.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
                    plt.draw()
 
                except:
@@ -917,14 +920,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
                    print('-'*80)
                    print('Temperature [T] (K) : ', self.T_x)
-                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
-                   print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
-                   print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
+                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
+                   print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
+                   print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
                    print('-'*80)
 
                    self.ax6.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
                    plt.draw()
-                   self.ax6.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
+                   if include_Disorder:
+                       self.ax6.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                   else:
+                       self.ax6.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
                    plt.draw()
 
                except:
@@ -1307,7 +1313,7 @@ class MainWindow(QtWidgets.QMainWindow):
             energy_fit, y_fit = self.compile_Data(energy, y, startFit, stopFit)
 
             diff = stopFit - startFit  # Find difference between start and stop fit energy
-            x_gaussian = linspace(startFit, stopFit + diff, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
+            x_gaussian = linspace(startFit, stopFit + 0.5*diff, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
             y_gaussian = []
 
             if self.ui.static_Disorder_EL.isChecked():
@@ -1333,6 +1339,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
 
                     elif data_no == 1: # EQE / Abs Data
+                        x_gaussian = linspace(startFit, stopFit + 2 * diff, 50)
                         if include_Disorder:
                             best_vals, covar = curve_fit(self.gaussian_EQE_disorder, energy_fit, y_fit)
                             for value in x_gaussian:
@@ -1344,21 +1351,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     print('-'*80)
                     print('Temperature [T] (K): ', self.T_EL)
-                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
-                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
-                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0, 0]), '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1, 1]), '.6f'))
+                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
                     print('-'*80)
 
-                    self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                    if include_Disorder:
+                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                    else:
+                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
                     plt.legend()
                     plt.draw()
 
                 elif self.ui.MLJ_Gaussian_EL_EQE.isChecked():  # MLJ Theory Fitting
 
-                    print('yay')
-
                     self.S_i_EL = self.ui.EL_Huang_Rhys.value()
                     self.hbarw_i_EL = self.ui.EL_vib_Energy.value()
+
+                    x_gaussian = linspace(1.18, stopFit + 0.5 * diff, 50)
 
                     if data_no == 0:  # EL Data
                         if include_Disorder:
@@ -1372,6 +1382,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 y_gaussian.append(self.MLJ_gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
 
                     elif data_no == 1:  # EQE / Abs Data
+                        x_gaussian = linspace(startFit, stopFit + 2 * diff, 50)
                         if include_Disorder:
                             best_vals, covar = curve_fit(self.MLJ_gaussian_EQE_disorder, energy_fit, y_fit)
                             for value in x_gaussian:
@@ -1384,12 +1395,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     print('-' * 80)
                     print('Temperature [T] (K): ', self.T_EL)
-                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'))
-                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'))
-                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'))
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0, 0]), '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1, 1]), '.6f'))
+                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',format(math.sqrt(covar[2, 2]), '.6f'))
                     print('-' * 80)
 
-                    self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',linestyle='--')
+                    if include_Disorder:
+                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                    else:
+                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',linestyle='--')
                     plt.legend()
                     plt.draw()
 
@@ -1844,7 +1858,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ax2 = fig1.add_subplot(2,1,2)
         self.ax2.set_yscale('log') # To generate log scale axis
         plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
-        plt.ylabel('Log(EQE)', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
         plt.grid(False)
 #        plt.box()
         plt.rcParams['figure.facecolor']='xkcd:white'
@@ -1893,11 +1907,11 @@ class MainWindow(QtWidgets.QMainWindow):
             plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
 
         if norm_num == 0:
-            plt.ylabel('Log(EQE)', fontsize=17, fontweight='medium')
+            plt.ylabel('EQE', fontsize=17, fontweight='medium')
         elif norm_num == 1:
-            plt.ylabel('Normalized Log EQE', fontsize=17, fontweight='medium')
+            plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
         elif norm_num == 2:
-            plt.ylabel('Reduced Log EQE', fontsize=17, fontweight='medium')
+            plt.ylabel('Reduced EQE', fontsize=17, fontweight='medium')
 
         plt.rcParams['figure.facecolor'] = 'xkcd:white'
         plt.rcParams['figure.edgecolor'] = 'xkcd:white'
