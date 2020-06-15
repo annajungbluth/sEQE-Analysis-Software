@@ -234,7 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Data Directory
 
-        self.data_dir = '/home/jungbluth/Desktop/EQE Control Software/sEQE Data'   ### CHANGE THIS IF NEEDED LATER
+        self.data_dir = '/home/jungbluth/Desktop'   ### CHANGE THIS IF NEEDED LATER
 
 
         # Define Variables
