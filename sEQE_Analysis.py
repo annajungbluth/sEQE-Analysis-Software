@@ -1341,11 +1341,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     elif data_no == 1: # EQE / Abs Data
                         x_gaussian = linspace(startFit, stopFit + 2 * diff, 50)
                         if include_Disorder:
-                            best_vals, covar = curve_fit(self.gaussian_EQE_disorder, energy_fit, y_fit)
+                            best_vals, covar = curve_fit(self.gaussian_EQE_disorder, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
                             for value in x_gaussian:
                                 y_gaussian.append(self.gaussian_EQE_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
                         else:
-                            best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit)
+                            best_vals, covar = curve_fit(self.gaussian_EQE, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
                             for value in x_gaussian:
                                 y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
 
@@ -1384,12 +1384,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     elif data_no == 1:  # EQE / Abs Data
                         x_gaussian = linspace(startFit, stopFit + 2 * diff, 50)
                         if include_Disorder:
-                            best_vals, covar = curve_fit(self.MLJ_gaussian_EQE_disorder, energy_fit, y_fit)
+                            best_vals, covar = curve_fit(self.MLJ_gaussian_EQE_disorder, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
                             for value in x_gaussian:
                                 y_gaussian.append(
                                     self.MLJ_gaussian_EQE_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
                         else:
-                            best_vals, covar = curve_fit(self.MLJ_gaussian_EQE, energy_fit, y_fit)
+                            best_vals, covar = curve_fit(self.MLJ_gaussian_EQE, energy_fit, y_fit, p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
                             for value in x_gaussian:
                                 y_gaussian.append(self.MLJ_gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
 
@@ -1749,18 +1749,41 @@ class MainWindow(QtWidgets.QMainWindow):
 
     ### Function to check if any data file is non-empty and within energy range
 
+    # def Data_is_valid(self, df, startE, stopE):
+    #
+    #     if len(df) != 0:
+    #
+    #         if startE >= min(df['Energy']) and stopE <= max(df['Energy']):
+    #             return True
+    #
+    #         elif startE < min(df['Energy']) and stopE <= max(df['Energy']):
+    #             print('Please select a valid start energy.')
+    #             return False
+    #
+    #         elif startE >= min(df['Energy']) and stopE > max(df['Energy']):
+    #             print('Please select a valid stop energy.')
+    #             return False
+    #
+    #         else:
+    #             print('Please select a valid energy range.')
+    #             return False
+    #
+    #     else: # If file is empty / hasn't been selected
+    #         print('Please import a valid file.')
+    #         return False
+
     def Data_is_valid(self, df, startE, stopE):
 
         if len(df) != 0:
 
-            if startE >= min(df['Energy']) and stopE <= max(df['Energy']):
+            if startE <= max(df['Energy']) and stopE >= min(df['Energy']):
                 return True
 
-            elif startE < min(df['Energy']) and stopE <= max(df['Energy']):
+            elif startE > max(df['Energy']) and stopE >= min(df['Energy']):
                 print('Please select a valid start energy.')
                 return False
 
-            elif startE >= min(df['Energy']) and stopE > max(df['Energy']):
+            elif startE <= max(df['Energy']) and stopE < min(df['Energy']):
                 print('Please select a valid stop energy.')
                 return False
 
