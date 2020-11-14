@@ -59,25 +59,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ref_3 = []
         self.ref_4 = []
         self.ref_5 = []
+        self.ref_6 = []
 
         self.data_1 = []
         self.data_2 = []
         self.data_3 = []
         self.data_4 = []
         self.data_5 = []
+        self.data_6 = []
 
         # Handle Browse Buttons
 
-        self.ui.browseButton_1.clicked.connect(lambda: self.writeText(self.ui.textBox_1, 1))
-        self.ui.browseButton_2.clicked.connect(lambda: self.writeText(self.ui.textBox_2, 2))
-        self.ui.browseButton_3.clicked.connect(lambda: self.writeText(self.ui.textBox_3, 3))
-        self.ui.browseButton_4.clicked.connect(lambda: self.writeText(self.ui.textBox_4, 4))
-        self.ui.browseButton_5.clicked.connect(lambda: self.writeText(self.ui.textBox_5, 5))
-        self.ui.browseButton_6.clicked.connect(lambda: self.writeText(self.ui.textBox_6, 6))
-        self.ui.browseButton_7.clicked.connect(lambda: self.writeText(self.ui.textBox_7, 7))
-        self.ui.browseButton_8.clicked.connect(lambda: self.writeText(self.ui.textBox_8, 8))
-        self.ui.browseButton_9.clicked.connect(lambda: self.writeText(self.ui.textBox_9, 9))
-        self.ui.browseButton_10.clicked.connect(lambda: self.writeText(self.ui.textBox_10, 10))
+        self.ui.browseButton_1.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_1, 1))
+        self.ui.browseButton_2.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_2, 2))
+        self.ui.browseButton_3.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_3, 3))
+        self.ui.browseButton_4.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_4, 4))
+        self.ui.browseButton_5.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_5, 5))
+        self.ui.browseButton_6.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_6, 6))
+        self.ui.browseButton_7.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_7, 7))
+        self.ui.browseButton_8.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_8, 8))
+        self.ui.browseButton_9.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_9, 9))
+        self.ui.browseButton_10.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_10, 10))
+        self.ui.browseButton_11.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_11, 11))
+        self.ui.browseButton_12.clicked.connect(lambda: self.writeText(self.ui.textBox_p1_12, 12))
 
         # Handle Calculate Buttons
 
@@ -86,6 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.calculateButton_3.clicked.connect(lambda: self.pre_EQE(self.ref_3, self.data_3, self.ui.startNM_3, self.ui.stopNM_3, 3))
         self.ui.calculateButton_4.clicked.connect(lambda: self.pre_EQE(self.ref_4, self.data_4, self.ui.startNM_4, self.ui.stopNM_4, 4))
         self.ui.calculateButton_5.clicked.connect(lambda: self.pre_EQE(self.ref_5, self.data_5, self.ui.startNM_5, self.ui.stopNM_5, 5))
+        self.ui.calculateButton_6.clicked.connect(lambda: self.pre_EQE(self.ref_6, self.data_6, self.ui.startNM_6, self.ui.stopNM_6, 6))
 
         # Handle Export All Data Button
 
@@ -111,16 +116,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Handle Import EQE Buttons
 
-        self.ui.browseEQEButton_1.clicked.connect(lambda: self.writeText(self.ui.textBox_11, 11))
-        self.ui.browseEQEButton_2.clicked.connect(lambda: self.writeText(self.ui.textBox_14, 14))
-        self.ui.browseEQEButton_3.clicked.connect(lambda: self.writeText(self.ui.textBox_17, 17))
-        self.ui.browseEQEButton_4.clicked.connect(lambda: self.writeText(self.ui.textBox_20, 20))
-        self.ui.browseEQEButton_5.clicked.connect(lambda: self.writeText(self.ui.textBox_23, 23))
-        self.ui.browseEQEButton_6.clicked.connect(lambda: self.writeText(self.ui.textBox_26, 26))
-        self.ui.browseEQEButton_7.clicked.connect(lambda: self.writeText(self.ui.textBox_29, 29))
-        self.ui.browseEQEButton_8.clicked.connect(lambda: self.writeText(self.ui.textBox_32, 32))
-        self.ui.browseEQEButton_9.clicked.connect(lambda: self.writeText(self.ui.textBox_35, 35))
-        self.ui.browseEQEButton_10.clicked.connect(lambda: self.writeText(self.ui.textBox_38, 38))
+        self.ui.browseEQEButton_1.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_1, 'p1'))
+        self.ui.browseEQEButton_2.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_4, 'p4'))
+        self.ui.browseEQEButton_3.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_7, 'p7'))
+        self.ui.browseEQEButton_4.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_10, 'p10'))
+        self.ui.browseEQEButton_5.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_13, 'p13'))
+        self.ui.browseEQEButton_6.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_16, 'p16'))
+        self.ui.browseEQEButton_7.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_19, 'p19'))
+        self.ui.browseEQEButton_8.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_22, 'p22'))
+        self.ui.browseEQEButton_9.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_25, 'p25'))
+        self.ui.browseEQEButton_10.clicked.connect(lambda: self.writeText(self.ui.textBox_p2_28, 'p28'))
 
         # Handle Plot EQE Buttons
 
@@ -134,7 +139,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_fit_2 = []
         self.data_fit_3 = []
         self.data_fit_4 = []
-        self.data_fit_5 = []
 
         # Handle Import EQE Buttons
 
@@ -142,7 +146,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.browseFitButton_2.clicked.connect(lambda: self.writeText(self.ui.textBox_f4, 'f4'))
         self.ui.browseFitButton_3.clicked.connect(lambda: self.writeText(self.ui.textBox_f7, 'f7'))
         self.ui.browseFitButton_4.clicked.connect(lambda: self.writeText(self.ui.textBox_f10, 'f10'))
-        self.ui.browseFitButton_5.clicked.connect(lambda: self.writeText(self.ui.textBox_f13, 'f13'))
 
         # Handle Gaussian Fit Buttons
 
@@ -150,8 +153,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.gaussianFit_2.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_2, self.ui.startPlot_2, self.ui.stopPlot_2, self.ui.startFit_2, self.ui.stopFit_2, self.ui.startFitPlot_2, self.ui.stopFitPlot_2, self.ui.textBox_f4, self.ui.textBox_f5, self.ui.textBox_f6, 2))
         self.ui.gaussianFit_3.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_3, self.ui.startPlot_3, self.ui.stopPlot_3, self.ui.startFit_3, self.ui.stopFit_3, self.ui.startFitPlot_3, self.ui.stopFitPlot_3, self.ui.textBox_f7, self.ui.textBox_f8, self.ui.textBox_f9, 3))
         self.ui.gaussianFit_4.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_4, self.ui.startPlot_4, self.ui.stopPlot_4, self.ui.startFit_4, self.ui.stopFit_4, self.ui.startFitPlot_4, self.ui.stopFitPlot_4, self.ui.textBox_f10, self.ui.textBox_f11, self.ui.textBox_f12, 4))
-        self.ui.gaussianFit_5.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_5, self.ui.startPlot_5, self.ui.stopPlot_5, self.ui.startFit_5, self.ui.stopFit_5, self.ui.startFitPlot_5, self.ui.stopFitPlot_5, self.ui.textBox_f13, self.ui.textBox_f14, self.ui.textBox_f15, 5))
-
 
         # Handle Heat Map Buttons
 
@@ -159,7 +160,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.heatButton_2.clicked.connect(lambda: self.heatMap(self.data_fit_2, self.ui.startPlot_2, self.ui.stopPlot_2, self.ui.startStart_2, self.ui.startStop_2, self.ui.stopStart_2, self.ui.stopStop_2, self.ui.textBox_f4, self.ui.textBox_f5, self.ui.textBox_f6, 2))
         self.ui.heatButton_3.clicked.connect(lambda: self.heatMap(self.data_fit_3, self.ui.startPlot_3, self.ui.stopPlot_3, self.ui.startStart_3, self.ui.startStop_3, self.ui.stopStart_3, self.ui.stopStop_3, self.ui.textBox_f7, self.ui.textBox_f8, self.ui.textBox_f9, 3))
         self.ui.heatButton_4.clicked.connect(lambda: self.heatMap(self.data_fit_4, self.ui.startPlot_4, self.ui.stopPlot_4, self.ui.startStart_4, self.ui.startStop_4, self.ui.stopStart_4, self.ui.stopStop_4, self.ui.textBox_f10, self.ui.textBox_f11, self.ui.textBox_f12, 4))
-        self.ui.heatButton_5.clicked.connect(lambda: self.heatMap(self.data_fit_5, self.ui.startPlot_5, self.ui.stopPlot_5, self.ui.startStart_5, self.ui.startStop_5, self.ui.stopStart_5, self.ui.stopStop_5, self.ui.textBox_f13, self.ui.textBox_f14, self.ui.textBox_f15, 5))
 
         self.ui.clearButton_2.clicked.connect(self.clear_EQE_fit_plot)
 
@@ -275,8 +275,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if textBox_no == 1:
                 self.ref_1 = pd.read_csv(file_) # Turn file into dataFrame
-#                print(self.ref_1)
-#                print(len(self.ref_1))
 
             elif textBox_no == 3:
                 self.ref_2 = pd.read_csv(file_)
@@ -289,6 +287,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             elif textBox_no == 9:
                 self.ref_5 = pd.read_csv(file_)
+
+            elif textBox_no == 11:
+                self.ref_6 = pd.read_csv(file_)
 
             # For data files:
 
@@ -307,36 +308,39 @@ class MainWindow(QtWidgets.QMainWindow):
             elif textBox_no == 10:
                 self.data_5 = pd.read_csv(file_)
 
+            elif textBox_no == 12:
+                self.data_6 = pd.read_csv(file_)
+
             # For EQE files:
 
-            elif textBox_no == 11:
+            elif textBox_no == 'p1':
                 self.EQE_1 = pd.read_csv(file_)
 
-            elif textBox_no == 14:
+            elif textBox_no == 'p4':
                 self.EQE_2 = pd.read_csv(file_)
 
-            elif textBox_no == 17:
+            elif textBox_no == 'p7':
                 self.EQE_3 = pd.read_csv(file_)
 
-            elif textBox_no == 20:
+            elif textBox_no == 'p10':
                 self.EQE_4 = pd.read_csv(file_)
 
-            elif textBox_no == 23:
+            elif textBox_no == 'p13':
                 self.EQE_5 = pd.read_csv(file_)
 
-            elif textBox_no == 26:
+            elif textBox_no == 'p16':
                 self.EQE_6 = pd.read_csv(file_)
 
-            elif textBox_no == 29:
+            elif textBox_no == 'p19':
                 self.EQE_7 = pd.read_csv(file_)
 
-            elif textBox_no == 32:
+            elif textBox_no == 'p22':
                 self.EQE_8 = pd.read_csv(file_)
 
-            elif textBox_no == 35:
+            elif textBox_no == 'p25':
                 self.EQE_9 = pd.read_csv(file_)
 
-            elif textBox_no == 38:
+            elif textBox_no == 'p28':
                 self.EQE_10 = pd.read_csv(file_)
 
 
@@ -353,9 +357,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             elif textBox_no == 'f10':
                 self.data_fit_4 = pd.read_csv(file_)
-
-            elif textBox_no == 'f13':
-                self.data_fit_5 = pd.read_csv(file_)
 
             # For El files
 
@@ -497,6 +498,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     print('Please select a valid reference diode.')
 
+            elif range_no == 6:
+                if self.ui.Range6_Si_button.isChecked() and not self.ui.Range6_InGaAs_button.isChecked():
+                    try:
+                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                    except:
+                        print('Please select a valid reference diode.')
+                elif self.ui.Range6_InGaAs_button.isChecked() and not self.ui.Range6_Si_button.isChecked():
+                    try:
+                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                    except:
+                        print('Please select a valid reference diode.')
+                else:
+                    print('Please select a valid reference diode.')
+
         if 'Power' in ref_df.columns:  # Check if the power has been calculated already
 
             for x in range(len(ref_df['Wavelength'])):  # Iterate through columns of reference file
@@ -566,30 +581,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ok_3 = True
         ok_4 = True
         ok_5 = True
-
-        Wave_1 = [] # Create empty lists for all the data
-        Wave_2 = []
-        Wave_3 = []
-        Wave_4 = []
-        Wave_5 = []
-
-        Energy_1 = []
-        Energy_2 = []
-        Energy_3 = []
-        Energy_4 = []
-        Energy_5 = []
-
-        EQE_1 = []
-        EQE_2 = []
-        EQE_3 = []
-        EQE_4 = []
-        EQE_5 = []
-
-        log_EQE_1 = []
-        log_EQE_2 = []
-        log_EQE_3 = []
-        log_EQE_4 = []
-        log_EQE_5 = []
+        ok_6 = True
 
         columns = ['Wavelength', 'Energy', 'EQE', 'Log_EQE'] # Columns for dataFrame
 
@@ -647,8 +639,18 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 ok_5 = False
 
+        if self.ui.exportBox_6.isChecked():
+            startNM6 = self.ui.startNM_6.value()
+            stopNM6 = self.ui.stopNM_6.value()
+            if self.Ref_Data_is_valid(self.ref_6, self.data_6, startNM6, stopNM6, 6):
+                Wave_6, Energy_6, EQE_6, log_EQE_6 = self.calculate_EQE(self.ref_6, self.data_6, startNM6, stopNM6, 6)
+                export_6 = pd.DataFrame({'Wavelength': Wave_6, 'Energy': Energy_6, 'EQE': EQE_6, 'Log_EQE': log_EQE_6})
+                wave_inc['6'] = Wave_6[0]
+            else:
+                ok_6 = False
 
-        if ok_1 and ok_2 and ok_3 and ok_4 and ok_5: # Check if all operations are ok or if fields are left empty
+
+        if ok_1 and ok_2 and ok_3 and ok_4 and ok_5 and ok_6: # Check if all operations are ok or if fields are left empty
 
             for x in range(len(wave_inc.keys())): # Iterate through wave_inc list
 #                print(x)
@@ -666,6 +668,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     export_file = export_file.append(export_4, ignore_index = True)
                 elif minimum == '5':
                     export_file = export_file.append(export_5, ignore_index = True)
+                elif minimum == '6':
+                    export_file = export_file.append(export_6, ignore_index=True)
 
                 del wave_inc[minimum] # Delete recently appended value
 #            print(export_file)
@@ -730,13 +734,13 @@ class MainWindow(QtWidgets.QMainWindow):
             ok_EQE_7 = self.plot_EQE(self.EQE_7, self.ui.startEQE_7, self.ui.stopEQE_7, self.ui.textBox_29, self.ui.textBox_30, self.ui.textBox_31, 7, number)
 
         if self.ui.plotBox_8.isChecked():
-            ok_EQE_8 = self.plot_EQE(self.EQE_8, self.ui.startEQE_8, self.ui.stopEQE_8, self.ui.textBox_32, self.ui.textBox_33, self.ui.textBox_33, 8, number)
+            ok_EQE_8 = self.plot_EQE(self.EQE_8, self.ui.startEQE_8, self.ui.stopEQE_8, self.ui.textBox_32, self.ui.textBox_33, self.ui.textBox_34, 8, number)
 
         if self.ui.plotBox_9.isChecked():
-            ok_EQE_9 = self.plot_EQE(self.EQE_9, self.ui.startEQE_9, self.ui.stopEQE_9, self.ui.textBox_34, self.ui.textBox_35, self.ui.textBox_36, 9, number)
+            ok_EQE_9 = self.plot_EQE(self.EQE_9, self.ui.startEQE_9, self.ui.stopEQE_9, self.ui.textBox_35, self.ui.textBox_36, self.ui.textBox_37, 9, number)
 
         if self.ui.plotBox_10.isChecked():
-            ok_EQE_10 = self.plot_EQE(self.EQE_10, self.ui.startEQE_10, self.ui.stopEQE_10, self.ui.textBox_37, self.ui.textBox_38, self.ui.textBox_40, 10, number)
+            ok_EQE_10 = self.plot_EQE(self.EQE_10, self.ui.startEQE_10, self.ui.stopEQE_10, self.ui.textBox_38, self.ui.textBox_39, self.ui.textBox_40, 10, number)
 
 
         if ok_EQE_1 and ok_EQE_2 and ok_EQE_3 and ok_EQE_4 and ok_EQE_5 and ok_EQE_6 and ok_EQE_7 and ok_EQE_8 and ok_EQE_9 and ok_EQE_10:
@@ -799,7 +803,8 @@ class MainWindow(QtWidgets.QMainWindow):
         ok_plot_Fit = self.plot_fit_EQE(eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no)
 
         if ok_plot_Fit:
-            self.ax6.legend()
+            self.axFit_1.legend()
+            self.axFit_2.legend()
             plt.show()
 #        else:
 #            plt.close()
@@ -811,6 +816,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def plot_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no):
 
        include_Disorder = False
+       fit_opticalPeak = False
 
        startE = startE.value() # Pick start energy
        stopE = stopE.value() # Pick stop energy
@@ -837,11 +843,25 @@ class MainWindow(QtWidgets.QMainWindow):
                        include_Disorder = True
                        self.sig = self.ui.Disorder_1.value()
 
+                   if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked(): # Check if CT state or optical gap are fitted.
+                       fit_opticalPeak = True
+                   elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
+                       print('Please select a valid peak to fit.')
+                   elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
+                       print('Please select a valid peak to fit.')
+
                elif file_no ==2:
                    self.T_CT = self.ui.Temperature_2.value()
                    if self.ui.static_Disorder_2.isChecked():
                        include_Disorder = True
                        self.sig = self.ui.Disorder_2.value()
+
+                   if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
+                       fit_opticalPeak = True
+                   elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
+                       print('Please select a valid peak to fit.')
+                   elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
+                       print('Please select a valid peak to fit.')
 
                elif file_no == 3:
                    self.T_CT = self.ui.Temperature_3.value()
@@ -849,17 +869,25 @@ class MainWindow(QtWidgets.QMainWindow):
                        include_Disorder = True
                        self.sig = self.ui.Disorder_3.value()
 
+                   if self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
+                       fit_opticalPeak = True
+                   elif self.ui.OptButton_3.isChecked() and self.ui.CTButton_3.isChecked():
+                       print('Please select a valid peak to fit.')
+                   elif not self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
+                       print('Please select a valid peak to fit.')
+
                elif file_no ==4:
                    self.T_CT = self.ui.Temperature_4.value()
                    if self.ui.static_Disorder_4.isChecked():
                        include_Disorder = True
                        self.sig = self.ui.Disorder_4.value()
 
-               elif file_no ==5:
-                   self.T_CT = self.ui.Temperature_5.value()
-                   if self.ui.static_Disorder_5.isChecked():
-                       include_Disorder = True
-                       self.sig = self.ui.Disorder_5.value()
+                   if self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
+                       fit_opticalPeak = True
+                   elif self.ui.OptButton_4.isChecked() and self.ui.CTButton_4.isChecked():
+                       print('Please select a valid peak to fit.')
+                   elif not self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
+                       print('Please select a valid peak to fit.')
 
                try:
                    x_gaussian = linspace(startPlotFit, stopPlotFit,50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
@@ -878,16 +906,52 @@ class MainWindow(QtWidgets.QMainWindow):
                    print('Temperature [T] (K) : ', self.T_CT)
                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
                    print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
-                   print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
+                   if fit_opticalPeak:
+                       print('Optical Peak Energy [E_Opt] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
+                   else:
+                       print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
                    print('-'*80)
 
-                   self.ax6.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
+                   # Plot EQE data and CT fit
+                   self.axFit_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
                    plt.draw()
                    if include_Disorder:
-                       self.ax6.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                       self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
                    else:
-                       self.ax6.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                       self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
                    plt.draw()
+
+                   self.axFit_2.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
+                   plt.draw()
+                   if include_Disorder:
+                       self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                   else:
+                       self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                   plt.draw()
+
+                   ###### Save fit data ######
+                   if self.ui.save_gaussianFit.isChecked():
+
+                       fit_file = pd.DataFrame()
+                       fit_file['Energy'] = x_gaussian
+                       fit_file['Signal'] = y_gaussian
+
+                       # FIX to add as header rather than columns
+                       fit_file['Temperature'] = self.T_CT
+                       fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
+                       fit_file['Reorganization Energy (eV)'] = best_vals[1]
+                       if fit_opticalPeak:
+                           fit_file['Optical Peak Energy (eV)'] = best_vals[2]
+                       else:
+                           fit_file['CT State Energy (eV)'] = best_vals[2]
+
+                       save_fit_file = filedialog.asksaveasfilename()  # Prompt the user to pick a folder & name to save data to
+                       save_fit_path, save_fit_filename = os.path.split(save_fit_file)
+                       if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                           self.change_dir(save_fit_path)  # Change the working directory
+                           fit_file.to_csv(save_fit_filename)  # Save data to csv
+                           print('Saving fit data to: %s' % str(save_fit_file))
+                           self.change_dir(self.data_dir)  # Change the directory back
 
                except:
                    print('Optimal parameters not found.')
@@ -925,12 +989,21 @@ class MainWindow(QtWidgets.QMainWindow):
                    print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
                    print('-'*80)
 
-                   self.ax6.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                   # Plot EQE data and CT fit
+                   self.axFit_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
                    plt.draw()
                    if include_Disorder:
-                       self.ax6.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                       self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
                    else:
-                       self.ax6.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
+                       self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
+                   plt.draw()
+
+                   self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                   plt.draw()
+                   if include_Disorder:
+                       self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                   else:
+                       self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
                    plt.draw()
 
                except:
@@ -950,6 +1023,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def heatMap(self, eqe_df, startE, stopE, startStartE, startStopE, stopStartE, stopStopE, filename_Box, label_Box, color_Box, file_no):
 
         include_Disorder = False
+        fit_opticalPeak = False
 
         startE = startE.value() # Pick start energy value
         stopE = stopE.value() # Pick stop energy value
@@ -1000,11 +1074,26 @@ class MainWindow(QtWidgets.QMainWindow):
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_1.value()
 
+                                if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check if CT state or optical gap are fitted.
+                                    fit_opticalPeak = True
+                                elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
+                                    print('Please select a valid peak to fit.')
+                                elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
+                                    print('Please select a valid peak to fit.')
+
                             elif file_no == 2:
                                 self.T_CT = self.ui.Temperature_2.value()
                                 if self.ui.static_Disorder_2.isChecked():
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_2.value()
+
+                                if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
+                                    fit_opticalPeak = True
+                                elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
+                                    print('Please select a valid peak to fit.')
+                                elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
+                                    print('Please select a valid peak to fit.')
+
 
                             elif file_no == 3:
                                 self.T_CT = self.ui.Temperature_3.value()
@@ -1012,17 +1101,25 @@ class MainWindow(QtWidgets.QMainWindow):
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_3.value()
 
+                                if self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
+                                    fit_opticalPeak = True
+                                elif self.ui.OptButton_3.isChecked() and self.ui.CTButton_3.isChecked():
+                                    print('Please select a valid peak to fit.')
+                                elif not self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
+                                    print('Please select a valid peak to fit.')
+
                             elif file_no == 4:
                                 self.T_CT = self.ui.Temperature_4.value()
                                 if self.ui.static_Disorder_4.isChecked():
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_4.value()
 
-                            elif file_no == 5:
-                                self.T_CT = self.ui.Temperature_5.value()
-                                if self.ui.static_Disorder_5.isChecked():
-                                    include_Disorder = True
-                                    self.sig = self.ui.Disorder_5.value()
+                                if self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
+                                    fit_opticalPeak = True
+                                elif self.ui.OptButton_4.isChecked() and self.ui.CTButton_4.isChecked():
+                                    print('Please select a valid peak to fit.')
+                                elif not self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
+                                    print('Please select a valid peak to fit.')
 
                             try:
                                 if include_Disorder:
@@ -1076,7 +1173,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
             print('Average Oscillator Strength [f] (eV**2) : ', format(parameter_df['f'].mean(), '.6f'), ', Stdev : ', format(parameter_df['f'].std(), '.6f')) # Determine the average value and standard deviation
             print('Average Reorganization Energy [l] (eV) : ', format(parameter_df['l'].mean(), '.6f'), ', Stdev : ', format(parameter_df['l'].std(), '.6f'))
-            print('Average CT State Energy [ECT] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), ', Stdev : ', format(parameter_df['Ect'].std(), '.6f'))
+            if fit_opticalPeak:
+                print('Average Optical Peak Energy [E_Opt] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), ', Stdev : ', format(parameter_df['Ect'].std(), '.6f'))
+            else:
+                print('Average CT State Energy [ECT] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), ', Stdev : ', format(parameter_df['Ect'].std(), '.6f'))
             print('-'*80)
 
 
@@ -1089,11 +1189,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(f_df) != 0:
                 plt.ion()
                 plt.figure() # Create a new figure
-                self.ax5 = seaborn.heatmap(f_df, xticklabels=3, yticklabels=3) # Create the heat map
+                self.heatmap_1 = seaborn.heatmap(f_df, xticklabels=3, yticklabels=3) # Create the heat map
                 plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.title('Oscillator Strength ($eV^2$)', fontsize=17, fontweight='medium')
-                cbar = self.ax5.collections[0].colorbar
+                cbar = self.heatmap_1.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
@@ -1105,11 +1205,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(l_df) != 0:
                 plt.ion()
                 plt.figure()
-                self.ax6 = seaborn.heatmap(l_df, xticklabels=3, yticklabels=3)
+                self.heatmap_2 = seaborn.heatmap(l_df, xticklabels=3, yticklabels=3)
                 plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.title('Reorganization Energy (eV)', fontsize=17, fontweight='medium')
-                cbar = self.ax6.collections[0].colorbar
+                cbar = self.heatmap_2.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
@@ -1121,11 +1221,14 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(l_df) != 0:
                 plt.ion()
                 plt.figure()
-                self.ax7 = seaborn.heatmap(Ect_df, xticklabels=3, yticklabels=3)
+                self.heatmap_3 = seaborn.heatmap(Ect_df, xticklabels=3, yticklabels=3)
                 plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
-                plt.title('CT State Energy (eV)', fontsize=17, fontweight='medium')
-                cbar = self.ax7.collections[0].colorbar
+                if fit_opticalPeak:
+                    plt.title('Optical Peak Energy (eV)', fontsize=17, fontweight='medium')
+                else:
+                    plt.title('CT State Energy (eV)', fontsize=17, fontweight='medium')
+                cbar = self.heatmap_3.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
@@ -1286,11 +1389,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif fit:
                     self.fit_EL_EQE(EQE_energy, red_EQE, self.ui.startFit_EQE, self.ui.stopFit_EQE, 1)
 
-    ### Function to plot any data
+    ### Function to plot any EL data
 
     def plot_EL_EQE(self, x, y, label_, color_):
 
-        self.ax5.plot(x, y, linewidth = 3, label = label_, color = color_)
+        self.axEL_1.plot(x, y, linewidth = 3, label = label_, color = color_)
+        self.axEL_2.plot(x, y, linewidth = 3, label = label_, color = color_)
         plt.legend()
         plt.draw()
 
@@ -1357,9 +1461,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     print('-'*80)
 
                     if include_Disorder:
-                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
                     else:
-                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
                     plt.legend()
                     plt.draw()
 
@@ -1401,9 +1507,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     print('-' * 80)
 
                     if include_Disorder:
-                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
                     else:
-                        self.ax5.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',linestyle='--')
+                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',linestyle='--')
+                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',linestyle='--')
                     plt.legend()
                     plt.draw()
 
@@ -1897,12 +2005,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_up_EQE_plot(self, number, norm_num):
 
-#        style.use('ggplot')
-
         plt.ion()
 
         self.fig3, self.ax3 = plt.subplots()
-
         if number == 0: # number determines whether the x-axis is in wavelength or energy
             plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
         elif number == 1:
@@ -1912,7 +2017,6 @@ class MainWindow(QtWidgets.QMainWindow):
             plt.ylabel('EQE', fontsize=17, fontweight='medium')
         elif norm_num == 1:
             plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
-
         plt.rcParams['figure.facecolor']='xkcd:white'
         plt.rcParams['figure.edgecolor']='xkcd:white'
         plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
@@ -1923,19 +2027,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.fig4, self.ax4 = plt.subplots()
         self.ax4.set_yscale('log')  # To generate log scale axis
-
         if number == 0:
             plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
         elif number == 1:
             plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-
         if norm_num == 0:
             plt.ylabel('EQE', fontsize=17, fontweight='medium')
         elif norm_num == 1:
             plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
         elif norm_num == 2:
             plt.ylabel('Reduced EQE', fontsize=17, fontweight='medium')
-
         plt.rcParams['figure.facecolor'] = 'xkcd:white'
         plt.rcParams['figure.edgecolor'] = 'xkcd:white'
         plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
@@ -1952,12 +2053,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         plt.ion()
 
-        self.fig6, self.ax6 = plt.subplots()
-        self.ax6.set_yscale('log')  # To generate log scale axis
-
+        self.figFit_1, self.axFit_1 = plt.subplots()
         plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
         plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+        plt.show()
 
+        self.figFit_2, self.axFit_2 = plt.subplots()
+        self.axFit_2.set_yscale('log')  # To generate log scale axis
+        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
         plt.rcParams['figure.facecolor'] = 'xkcd:white'
         plt.rcParams['figure.edgecolor'] = 'xkcd:white'
         plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
@@ -1973,9 +2082,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         plt.ion()
 
-        self.fig5, self.ax5 = plt.subplots()
-        self.ax5.set_yscale('log')
+        self.figEL_1, self.axEL_1 = plt.subplots()
+        plt.ylabel('Red. EL (1/eV), Red. EQE (eV)', fontsize=17, fontweight='medium')
+        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.grid(False)
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+        plt.show()
 
+        self.figEL_2, self.axEL_2 = plt.subplots()
+        self.axEL_2.set_yscale('log')
         plt.ylabel('Red. EL (1/eV), Red. EQE (eV)', fontsize=17, fontweight='medium')
         plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
         plt.grid(False)
@@ -2003,6 +2122,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_EQE_fit_plot(self):
 
         plt.close() # Close the current plot
+        plt.close()
         self.set_up_EQE_fit_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
 
 # -----------------------------------------------------------------------------------------------------------
@@ -2011,6 +2131,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clear_EL_plot(self):
 
+        plt.close()
         plt.close()
         self.set_up_EL_plot()
 
