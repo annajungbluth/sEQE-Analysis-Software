@@ -6129,18 +6129,6 @@
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
-     <zorder>line_202</zorder>
-     <zorder>line_210</zorder>
-     <zorder>line_214</zorder>
-     <zorder>line_215</zorder>
-     <zorder>clearButton_2</zorder>
-     <zorder>gridLayoutWidget_7</zorder>
-     <zorder>save_gaussianFit</zorder>
-     <zorder>line_436</zorder>
-     <zorder>line_437</zorder>
-     <zorder>line_439</zorder>
-     <zorder>line_440</zorder>
-     <zorder>textBox_f4</zorder>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -8318,7 +8306,7 @@
     </widget>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
-      <string>Remove Optical Peak</string>
+      <string>Subtract Optical Peak</string>
      </attribute>
      <widget class="Line" name="line_449">
       <property name="geometry">
@@ -8339,7 +8327,7 @@
         <x>20</x>
         <y>30</y>
         <width>20</width>
-        <height>251</height>
+        <height>441</height>
        </rect>
       </property>
       <property name="orientation">
@@ -8352,24 +8340,11 @@
         <x>1140</x>
         <y>30</y>
         <width>20</width>
-        <height>251</height>
+        <height>441</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="Line" name="line_455">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>270</y>
-        <width>1121</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
      <widget class="QWidget" name="gridLayoutWidget_8">
@@ -8378,10 +8353,16 @@
         <x>40</x>
         <y>40</y>
         <width>1101</width>
-        <height>231</height>
+        <height>421</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_31">
+       <item row="2" column="4">
+        <widget class="QTextEdit" name="textBox_p6_2"/>
+       </item>
+       <item row="4" column="4">
+        <widget class="QTextEdit" name="textBox_p6_5"/>
+       </item>
        <item row="0" column="4">
         <widget class="QLabel" name="label_35">
          <property name="font">
@@ -8396,9 +8377,6 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QTextEdit" name="textBox_removeOpt_Fit"/>
-       </item>
        <item row="0" column="1">
         <widget class="Line" name="line_505">
          <property name="orientation">
@@ -8412,9 +8390,6 @@
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
-       </item>
-       <item row="2" column="6">
-        <widget class="QTextEdit" name="textBox_removeOpt_2"/>
        </item>
        <item row="3" column="2">
         <widget class="Line" name="line_507">
@@ -8444,13 +8419,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="Line" name="line_495">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="5">
         <widget class="Line" name="line_485">
          <property name="orientation">
@@ -8458,31 +8426,13 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="4">
-        <widget class="QTextEdit" name="textBox_removeOpt_3"/>
+       <item row="2" column="2">
+        <widget class="QTextEdit" name="textBox_p6_1"/>
        </item>
        <item row="1" column="4">
         <widget class="Line" name="line_494">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QTextEdit" name="textBox_removeOpt_EQE"/>
-       </item>
-       <item row="4" column="6">
-        <widget class="QTextEdit" name="textBox_removeOpt_4"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="browseRemoveOptButton_EQE">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select EQE</string>
          </property>
         </widget>
        </item>
@@ -8500,6 +8450,13 @@
          </property>
         </widget>
        </item>
+       <item row="1" column="2">
+        <widget class="Line" name="line_468">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="6">
         <widget class="QLabel" name="label_70">
          <property name="font">
@@ -8511,20 +8468,6 @@
          </property>
          <property name="text">
           <string>Color :</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="Line" name="line_468">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="Line" name="line_502">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
@@ -8549,27 +8492,12 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QPushButton" name="browseRemoveOptButton_Fit">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select Fit</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="3">
         <widget class="Line" name="line_484">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QTextEdit" name="textBox_removeOpt_1"/>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_71">
@@ -8585,13 +8513,60 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="2">
+        <widget class="QTextEdit" name="textBox_p6_4"/>
+       </item>
+       <item row="2" column="6">
+        <widget class="QTextEdit" name="textBox_p6_3"/>
+       </item>
+       <item row="4" column="6">
+        <widget class="QTextEdit" name="textBox_p6_6"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="browseSubButton_EQE">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Select EQE</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="browseSubButton_Fit">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Select Fit</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="Line" name="line_502">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="Line" name="line_495">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
-     <widget class="QPushButton" name="removeOptButton">
+     <widget class="QPushButton" name="subButton">
       <property name="geometry">
        <rect>
         <x>930</x>
-        <y>300</y>
+        <y>500</y>
         <width>221</width>
         <height>51</height>
        </rect>
@@ -8605,7 +8580,93 @@
        </font>
       </property>
       <property name="text">
-       <string>Remove Optical Peak</string>
+       <string>Subtract Fit</string>
+      </property>
+     </widget>
+     <widget class="Line" name="line_415">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>460</y>
+        <width>1121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="save_subEQE">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>510</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Save EQE</string>
+      </property>
+     </widget>
+     <widget class="Line" name="line_455">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>490</y>
+        <width>141</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_508">
+      <property name="geometry">
+       <rect>
+        <x>890</x>
+        <y>500</y>
+        <width>20</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_511">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>500</y>
+        <width>20</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_513">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>540</y>
+        <width>141</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </widget>
