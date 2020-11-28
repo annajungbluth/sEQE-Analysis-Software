@@ -251,7 +251,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.data_dir = '/home/jungbluth/Desktop'   ### CHANGE THIS IF NEEDED LATER
 
-
         # Define Variables
 
         self.h = 6.626 * math.pow(10,-34) # [m^2 kg/s]
@@ -852,19 +851,20 @@ class MainWindow(QtWidgets.QMainWindow):
        if self.Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no): # Check that files are non-empty and within energy range
            wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startE, stopE, 1) # Compile EQE file
            wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, startFit, stopFit, 1) # Compile fit range of EQE file
+           wave_plot_fit, energy_plot_fit, eqe_plot_fit, log_eqe_plot_fit = self.compile_EQE(eqe_df, startPlotFit, stopPlotFit, 1)
 
            label_ = self.pick_EQE_Label(label_Box, filename_Box)
            color_ = self.pick_EQE_Color(color_Box, file_no)
-
 
            if (str(file_no)).isnumeric(): # For Marcus theory fitting
 
                if file_no == 1:
                    self.T_CT = self.ui.Temperature_1.value()
+                   guessStart = self.ui.guessStart_1.value()
+                   guessStop = self.ui.guessStop_1.value()
                    if self.ui.static_Disorder_1.isChecked():
                        include_Disorder = True
                        self.sig = self.ui.Disorder_1.value()
-
                    if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked(): # Check if CT state or optical gap are fitted.
                        fit_opticalPeak = True
                    elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
@@ -874,10 +874,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
                elif file_no ==2:
                    self.T_CT = self.ui.Temperature_2.value()
+                   guessStart = self.ui.guessStart_2.value()
+                   guessStop = self.ui.guessStop_2.value()
                    if self.ui.static_Disorder_2.isChecked():
                        include_Disorder = True
                        self.sig = self.ui.Disorder_2.value()
-
                    if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
                        fit_opticalPeak = True
                    elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
@@ -887,10 +888,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
                elif file_no == 3:
                    self.T_CT = self.ui.Temperature_3.value()
+                   guessStart = self.ui.guessStart_3.value()
+                   guessStop = self.ui.guessStop_3.value()
                    if self.ui.static_Disorder_3.isChecked():
                        include_Disorder = True
                        self.sig = self.ui.Disorder_3.value()
-
                    if self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
                        fit_opticalPeak = True
                    elif self.ui.OptButton_3.isChecked() and self.ui.CTButton_3.isChecked():
@@ -900,10 +902,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
                elif file_no ==4:
                    self.T_CT = self.ui.Temperature_4.value()
+                   guessStart = self.ui.guessStart_4.value()
+                   guessStop = self.ui.guessStop_4.value()
                    if self.ui.static_Disorder_4.isChecked():
                        include_Disorder = True
                        self.sig = self.ui.Disorder_4.value()
-
                    if self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
                        fit_opticalPeak = True
                    elif self.ui.OptButton_4.isChecked() and self.ui.CTButton_4.isChecked():
@@ -911,80 +914,100 @@ class MainWindow(QtWidgets.QMainWindow):
                    elif not self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
                        print('Please select a valid peak to fit.')
 
-               try:
-                   x_gaussian = linspace(startPlotFit, stopPlotFit,50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
-                   y_gaussian = []
+               # Attempt peak fit:
+               x_gaussian = linspace(startPlotFit, stopPlotFit, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
+               y_gaussian = []
 
-                   if include_Disorder:
-                       best_vals, covar = curve_fit(self.gaussian_disorder, energy_fit, eqe_fit) # , p0 = init_values
-                       for value in x_gaussian:
-                           y_gaussian.append(self.gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
-                       y_fit = [self.gaussian_disorder(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                       r_squared = self.R_squared(eqe_fit, y_fit)
-                   else:
-                       best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
-                       for value in x_gaussian:
-                           y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
-                       y_fit = [self.gaussian(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                       r_squared = self.R_squared(eqe_fit, y_fit)
+               ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+               p0 = None
 
-                   print('-'*80)
-                   print('Temperature [T] (K) : ', self.T_CT)
-                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
-                   print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
-                   if fit_opticalPeak:
-                       print('Optical Peak Energy [E_Opt] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
-                   else:
-                       print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
-                   print('R_Squared : ', format(r_squared, '.6f'))
-                   print('-'*80)
-
-                   # Plot EQE data and CT fit
-                   self.axFit_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
-                   plt.draw()
-                   if include_Disorder:
-                       self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
-                   else:
-                       self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
-                   plt.draw()
-
-                   self.axFit_2.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
-                   plt.draw()
-                   if include_Disorder:
-                       self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
-                   else:
-                       self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
-                   plt.draw()
-
-                   ###### Save fit data ######
-                   if self.ui.save_gaussianFit.isChecked():
-
-                       fit_file = pd.DataFrame()
-                       fit_file['Energy'] = x_gaussian
-                       fit_file['Signal'] = y_gaussian
-
-                       # FIX to add as header rather than columns
-                       fit_file['Temperature'] = self.T_CT
-                       fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
-                       fit_file['Reorganization Energy (eV)'] = best_vals[1]
-                       if fit_opticalPeak:
-                           fit_file['Optical Peak Energy (eV)'] = best_vals[2]
+               for ECT in ECT_guess:
+                   try:
+                       if include_Disorder:
+                           best_vals, covar, y_fit, r_squared = self.fit_function(self.gaussian_disorder, energy_fit, eqe_fit, p0=p0)
+                           for value in x_gaussian:
+                               y_gaussian.append(self.gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
                        else:
-                           fit_file['CT State Energy (eV)'] = best_vals[2]
+                           best_vals, covar, y_fit, r_squared = self.fit_function(self.gaussian, energy_fit, eqe_fit, p0=p0)
+                           for value in x_gaussian:
+                               y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
-                       save_fit_file = filedialog.asksaveasfilename()  # Prompt the user to pick a folder & name to save data to
-                       save_fit_path, save_fit_filename = os.path.split(save_fit_file)
-                       if len(save_fit_path) != 0:  # Check if the user actually selected a path
-                           self.change_dir(save_fit_path)  # Change the working directory
-                           fit_file.to_csv(save_fit_filename)  # Save data to csv
-                           print('Saving fit data to: %s' % str(save_fit_file))
-                           self.change_dir(self.data_dir)  # Change the directory back
+                       if r_squared > 0:
+                           print('Initial Guess (eV) : ', p0)
 
-               except:
-                   print('Optimal parameters not found.')
-                   return False
+                           print('-'*80)
+                           print('Temperature [T] (K) : ', self.T_CT)
+                           print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
+                           print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
+                           if fit_opticalPeak:
+                               print('Optical Peak Energy [E_Opt] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
+                           else:
+                               print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
+                           print('R_Squared : ', format(r_squared, '.6f'))
+                           print('-'*80)
 
-               return True
+                           # Plot EQE data and CT fit
+                           self.axFit_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
+                           plt.draw()
+                           if include_Disorder:
+                               if fit_opticalPeak:
+                                   self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='dotted')
+                               else:
+                                   self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                           else:
+                               if fit_opticalPeak:
+                                   self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='dotted')
+                               else:
+                                   self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                           #plt.draw()
+
+                           self.axFit_2.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
+                           plt.draw()
+                           if include_Disorder:
+                               if fit_opticalPeak:
+                                   self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='dotted')
+                               else:
+                                   self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
+                           else:
+                               if fit_opticalPeak:
+                                   self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='dotted')
+                               else:
+                                   self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000', linestyle='--')
+                           #plt.draw()
+
+                           ###### Save fit data ######
+                           if self.ui.save_gaussianFit.isChecked():
+                               fit_file = pd.DataFrame()
+                               fit_file['Energy'] = x_gaussian
+                               fit_file['Signal'] = y_gaussian
+
+                               # FIX to add as header rather than columns
+                               fit_file['Temperature'] = self.T_CT
+                               fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
+                               fit_file['Reorganization Energy (eV)'] = best_vals[1]
+                               if fit_opticalPeak:
+                                   fit_file['Optical Peak Energy (eV)'] = best_vals[2]
+                               else:
+                                   fit_file['CT State Energy (eV)'] = best_vals[2]
+                               save_fit_file = filedialog.asksaveasfilename()  # Prompt the user to pick a folder & name to save data to
+                               save_fit_path, save_fit_filename = os.path.split(save_fit_file)
+                               if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                                   self.change_dir(save_fit_path)  # Change the working directory
+                                   fit_file.to_csv(save_fit_filename)  # Save data to csv
+                                   print('Saving fit data to: %s' % str(save_fit_file))
+                                   self.change_dir(self.data_dir)  # Change the directory back
+
+                           return True
+                           break
+
+                       else:
+                           raise Exception('Wrong fit determined.')
+
+                   except:
+                       p0 = [0.001, 0.1, round(ECT, 3)]
+
+               print('Optimal parameters not found.')
+               return False
 
            elif file_no == 'x1': # For extended fitting with MLJ Theory
 
@@ -992,57 +1015,70 @@ class MainWindow(QtWidgets.QMainWindow):
                self.hbarw_i = self.ui.vib_Energy.value()
                self.T_x = self.ui.extra_Temperature.value()
 
+               guessStart = self.ui.extraGuessStart.value()
+               guessStop = self.ui.extraGuessStop.value()
+
                if self.ui.extra_static_Disorder.isChecked():
                    include_Disorder = True
                    self.sig_x = self.ui.extra_Disorder.value()
 
-               try:
-                   x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)
-                   y_MLJ_theory = []
+               # Attempt peak fit:
+               x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)
+               y_MLJ_theory = []
 
-                   if include_Disorder:
-                       best_vals, covar = curve_fit(self.MLJ_gaussian_disorder, energy_fit, eqe_fit)
-                       for value in x_MLJ_theory:
-                           y_MLJ_theory.append(self.MLJ_gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
-                       y_fit = [self.MLJ_gaussian_disorder(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                       r_squared = self.R_squared(eqe_fit, y_fit)
-                   else:
-                       best_vals, covar = curve_fit(self.MLJ_gaussian, energy_fit, eqe_fit)
-                       for value in x_MLJ_theory:
-                           y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
-                       y_fit = [self.MLJ_gaussian(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                       r_squared = self.R_squared(eqe_fit, y_fit)
+               ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+               p0 = None
 
-                   print('-'*80)
-                   print('Temperature [T] (K) : ', self.T_x)
-                   print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
-                   print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
-                   print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
-                   print('R_Squared : ', format(r_squared, '.6f'))
-                   print('-'*80)
+               for ECT in ECT_guess:
+                   try:
+                       if include_Disorder:
+                           best_vals, covar, y_fit, r_squared = self.fit_function(self.MLJ_gaussian_disorder, energy_fit, eqe_fit, p0=p0)
+                           for value in x_MLJ_theory:
+                               y_MLJ_theory.append(self.MLJ_gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
+                       else:
+                           best_vals, covar, y_fit, r_squared = self.fit_function(self.MLJ_gaussian, energy_fit, eqe_fit, p0=p0)
+                           for value in x_MLJ_theory:
+                               y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
-                   # Plot EQE data and CT fit
-                   self.axFit_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
-                   plt.draw()
-                   if include_Disorder:
-                       self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
-                   else:
-                       self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
-                   plt.draw()
+                       if r_squared > 0:
+                           print('Initial Guess (eV) : ', p0)
 
-                   self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
-                   plt.draw()
-                   if include_Disorder:
-                       self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
-                   else:
-                       self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
-                   plt.draw()
+                           print('-'*80)
+                           print('Temperature [T] (K) : ', self.T_x)
+                           print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0,0]), '.6f'))
+                           print('Reorganization Energy [l] (eV) : ',  format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1,1]), '.6f'))
+                           print('CT State Energy [ECT] (eV) : ',  format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2,2]), '.6f'))
+                           print('R_Squared : ', format(r_squared, '.6f'))
+                           print('-'*80)
 
-               except:
-                   print('Optimal parameters not found.')
-                   return False
+                           # Plot EQE data and CT fit
+                           self.axFit_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
+                           plt.draw()
+                           if include_Disorder:
+                               self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                           else:
+                               self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
+                           plt.draw()
 
-               return True
+                           self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                           plt.draw()
+                           if include_Disorder:
+                               self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder', color='#000000', linestyle='--')
+                           else:
+                               self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit', color='#000000', linestyle='--')
+                           plt.draw()
+
+                           return True
+                           break
+
+                       else:
+                           raise Exception('Wrong fit determined.')
+
+                   except:
+                       p0 = [0.001, 0.1, round(ECT, 3)]
+
+               print('Optimal parameters not found.')
+               return False
 
        else:
            return False
@@ -1103,6 +1139,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                             if file_no == 1:
                                 self.T_CT = self.ui.Temperature_1.value()
+                                guessStart = self.ui.guessStart_1.value()
+                                guessStop = self.ui.guessStop_1.value()
                                 if self.ui.static_Disorder_1.isChecked():
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_1.value()
@@ -1116,6 +1154,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                             elif file_no == 2:
                                 self.T_CT = self.ui.Temperature_2.value()
+                                guessStart = self.ui.guessStart_2.value()
+                                guessStop = self.ui.guessStop_2.value()
                                 if self.ui.static_Disorder_2.isChecked():
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_2.value()
@@ -1130,6 +1170,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                             elif file_no == 3:
                                 self.T_CT = self.ui.Temperature_3.value()
+                                guessStart = self.ui.guessStart_3.value()
+                                guessStop = self.ui.guessStop_3.value()
                                 if self.ui.static_Disorder_3.isChecked():
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_3.value()
@@ -1143,6 +1185,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                             elif file_no == 4:
                                 self.T_CT = self.ui.Temperature_4.value()
+                                guessStart = self.ui.guessStart_4.value()
+                                guessStop = self.ui.guessStop_4.value()
                                 if self.ui.static_Disorder_4.isChecked():
                                     include_Disorder = True
                                     self.sig = self.ui.Disorder_4.value()
@@ -1154,25 +1198,28 @@ class MainWindow(QtWidgets.QMainWindow):
                                 elif not self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
                                     print('Please select a valid peak to fit.')
 
-                            try:
-                                if include_Disorder:
-                                    best_vals, covar = curve_fit(self.gaussian_disorder, energy_fit, eqe_fit)
-                                    y_fit = [self.gaussian_disorder(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                                    r_squared = self.R_squared(eqe_fit, y_fit)
-                                else:
-                                    best_vals, covar = curve_fit(self.gaussian, energy_fit, eqe_fit)
-                                    y_fit = [self.gaussian(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                                    r_squared = self.R_squared(eqe_fit, y_fit)
+                            # Attempt peak fit:
+                            ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+                            p0 = None
 
-                                start_df.append(start)
-                                stop_df.append(stop)
-                                f_df.append(best_vals[0])
-                                l_df.append(best_vals[1])
-                                Ect_df.append(best_vals[2])
-                                R_df.append(r_squared)
-
-                            except:
-                               print('Optimal parameters not found.')
+                            for ECT in ECT_guess:
+                                try:
+                                    if include_Disorder:
+                                        best_vals, covar, y_fit, r_squared = self.fit_function(self.gaussian_disorder, energy_fit, eqe_fit, p0=p0)
+                                    else:
+                                        best_vals, covar, y_fit, r_squared = self.fit_function(self.gaussian, energy_fit, eqe_fit, p0=p0)
+                                    if r_squared > 0:
+                                        start_df.append(start)
+                                        stop_df.append(stop)
+                                        f_df.append(best_vals[0])
+                                        l_df.append(best_vals[1])
+                                        Ect_df.append(best_vals[2])
+                                        R_df.append(r_squared)
+                                    break
+                                except:
+                                    p0 = [0.001, 0.1, ECT]
+                                    if ECT == ECT_guess[-1]:
+                                        print('Optimal parameters not found.')
 
                         elif file_no == 'x1': # For extended fitting with MLJ Theory
 
@@ -1180,101 +1227,100 @@ class MainWindow(QtWidgets.QMainWindow):
                             self.hbarw_i = self.ui.vib_Energy.value()
                             self.T_x = self.ui.extra_Temperature.value()
 
+                            guessStart = self.ui.extraGuessStart.value()
+                            guessStop = self.ui.extraGuessStop.value()
+
                             if self.ui.extra_static_Disorder.isChecked():
                                 include_Disorder = True
                                 self.sig_x = self.ui.extra_Disorder.value()
 
-                            try:
-                                if include_Disorder:
-                                    best_vals, covar = curve_fit(self.MLJ_gaussian_disorder, energy_fit, eqe_fit)
-                                    y_fit = [self.MLJ_gaussian_disorder(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                                    r_squared = self.R_squared(eqe_fit, y_fit)
-                                else:
-                                    best_vals, covar = curve_fit(self.MLJ_gaussian, energy_fit, eqe_fit)
-                                    y_fit = [self.MLJ_gaussian(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-                                    r_squared = self.R_squared(eqe_fit, y_fit)
+                            # Attempt peak fit:
+                            ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+                            p0 = None
 
-                                start_df.append(start)
-                                stop_df.append(stop)
-                                f_df.append(best_vals[0])
-                                l_df.append(best_vals[1])
-                                Ect_df.append(best_vals[2])
-                                R_df.append(r_squared)
+                            for ECT in ECT_guess:
+                                try:
+                                    if include_Disorder:
+                                        best_vals, covar, y_fit, r_squared = self.fit_function(self.MLJ_gaussian_disorder, energy_fit, eqe_fit, p0=p0)
+                                    else:
+                                        best_vals, covar, y_fit, r_squared = self.fit_function(self.MLJ_gaussian, energy_fit, eqe_fit, p0=p0)
+                                    if r_squared > 0:
+                                        start_df.append(start)
+                                        stop_df.append(stop)
+                                        f_df.append(best_vals[0])
+                                        l_df.append(best_vals[1])
+                                        Ect_df.append(best_vals[2])
+                                        R_df.append(r_squared)
+                                    break
+                                except:
+                                    p0 = [0.001, 0.1, ECT]
+                                    if ECT == ECT_guess[-1]:
+                                        print('Optimal parameters not found.')
 
-                            except:
-                                print('Optimal parameters not found.')
+            if len(R_df)!=0:
+                parameter_df = pd.DataFrame({'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df, 'R_Squared':R_df}) # Create a dataFrame with all results
+                max_index = parameter_df[parameter_df['R_Squared']==max(parameter_df['R_Squared'])].index.values[0]
 
+                print('-'*80)
+                if file_no == 'x1':
+                    print('Temperature [T] (K) : ', self.T_x)
+                else:
+                    print('Temperature [T] (K) : ', self.T_CT)
 
-            parameter_df = pd.DataFrame({'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df, 'R_Squared':R_df}) # Create a dataFrame with all results
-            max_index = parameter_df[parameter_df['R_Squared']==max(parameter_df['R_Squared'])].index.values[0]
+                print('Average Oscillator Strength [f] (eV**2) : ', format(parameter_df['f'].mean(), '.6f'), '+/-' , format(parameter_df['f'].std(), '.6f')) # Determine the average value and standard deviation
+                print('Average Reorganization Energy [l] (eV) : ', format(parameter_df['l'].mean(), '.6f'), '+/-', format(parameter_df['l'].std(), '.6f'))
 
-            print('-'*80)
-            if file_no == 'x1':
-                print('Temperature [T] (K) : ', self.T_x)
-            else:
-                print('Temperature [T] (K) : ', self.T_CT)
+                if fit_opticalPeak:
+                    print('Average Optical Peak Energy [E_Opt] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), '+/-' , format(parameter_df['Ect'].std(), '.6f'))
+                else:
+                    print('Average CT State Energy [ECT] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), '+/-' , format(parameter_df['Ect'].std(), '.6f'))
 
-            print('Average Oscillator Strength [f] (eV**2) : ', format(parameter_df['f'].mean(), '.6f'), ', Stdev : ', format(parameter_df['f'].std(), '.6f')) # Determine the average value and standard deviation
-            print('Average Reorganization Energy [l] (eV) : ', format(parameter_df['l'].mean(), '.6f'), ', Stdev : ', format(parameter_df['l'].std(), '.6f'))
+                print('Average R_Squared : ', format(parameter_df['R_Squared'].mean(), '.6f'), '+/-' , format(parameter_df['R_Squared'].std(), '.6f'))
 
-            if fit_opticalPeak:
-                print('Average Optical Peak Energy [E_Opt] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), ', Stdev : ', format(parameter_df['Ect'].std(), '.6f'))
-            else:
-                print('Average CT State Energy [ECT] (eV) : ', format(parameter_df['Ect'].mean(), '.6f'), ', Stdev : ', format(parameter_df['Ect'].std(), '.6f'))
+                print('-'*80)
 
-            print('Average R_Squared : ', format(parameter_df['R_Squared'].mean(), '.6f'), ', Stdev : ', format(parameter_df['R_Squared'].std(), '.6f'))
+                print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
+                print('Start Energy (eV) : ', parameter_df['Start'][max_index])
+                print('Stop Energy (eV) : ', parameter_df['Stop'][max_index])
+                print('-'*80)
 
-            print('-'*80)
+                f_df = parameter_df.pivot('Stop', 'Start', 'f') # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
+                l_df = parameter_df.pivot('Stop', 'Start', 'l')
+                Ect_df = parameter_df.pivot('Stop', 'Start', 'Ect')
+                R_df = parameter_df.pivot('Stop', 'Start', 'R_Squared')
 
-            print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
-            print('Start Energy (eV) : ', parameter_df['Start'][max_index])
-            print('Stop Energy (eV) : ', parameter_df['Stop'][max_index])
-            print('-'*80)
-
-            f_df = parameter_df.pivot('Stop', 'Start', 'f') # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
-            l_df = parameter_df.pivot('Stop', 'Start', 'l')
-            Ect_df = parameter_df.pivot('Stop', 'Start', 'Ect')
-            R_df = parameter_df.pivot('Stop', 'Start', 'R_Squared')
-
-            #seaborn.set(font_scale=1.2)
-
-            if len(f_df) != 0:
                 plt.ion()
-                plt.figure() # Create a new figure
+                plt.figure(figsize=(11, 9)) # Create a new figure
                 self.heatmap_1 = seaborn.heatmap(f_df, xticklabels=3, yticklabels=3) # Create the heat map
-                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.xlabel('Initial Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.title('Oscillator Strength ($eV^2$)', fontsize=17, fontweight='medium')
                 cbar = self.heatmap_1.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
+                plt.xticks(rotation = 90)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
-            else:
-                print('No fitting oscillator strengths determined.')
 
-            if len(l_df) != 0:
                 plt.ion()
-                plt.figure()
+                plt.figure(figsize=(11, 9))
                 self.heatmap_2 = seaborn.heatmap(l_df, xticklabels=3, yticklabels=3)
-                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.xlabel('Initial Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.title('Reorganization Energy (eV)', fontsize=17, fontweight='medium')
                 cbar = self.heatmap_2.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
+                plt.xticks(rotation = 90)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
-            else:
-                print('No fitting reorganization energies determined.')
 
-            if len(l_df) != 0:
                 plt.ion()
-                plt.figure()
+                plt.figure(figsize=(11, 9))
                 self.heatmap_3 = seaborn.heatmap(Ect_df, xticklabels=3, yticklabels=3)
-                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.xlabel('Initial Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
                 if fit_opticalPeak:
                     plt.title('Optical Peak Energy (eV)', fontsize=17, fontweight='medium')
@@ -1283,28 +1329,27 @@ class MainWindow(QtWidgets.QMainWindow):
                 cbar = self.heatmap_3.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
+                plt.xticks(rotation = 90)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
-            else:
-                print('No fitting CT state energies determined.')
 
-            if len(R_df) != 0:
                 plt.ion()
-                plt.figure()
+                plt.figure(figsize=(11, 9))
                 self.heatmap_4 = seaborn.heatmap(R_df, xticklabels=3, yticklabels=3)
-                plt.xlabel('Inital Energy Value (eV)', fontsize=17, fontweight='medium')
+                plt.xlabel('Initial Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
                 plt.title('$\mathregular{R^{2}}$', fontsize=17, fontweight='medium')
                 cbar = self.heatmap_4.collections[0].colorbar
                 cbar.ax.tick_params(labelsize=15)
                 plt.yticks(rotation = 360)
+                plt.xticks(rotation = 90)
                 plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
                 #plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
                 plt.show()
-            else:
-                print('No fitting R squared values determined.')
 
+            else:
+                print('No fits determined.')
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -1372,6 +1417,24 @@ class MainWindow(QtWidgets.QMainWindow):
                     / (4 * l_o * self.k * self.T_x + 2 * self.sig_x**2))
             EQE += EQE_n
         return EQE
+
+# -----------------------------------------------------------------------------------------------------------
+
+    def fit_function(self, function, energy_fit, eqe_fit, p0=None):
+        """
+        :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
+        :param energy_fit: energy values to fit against (x values)
+        :param eqe_fit: EQE values to fit against (y values
+        :return: best_vals: list of best fit parameters,
+                 covar: covariance matrix of fit
+                 y_fit: calculated EQE values of the fit,
+                 r_squared: R^2 of the fit
+        """
+        best_vals, covar = curve_fit(function, energy_fit, eqe_fit, p0=p0)
+        y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
+        r_squared = self.R_squared(eqe_fit, y_fit)
+
+        return best_vals, covar, y_fit, r_squared
 
 # -----------------------------------------------------------------------------------------------------------
 
