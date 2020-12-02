@@ -916,12 +916,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
                # Attempt peak fit:
                x_gaussian = linspace(startPlotFit, stopPlotFit, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
-               y_gaussian = []
 
                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
                p0 = None
 
                for ECT in ECT_guess:
+                   y_gaussian = []
                    try:
                        if include_Disorder:
                            best_vals, covar, y_fit, r_squared = self.fit_function(self.gaussian_disorder, energy_fit, eqe_fit, p0=p0)
@@ -1004,7 +1004,7 @@ class MainWindow(QtWidgets.QMainWindow):
                            raise Exception('Wrong fit determined.')
 
                    except:
-                       p0 = [0.001, 0.1, round(ECT, 3)]
+                       p0 = [0.001, 0.1, round(ECT, 3)
 
                print('Optimal parameters not found.')
                return False
@@ -1024,12 +1024,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
                # Attempt peak fit:
                x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)
-               y_MLJ_theory = []
 
                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
                p0 = None
 
                for ECT in ECT_guess:
+                   y_MLJ_theory = []
                    try:
                        if include_Disorder:
                            best_vals, covar, y_fit, r_squared = self.fit_function(self.MLJ_gaussian_disorder, energy_fit, eqe_fit, p0=p0)
