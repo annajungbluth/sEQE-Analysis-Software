@@ -1004,7 +1004,7 @@ class MainWindow(QtWidgets.QMainWindow):
                            raise Exception('Wrong fit determined.')
 
                    except:
-                       p0 = [0.001, 0.1, round(ECT, 3)
+                       p0 = [0.001, 0.1, round(ECT, 3)]
 
                print('Optimal parameters not found.')
                return False
