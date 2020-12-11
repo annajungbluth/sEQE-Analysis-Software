@@ -237,6 +237,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.subButton.clicked.connect(lambda: self.subtract_Fit(self.data_subFit, self.data_subEQE, self.ui.textBox_p6_2, self.ui.textBox_p6_5, self.ui.textBox_p6_3, self.ui.textBox_p6_6))
 
 
+        ##### Page 7 - Add Peak Fits
+
+        self.data_addOptFit = []
+        self.data_addCTFit = []
+        self.data_addEQE = []
+
+        # Handle Import Fit and EQE Data Buttons
+
+        self.ui.browseAddButton_optFit.clicked.connect(lambda: self.writeText(self.ui.textBox_p7_1, 'add1'))
+        self.ui.browseAddButton_CTFit.clicked.connect(lambda: self.writeText(self.ui.textBox_p7_4, 'add2'))
+        self.ui.browseAddButton_EQE.clicked.connect(lambda: self.writeText(self.ui.textBox_p7_7, 'add3'))
+
+        # Handle Plot Fit Button
+
+        self.ui.plotAddButton.clicked.connect(lambda: self.add_Fits(self.data_addOptFit, self.data_addCTFit, self.data_addEQE))
+
         # Import Photodiode Calibration Files
 
         Si_file = pd.ExcelFile("FDS100-CAL.xlsx") # The files are in the sEQE Analysis folder, just as this program
@@ -393,6 +409,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
             elif textBox_no == 'sub2':
                 self.data_subEQE = pd.read_csv(file_)
+
+
+            # For adding fit files
+
+            elif textBox_no == 'add1':
+                self.data_addOptFit = pd.read_csv(file_)
+
+            elif textBox_no == 'add2':
+                self.data_addCTFit = pd.read_csv(file_)
+
+            elif textBox_no == 'add3':
+                self.data_addEQE = pd.read_csv(file_)
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -1279,9 +1307,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 print('-'*80)
 
-                print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
-                print('Start Energy (eV) : ', parameter_df['Start'][max_index])
-                print('Stop Energy (eV) : ', parameter_df['Stop'][max_index])
+                if max(parameter_df['R_Squared']) == 1.0:
+                    print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
+                    print('Start Energies (eV) : ', np.array(parameter_df['Start'][parameter_df['R_Squared']==1.0]).tolist())
+                    print('Stop Energies (eV) : ', np.array(parameter_df['Stop'][parameter_df['R_Squared']==1.0]).tolist())
+                    print('Average Oscillator Strength [f] (eV**2) : ', format(parameter_df['f'][parameter_df['R_Squared']==1.0].mean(), '.6f'), '+/-' , format(parameter_df['f'][parameter_df['R_Squared']==1.0].std(), '.6f'))
+                    print('Average Reorganization Energy [l] (eV) : ', format(parameter_df['l'][parameter_df['R_Squared']==1.0].mean(), '.6f'), '+/-' , format(parameter_df['l'][parameter_df['R_Squared']==1.0].std(), '.6f'))
+                    if fit_opticalPeak:
+                        print('Average Optical Peak Energy [E_Opt] (eV) : ', format(parameter_df['Ect'][parameter_df['R_Squared']==1.0].mean(), '.6f'), '+/-' , format(parameter_df['Ect'][parameter_df['R_Squared']==1.0].std(), '.6f'))
+                    else:
+                        print('Average CT State Energy [ECT] (eV) : ', format(parameter_df['Ect'][parameter_df['R_Squared']==1.0].mean(), '.6f'), '+/-' , format(parameter_df['Ect'][parameter_df['R_Squared']==1.0].std(), '.6f'))
+
+                else:
+                    print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
+                    print('Start Energy (eV) : ', parameter_df['Start'][max_index])
+                    print('Stop Energy (eV) : ', parameter_df['Stop'][max_index])
                 print('-'*80)
 
                 f_df = parameter_df.pivot('Stop', 'Start', 'f') # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
@@ -1865,6 +1905,74 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
+    ### Function to add fits
+
+    def add_Fits(self, data_OptFit, data_CTFit, data_EQE):
+
+        E_fit = 0
+        add_Energy = []
+        add_Fits = []
+
+        label_OptFit = self.pick_EQE_Label(self.ui.textBox_p7_2, self.ui.textBox_p7_2)
+        label_CTFit = self.pick_EQE_Label(self.ui.textBox_p7_5, self.ui.textBox_p7_5)
+        label_EQE = self.pick_EQE_Label(self.ui.textBox_p7_8, self.ui.textBox_p7_8)
+
+        color_OptFit = self.ui.textBox_p7_3.toPlainText()
+        color_OptFit = color_OptFit.replace(" ", "")
+
+        color_CTFit = self.ui.textBox_p7_6.toPlainText()
+        color_CTFit = color_CTFit.replace(" ", "")
+
+        color_EQE = self.ui.textBox_p7_9.toPlainText()
+        color_EQE = color_EQE.replace(" ", "")
+
+        if len(color_OptFit) == 0 or not self.is_Colour(color_OptFit):
+            color_OptFit = '#ff7716'
+
+        if len(color_CTFit) == 0 or not self.is_Colour(color_CTFit):
+            color_CTFit = '#1f77b4'
+
+        if len(color_EQE) == 0 or not self.is_Colour(color_EQE):
+            color_EQE = 'black'
+
+        try: # Check if fit for an optical peak was imported
+            T_OptFit = data_OptFit['Temperature'][0]
+            f_OptFit = data_OptFit['Oscillator Strength (eV**2)'][0]
+            l_OptFit = data_OptFit['Reorganization Energy (eV)'][0]
+            E_OptFit = data_OptFit['Optical Peak Energy (eV)'][0]
+
+            T_CTFit = data_CTFit['Temperature'][0]
+            f_CTFit = data_CTFit['Oscillator Strength (eV**2)'][0]
+            l_CTFit = data_CTFit['Reorganization Energy (eV)'][0]
+            E_CTFit = data_CTFit['CT State Energy (eV)'][0]
+        except:
+            print('Please import a valid fit file.')
+
+        if E_OptFit != 0 and E_CTFit != 0: # Only progress if a valid energy was imported
+
+            for x in range(len(data_EQE['Energy'])):
+                if data_EQE['Energy'][x] < max(data_OptFit['Energy']):
+                    OptFit_value = self.gaussian_absorption(data_EQE['Energy'][x], f_OptFit, l_OptFit, E_OptFit, T_OptFit)
+                    CTFit_value = self.gaussian_absorption(data_EQE['Energy'][x], f_CTFit, l_CTFit, E_CTFit, T_CTFit)
+                    add_Energy.append(data_EQE['Energy'][x])
+                    add_Fits.append(OptFit_value + CTFit_value)
+
+            self.set_up_EQE_add_plot()
+
+            self.axAdd_1.plot(data_OptFit['Energy'], data_OptFit['Signal'], linewidth=2, linestyle='--', color=color_OptFit, label=label_OptFit)
+            self.axAdd_1.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--', color=color_CTFit, label=label_CTFit)
+            self.axAdd_1.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE, label=label_EQE)
+            self.axAdd_1.plot(add_Energy, add_Fits, linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+            self.axAdd_1.legend()
+
+            self.axAdd_2.plot(data_OptFit['Energy'], data_OptFit['Signal'], linewidth=2, linestyle='--', color=color_OptFit, label=label_OptFit)
+            self.axAdd_2.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--', color=color_CTFit, label=label_CTFit)
+            self.axAdd_2.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE, label=label_EQE)
+            self.axAdd_2.plot(add_Energy, add_Fits, linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+            self.axAdd_2.legend()
+
+# -----------------------------------------------------------------------------------------------------------
+
     ### Gaussian fitting function
 
     def gaussian_absorption(self, x, f, l, E, T):
@@ -2329,6 +2437,33 @@ class MainWindow(QtWidgets.QMainWindow):
         plt.minorticks_on()
         plt.show()
 
+# -----------------------------------------------------------------------------------------------------------
+
+    ### Function to set up EQE subtraction plot
+
+    def set_up_EQE_add_plot(self):
+        plt.ion()
+
+        self.figAdd_1, self.axAdd_1 = plt.subplots()
+        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+        plt.show()
+
+        self.figAdd_2, self.axAdd_2 = plt.subplots()
+        self.axAdd_2.set_yscale('log')  # To generate log scale axis
+        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+        plt.show()
 
 # -----------------------------------------------------------------------------------------------------------
 
