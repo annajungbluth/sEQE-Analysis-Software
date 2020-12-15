@@ -29,6 +29,7 @@ from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_L
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
 from source.compilation import compile_EL, compile_Data
+from source.normalization import normalize_EQE
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -815,7 +816,7 @@ class MainWindow(QtWidgets.QMainWindow):
            if self.ui.normalizeBox.isChecked():
                normNM = self.ui.normalizeNM.value()
                if Normalization_is_valid(eqe_df, normNM, file_no):
-                   wave, energy, eqe, log_eqe = self.normalize_EQE(eqe_df, startNM, stopNM, normNM)
+                   wave, energy, eqe, log_eqe = normalize_EQE(eqe_df, startNM, stopNM, normNM)
                else:
                    return False
            else:
@@ -2464,36 +2465,36 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             print('Error Code 1: Length mismatch.')
 
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to normalize EQE data  
-
-    def normalize_EQE(self, eqe_df, startNM, stopNM, normNM):
-
-        Wavelength = []
-        Energy = []
-        EQE = []
-        log_EQE = []
-
-
-        norm_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['EQE'])
-        norm_log_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['Log_EQE'])
-
-        print(norm_EQE)
-        print(norm_log_EQE)
-
-        for y in range(len(eqe_df['Wavelength'])): # Iterate through columns of EQE file
-            if startNM <= eqe_df['Wavelength'][y] <= stopNM: # Compile EQE only if start <= wavelength <= stop, otherwise ignore
-                Wavelength.append(eqe_df['Wavelength'][y])
-                Energy.append(eqe_df['Energy'][y])
-                EQE.append(eqe_df['EQE'][y] / norm_EQE)
-                log_EQE.append(eqe_df['Log_EQE'][y] / norm_log_EQE)
-
-        if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE): # Check that the lengths are the same
-            return Wavelength, Energy, EQE, log_EQE
-
-        else:
-            print('Error Code 1: Length mismatch.')
+# # -----------------------------------------------------------------------------------------------------------
+#
+#     ### Function to normalize EQE data
+#
+#     def normalize_EQE(self, eqe_df, startNM, stopNM, normNM):
+#
+#         Wavelength = []
+#         Energy = []
+#         EQE = []
+#         log_EQE = []
+#
+#
+#         norm_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['EQE'])
+#         norm_log_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['Log_EQE'])
+#
+#         print(norm_EQE)
+#         print(norm_log_EQE)
+#
+#         for y in range(len(eqe_df['Wavelength'])): # Iterate through columns of EQE file
+#             if startNM <= eqe_df['Wavelength'][y] <= stopNM: # Compile EQE only if start <= wavelength <= stop, otherwise ignore
+#                 Wavelength.append(eqe_df['Wavelength'][y])
+#                 Energy.append(eqe_df['Energy'][y])
+#                 EQE.append(eqe_df['EQE'][y] / norm_EQE)
+#                 log_EQE.append(eqe_df['Log_EQE'][y] / norm_log_EQE)
+#
+#         if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE): # Check that the lengths are the same
+#             return Wavelength, Energy, EQE, log_EQE
+#
+#         else:
+#             print('Error Code 1: Length mismatch.')
 
 
 # -----------------------------------------------------------------------------------------------------------
