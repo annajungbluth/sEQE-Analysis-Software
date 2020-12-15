@@ -6,33 +6,27 @@ Created on Fri Sep 28 11:59:40 2018
 @author: jungbluth
 """
 
-import itertools
 import math
 import os
 import random
 import sys
 import tkinter as tk
 from tkinter import filedialog
-from tqdm import tqdm
 
-import matplotlib
-import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sEQE_Analysis_template
 import seaborn
-import serial
-import xlrd
 
 # for the gui
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from colour import Color
-from matplotlib import style
 from numpy import exp, linspace, random
 from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
-from scipy.signal import savgol_filter
+from tqdm import tqdm
+
+import sEQE_Analysis_template
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -138,31 +132,35 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.data_fit_1 = []
         self.data_fit_2 = []
-        self.data_fit_3 = []
-        self.data_fit_4 = []
 
         # Handle Import EQE Buttons
 
         self.ui.browseFitButton_1.clicked.connect(lambda: self.writeText(self.ui.textBox_f1, 'f1'))
         self.ui.browseFitButton_2.clicked.connect(lambda: self.writeText(self.ui.textBox_f4, 'f4'))
-        self.ui.browseFitButton_3.clicked.connect(lambda: self.writeText(self.ui.textBox_f7, 'f7'))
-        self.ui.browseFitButton_4.clicked.connect(lambda: self.writeText(self.ui.textBox_f10, 'f10'))
 
         # Handle Gaussian Fit Buttons
 
         self.ui.gaussianFit_1.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_1, self.ui.startPlot_1, self.ui.stopPlot_1, self.ui.startFit_1, self.ui.stopFit_1, self.ui.startFitPlot_1, self.ui.stopFitPlot_1, self.ui.textBox_f1, self.ui.textBox_f2, self.ui.textBox_f3, 1))
         self.ui.gaussianFit_2.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_2, self.ui.startPlot_2, self.ui.stopPlot_2, self.ui.startFit_2, self.ui.stopFit_2, self.ui.startFitPlot_2, self.ui.stopFitPlot_2, self.ui.textBox_f4, self.ui.textBox_f5, self.ui.textBox_f6, 2))
-        self.ui.gaussianFit_3.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_3, self.ui.startPlot_3, self.ui.stopPlot_3, self.ui.startFit_3, self.ui.stopFit_3, self.ui.startFitPlot_3, self.ui.stopFitPlot_3, self.ui.textBox_f7, self.ui.textBox_f8, self.ui.textBox_f9, 3))
-        self.ui.gaussianFit_4.clicked.connect(lambda: self.pre_fit_EQE(self.data_fit_4, self.ui.startPlot_4, self.ui.stopPlot_4, self.ui.startFit_4, self.ui.stopFit_4, self.ui.startFitPlot_4, self.ui.stopFitPlot_4, self.ui.textBox_f10, self.ui.textBox_f11, self.ui.textBox_f12, 4))
 
         # Handle Heat Map Buttons
 
         self.ui.heatButton_1.clicked.connect(lambda: self.heatMap(self.data_fit_1, self.ui.startPlot_1, self.ui.stopPlot_1, self.ui.startStart_1, self.ui.startStop_1, self.ui.stopStart_1, self.ui.stopStop_1, self.ui.textBox_f1, self.ui.textBox_f2, self.ui.textBox_f3, 1))
         self.ui.heatButton_2.clicked.connect(lambda: self.heatMap(self.data_fit_2, self.ui.startPlot_2, self.ui.stopPlot_2, self.ui.startStart_2, self.ui.startStop_2, self.ui.stopStart_2, self.ui.stopStop_2, self.ui.textBox_f4, self.ui.textBox_f5, self.ui.textBox_f6, 2))
-        self.ui.heatButton_3.clicked.connect(lambda: self.heatMap(self.data_fit_3, self.ui.startPlot_3, self.ui.stopPlot_3, self.ui.startStart_3, self.ui.startStop_3, self.ui.stopStart_3, self.ui.stopStop_3, self.ui.textBox_f7, self.ui.textBox_f8, self.ui.textBox_f9, 3))
-        self.ui.heatButton_4.clicked.connect(lambda: self.heatMap(self.data_fit_4, self.ui.startPlot_4, self.ui.stopPlot_4, self.ui.startStart_4, self.ui.startStop_4, self.ui.stopStart_4, self.ui.stopStop_4, self.ui.textBox_f10, self.ui.textBox_f11, self.ui.textBox_f12, 4))
 
         self.ui.clearButton_2.clicked.connect(self.clear_EQE_fit_plot)
+
+        # Double Fits
+
+        self.data_double = []
+
+        # Handle Import Data Button
+
+        self.ui.browseDoubleFitButton.clicked.connect(lambda: self.writeText(self.ui.textBox_dF1, 'double1'))
+
+        # Handle Double Fit Button
+
+        self.ui.doubleFitButton.clicked.connect(lambda: self.pre_double_fit())
 
 
         ##### Page 4 - Extended Fits - MLJ Theory
@@ -253,18 +251,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Handle Plot Fit Button
 
         self.ui.plotAddButton.clicked.connect(lambda: self.add_Fits(self.data_addOptFit, self.data_addCTFit, self.data_addEQE))
-
-        # Double Fits
-
-        self.data_double = []
-
-        # Handle Import Data Button
-
-        self.ui.browseDoubleFitButton.clicked.connect(lambda: self.writeText(self.ui.textBox_dF1, 'double1'))
-
-        # Handle Double Fit Button
-
-        self.ui.doubleFitButton.clicked.connect(lambda: self.pre_double_fit())
 
 
         # Import Photodiode Calibration Files
@@ -396,11 +382,6 @@ class MainWindow(QtWidgets.QMainWindow):
             elif textBox_no == 'f4':
                 self.data_fit_2 = pd.read_csv(file_)
 
-            elif textBox_no == 'f7':
-                self.data_fit_3 = pd.read_csv(file_)
-
-            elif textBox_no == 'f10':
-                self.data_fit_4 = pd.read_csv(file_)
 
             # For El files
 
@@ -932,34 +913,6 @@ class MainWindow(QtWidgets.QMainWindow):
                    elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
                        print('Please select a valid peak to fit.')
                    elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
-                       print('Please select a valid peak to fit.')
-
-               elif file_no == 3:
-                   self.T_CT = self.ui.Temperature_3.value()
-                   guessStart = self.ui.guessStart_3.value()
-                   guessStop = self.ui.guessStop_3.value()
-                   if self.ui.static_Disorder_3.isChecked():
-                       include_Disorder = True
-                       self.sig = self.ui.Disorder_3.value()
-                   if self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
-                       fit_opticalPeak = True
-                   elif self.ui.OptButton_3.isChecked() and self.ui.CTButton_3.isChecked():
-                       print('Please select a valid peak to fit.')
-                   elif not self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
-                       print('Please select a valid peak to fit.')
-
-               elif file_no ==4:
-                   self.T_CT = self.ui.Temperature_4.value()
-                   guessStart = self.ui.guessStart_4.value()
-                   guessStop = self.ui.guessStop_4.value()
-                   if self.ui.static_Disorder_4.isChecked():
-                       include_Disorder = True
-                       self.sig = self.ui.Disorder_4.value()
-                   if self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
-                       fit_opticalPeak = True
-                   elif self.ui.OptButton_4.isChecked() and self.ui.CTButton_4.isChecked():
-                       print('Please select a valid peak to fit.')
-                   elif not self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
                        print('Please select a valid peak to fit.')
 
                # Attempt peak fit:
