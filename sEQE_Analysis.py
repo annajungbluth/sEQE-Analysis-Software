@@ -28,6 +28,7 @@ from source.utils_el import bb_spectrum
 from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
+from source.compilation import compile_EL, compile_Data
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -1487,7 +1488,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 if Data_is_valid(data_df, startE, stopE) and StartStop_is_valid(startE, stopE):
 
-                    EL_wave, EL_energy, EL_signal = self.compile_EL(data_df, startE, stopE, 1)
+                    EL_wave, EL_energy, EL_signal = compile_EL(data_df, startE, stopE, 1)
                     red_EL_scaled = [EL_signal[x] / (scaleFactor * EL_energy[x])  for x in range(len(EL_signal))] # Divide by energy to reduce
 
                     if data_no == 0: # EL Data
@@ -1563,7 +1564,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if Data_is_valid(df, startFit, stopFit):
 
-            energy_fit, y_fit = self.compile_Data(energy, y, startFit, stopFit)
+            energy_fit, y_fit = compile_Data(energy, y, startFit, stopFit)
 
             diff = stopFit - startFit  # Find difference between start and stop fit energy
             x_gaussian = linspace(startFit, stopFit + 0.5*diff, 50)  # Create more x values to perform the fit on. This is useful to plot more of the gaussian.
@@ -2497,60 +2498,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    #### Functions to compile & scale EL data
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to compile EL data
-
-    def compile_EL(self, el_df, start, stop, number):
-
-        Wavelength = []
-        Energy = []
-        EL = []
-
-        if number == 0:  # If a wavelength range is given
-            startNM = start
-            stopNM = stop
-
-        elif number == 1:  # If an energy range is given
-            startNM = (self.h * self.c * math.pow(10, 9)) / (stop * self.q)  # The start wavelength corresponds to the high energy stop value
-            stopNM = (self.h * self.c * math.pow(10, 9)) / (start * self.q)  # The stop wavelength corresponds to the low energy start value
-
-        for y in range(len(el_df['Wavelength'])):  # Iterate through columns of EL file
-            if startNM <= el_df['Wavelength'][y] <= stopNM:  # Compile EL only if start <= wavelength <= stop, otherwise ignore
-                Wavelength.append(el_df['Wavelength'][y])
-                Energy.append(el_df['Energy'][y])
-                EL.append(el_df['Signal'][y])
-
-        if len(Wavelength) == len(EL) and len(Energy) == len(EL):  # Check that the lengths are the same
-            return Wavelength, Energy, EL
-
-        else:
-            print('Error Code 1: Length mismatch.')
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to compile any data
-
-    def compile_Data(self, energy, y, startE, stopE):
-
-        Energy_comp = []
-        y_comp = []
-
-        for x in range(len(energy)):
-            if startE <= energy[x] <= stopE :  # Compile data only if start <= energy <= stop, otherwise ignore
-                Energy_comp.append(energy[x])
-                y_comp.append(y[x])
-
-        if len(Energy_comp) == len(y_comp):  # Check that the lengths are the same
-            return Energy_comp, y_comp
-
-        else:
-            print('Error Code 1: Length mismatch.')
-
-# -----------------------------------------------------------------------------------------------------------
-
     #### Funtions to set up plot
 
 # -----------------------------------------------------------------------------------------------------------
@@ -2629,7 +2576,6 @@ class MainWindow(QtWidgets.QMainWindow):
         plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
         plt.minorticks_on()
         plt.show()
-
 
 # -----------------------------------------------------------------------------------------------------------
 
