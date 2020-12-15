@@ -8,7 +8,6 @@ Created on Fri Sep 28 11:59:40 2018
 
 import math
 import os
-import random
 import sys
 import tkinter as tk
 from tkinter import filedialog
@@ -20,8 +19,7 @@ import seaborn
 
 # for the gui
 from PyQt5 import QtWidgets
-from colour import Color
-from numpy import exp, linspace, random
+from numpy import exp, linspace
 from scipy.optimize import curve_fit
 from tqdm import tqdm
 
@@ -29,9 +27,7 @@ import sEQE_Analysis_template
 
 from source.utils import interpolate, R_squared
 from source.utils_el import bb_spectrum
-from source.utils_plots import is_Colour, pick_EQE_Color
-
-
+from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -606,7 +602,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.set_up_plot()
                     self.do_plot = False # Set self.do_plot to False to plot on the same graph
 
-                label_ = self.pick_Label(range_no, startNM, stopNM)
+                label_ = pick_Label(range_no, startNM, stopNM)
                 self.ax1.plot(Wavelength, EQE, linewidth = 3, label = label_)
 #                self.ax2.plot(Wavelength, log_EQE, linewidth = 3)
                 self.ax2.semilogy(Wavelength, EQE, linewidth = 3) # Equivalent to the line above but with proper log scale axes
@@ -823,7 +819,7 @@ class MainWindow(QtWidgets.QMainWindow):
            else:
                wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startNM, stopNM, 0)
 
-           label_ = self.pick_EQE_Label(label_Box, filename_Box)
+           label_ = pick_EQE_Label(label_Box, filename_Box)
            color_ = pick_EQE_Color(color_Box, file_no)
 
            if number == 0:
@@ -886,7 +882,7 @@ class MainWindow(QtWidgets.QMainWindow):
            wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, startFit, stopFit, 1) # Compile fit range of EQE file
            wave_plot_fit, energy_plot_fit, eqe_plot_fit, log_eqe_plot_fit = self.compile_EQE(eqe_df, startPlotFit, stopPlotFit, 1)
 
-           label_ = self.pick_EQE_Label(label_Box, filename_Box)
+           label_ = pick_EQE_Label(label_Box, filename_Box)
            color_ = pick_EQE_Color(color_Box, file_no)
 
            if (str(file_no)).isnumeric(): # For Marcus theory fitting
@@ -1496,7 +1492,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if data_no == 0: # EL Data
 
                         if not fit:
-                            label_ = self.pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
+                            label_ = pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
                             #color_ = pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
                             color_ = '#1f77b4' # Blue
                             self.plot_EL_EQE(EL_energy, red_EL_scaled, label_, color_)
@@ -1511,7 +1507,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         red_EL_abs_scaled = [EL_abs[x] / (scaleFactor * EL_energy[x]) for x in range(len(EL_abs))]
 
                         if not fit:
-                            #label_ = self.pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
+                            #label_ = pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
                             #color_ = pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
                             label_ = '$\mathregular{Red. EQE_{cal}}$'
                             color_ = '#ff7716' # Orange
@@ -1532,7 +1528,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 red_EQE = [EQE[x] * EQE_energy[x] for x in range(len(EQE))]
 
                 if not fit:
-                    label_ = self.pick_EQE_Label(self.ui.textBox_EL5, self.ui.textBox_EL4)
+                    label_ = pick_EQE_Label(self.ui.textBox_EL5, self.ui.textBox_EL4)
                     #color_ = pick_EQE_Color(self.ui.textBox_EL6, 100)
                     color_ = '#000000' # Black
                     self.plot_EL_EQE(EQE_energy, red_EQE, label_, color_)
@@ -2268,8 +2264,8 @@ class MainWindow(QtWidgets.QMainWindow):
         E_fit = 0
         sub_EQE = []
 
-        label_fit = self.pick_EQE_Label(label_Fit, self.ui.textBox_p6_1)
-        label_eqe = self.pick_EQE_Label(label_EQE, self.ui.textBox_p6_4)
+        label_fit = pick_EQE_Label(label_Fit, self.ui.textBox_p6_1)
+        label_eqe = pick_EQE_Label(label_EQE, self.ui.textBox_p6_4)
 
         color_fit = color_Fit.toPlainText()
         color_fit = color_fit.replace(" ", "")
@@ -2342,9 +2338,9 @@ class MainWindow(QtWidgets.QMainWindow):
         add_Energy = []
         add_Fits = []
 
-        label_OptFit = self.pick_EQE_Label(self.ui.textBox_p7_2, self.ui.textBox_p7_2)
-        label_CTFit = self.pick_EQE_Label(self.ui.textBox_p7_5, self.ui.textBox_p7_5)
-        label_EQE = self.pick_EQE_Label(self.ui.textBox_p7_8, self.ui.textBox_p7_8)
+        label_OptFit = pick_EQE_Label(self.ui.textBox_p7_2, self.ui.textBox_p7_2)
+        label_CTFit = pick_EQE_Label(self.ui.textBox_p7_5, self.ui.textBox_p7_5)
+        label_EQE = pick_EQE_Label(self.ui.textBox_p7_8, self.ui.textBox_p7_8)
 
         color_OptFit = self.ui.textBox_p7_3.toPlainText()
         color_OptFit = color_OptFit.replace(" ", "")
@@ -2937,33 +2933,6 @@ class MainWindow(QtWidgets.QMainWindow):
         plt.close()
         plt.close()
         self.set_up_EL_plot()
-
-# -----------------------------------------------------------------------------------------------------------
-
-    #### Plotting helper functions
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to pick "Calculate EQE" plot label
-
-    def pick_Label(self, range_no, startNM, stopNM):
-
-        label = str("Range") + str(range_no) + "_" + str(int(startNM)) + "nm" + "-" + str(int(stopNM)) + "nm" # Range1_360nm_800nm
-        return label
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to pick EQE plot label
-
-    def pick_EQE_Label(self, label_Box, filename_Box):
-
-        label = label_Box.toPlainText()
-        filename = filename_Box.toPlainText()
-
-        if len(label) != 0:
-            return label
-        else: # We don't need to check that there is a filename, as the "pick_label" function is only called after checking "EQE_is_valid"
-            return filename
 
 # -----------------------------------------------------------------------------------------------------------
 
