@@ -24,35 +24,31 @@ from tqdm import tqdm
 
 import sEQE_Analysis_template
 from source.compilation import compile_EQE, compile_EL, compile_Data
-from source.normalization import normalize_EQE
-from source.utils import interpolate, R_squared
 from source.electroluminescence import bb_spectrum
+from source.gaussian import calculate_gaussian_absorption
+from source.normalization import normalize_EQE
+from source.plot import set_up_plot, set_up_EQE_plot, set_up_EL_plot
+from source.reference_correction import calculate_Power
+from source.utils import interpolate, R_squared
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.reference_correction import calculate_Power
-from source.gaussian import calculate_gaussian_absorption
-from source.plot import set_up_plot, set_up_EQE_plot, set_up_EL_plot
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
 
         QtWidgets.QMainWindow.__init__(self)
 
-
         # Set up the user interface from Designer
-
         self.ui = sEQE_Analysis_template.Ui_MainWindow()
         self.ui.setupUi(self)
 
-
         # Tkinter
-
         root = tk.Tk()
         root.withdraw()
 
-
-        ##### Page 1 - Calculate EQE
+        # Page 1 - Calculate EQE
 
         self.ref_1 = []
         self.ref_2 = []
@@ -101,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.clearButton.clicked.connect(self.clear_plot)
 
 
-        ##### Page 2 - Plot EQE  
+        # Page 2 - Plot EQE
 
         self.EQE_1 = []
         self.EQE_2 = []
@@ -133,7 +129,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.plotEQEButton_Energy.clicked.connect(lambda: self.pre_plot_EQE(1))
 
 
-        ##### Page 3 - Fit CT States
+        # Page 3 - EQE Fits - Marcus theory
 
         self.data_fit_1 = []
         self.data_fit_2 = []
@@ -153,7 +149,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.heatButton_1.clicked.connect(lambda: self.heatMap(self.data_fit_1, self.ui.startPlot_1, self.ui.stopPlot_1, self.ui.startStart_1, self.ui.startStop_1, self.ui.stopStart_1, self.ui.stopStop_1, self.ui.textBox_f1, self.ui.textBox_f2, self.ui.textBox_f3, 1))
         self.ui.heatButton_2.clicked.connect(lambda: self.heatMap(self.data_fit_2, self.ui.startPlot_2, self.ui.stopPlot_2, self.ui.startStart_2, self.ui.startStop_2, self.ui.stopStart_2, self.ui.stopStop_2, self.ui.textBox_f4, self.ui.textBox_f5, self.ui.textBox_f6, 2))
 
-        self.ui.clearButton_2.clicked.connect(self.clear_EQE_fit_plot)
+        self.ui.clearButton_2.clicked.connect(self.clear_EQE_plot)
 
         # Double Fits
 
@@ -189,7 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Handle Clear Extra Fit Button
 
-        self.ui.clearButton_extraFit.clicked.connect(self.clear_EQE_fit_plot)
+        self.ui.clearButton_extraFit.clicked.connect(self.clear_EQE_plot)
 
 
         ##### Page 5 - Fit EL and EQE
@@ -216,10 +212,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.fitButton_EL1.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL1, self.ui.stopPlot_EL1, 0, fit=True)) # Fit EL
         self.ui.fitButton_EL2.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL, self.ui.startPlot_EL2, self.ui.stopPlot_EL2, 1, fit=True)) # Fit Abs
         self.ui.fitButton_EL3.clicked.connect(lambda: self.pre_plot_EL_EQE(self.EL_EQE, self.ui.startPlot_EQE, self.ui.stopPlot_EQE, 2, fit=True)) # Fit EQE
-
-        # Handle Intersection Button
-
-        #self.ui.intersectionButton.clicked.connect(lambda: self.intersection()) ##### Ability to determine intersection between EQE & EL Data. Currently removed.
 
         # Handle Clear EL Plot Button
 
@@ -261,7 +253,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # Import Photodiode Calibration Files
 
         Si_file = pd.ExcelFile("calibration_files/FDS100-CAL.xlsx") # The files are in the sEQE Analysis folder, just as this program
-#        print(Si_file.sheet_names)
         self.Si_cal = Si_file.parse('Sheet1')
 
         InGaAs_file = pd.ExcelFile("calibration_files/FGA21-CAL.xlsx")
@@ -272,6 +263,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.data_dir = '/home/jungbluth/Desktop'   ### CHANGE THIS IF NEEDED LATER
 
+
         # Define Variables
 
         self.h = 6.626 * math.pow(10,-34) # [m^2 kg/s]
@@ -279,8 +271,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.c = 2.998 * math.pow(10,8) # [m/s]
         self.q = 1.602 * math.pow(10,-19) # [C]
         self.k = 8.617 * math.pow(10, -5) # [ev/K]
-
-        # To Export Calculated EQE Files
 
         self.export = False
         self.do_plot = True
@@ -381,7 +371,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.EQE_10 = pd.read_csv(file_)
 
 
-            # Page 3 - Marcus theory fitting
+            # Page 3 - EQE Fits - Marcus theory
 
             elif textBox_no == 'f1':
                 self.data_fit_1 = pd.read_csv(file_)
@@ -431,13 +421,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.data_addEQE = pd.read_csv(file_)
 
 
-# -----------------------------------------------------------------------------------------------------------
-
-    #### Functions to calculate EQE
 
 # -----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------
 
-    ### Function to select data and reference file   
+    ##### Page 1 - Calculate EQE
+
+# -----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------
+
+
+    ### Function to select data and reference files
 
     def pre_EQE(self, ref_df, data_df, start, stop, range_no):
 
@@ -446,6 +440,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
             self.calculate_EQE(ref_df, data_df, startNM, stopNM, range_no)
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -598,9 +593,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    #### Functions to export EQE data
-
-# -----------------------------------------------------------------------------------------------------------
+    ### Function to export EQE data
 
     def export_EQE(self):
 
@@ -711,12 +704,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 # -----------------------------------------------------------------------------------------------------------
-
-    #### Functions to plot EQE data
-
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to select EQE data  
+    ##### Page 2 - Calculate EQE
+
+# -----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------
+
+
+    ### Function to select EQE data for plotting
 
     def pre_plot_EQE(self, number):
 
@@ -768,7 +764,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.plotBox_10.isChecked():
             ok_EQE_10 = self.plot_EQE(self.EQE_10, self.ui.startEQE_10, self.ui.stopEQE_10, self.ui.textBox_p2_28, self.ui.textBox_p2_29, self.ui.textBox_p2_30, 10, number)
 
-
         if ok_EQE_1 and ok_EQE_2 and ok_EQE_3 and ok_EQE_4 and ok_EQE_5 and ok_EQE_6 and ok_EQE_7 and ok_EQE_8 and ok_EQE_9 and ok_EQE_10:
             self.axEQE_1.legend()
             self.axEQE_2.legend()
@@ -777,7 +772,10 @@ class MainWindow(QtWidgets.QMainWindow):
             plt.close()
             plt.close()
 
+
 # -----------------------------------------------------------------------------------------------------------
+
+    ### Function to plot EQE
 
     def plot_EQE(self, eqe_df, startNM, stopNM, filename_Box, label_Box, color_Box, file_no, number):
 
@@ -812,12 +810,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 # -----------------------------------------------------------------------------------------------------------
-
-    #### Functions to fit EQE data
-
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to select EQE data  
+    #### Page 3 - EQE Fits - Marcus theory
+
+# -----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------
+
+
+    ### Function to select EQE data
 
     def pre_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no):
 
@@ -832,12 +833,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.axFit_1.legend()
             self.axFit_2.legend()
             plt.show()
-#        else:
-#            plt.close()
+
 
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to plot EQE data and gaussian fit 
+    ### Function to plot EQE data and gaussian fit
 
     def plot_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no):
 
@@ -2349,11 +2349,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    #### Funtions to set up plot
+    #### Funtions to clear plots
 
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to clear plot        
+    ### Function to clear "Calculate EQE" plot
 
     def clear_plot(self):
 
@@ -2362,13 +2362,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to clear fit plot        
+    ### Function to clear EQE plot
 
-    def clear_EQE_fit_plot(self):
+    def clear_EQE_plot(self):
 
-        plt.close() # Close the current plot
         plt.close()
-        self.axFit_1, self.axFit_2 = set_up_EQE_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
+        plt.close()
+        self.axFit_1, self.axFit_2 = set_up_EQE_plot()
 
 # -----------------------------------------------------------------------------------------------------------
 
