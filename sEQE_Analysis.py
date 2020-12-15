@@ -32,7 +32,7 @@ from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Norm
     StartStop_is_valid
 from source.reference_correction import calculate_Power
 from source.gaussian import calculate_gaussian_absorption
-from source.plot import set_up_EQE_plot
+from source.plot import set_up_plot, set_up_EQE_plot, set_up_EL_plot
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -582,7 +582,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             else: # If the "Calculate EQE" button has been clicked
                 if self.do_plot: # This is set to true during setup of the program
-                    self.set_up_plot()
+                    self.ax1, self.ax2 = set_up_plot()
                     self.do_plot = False # Set self.do_plot to False to plot on the same graph
 
                 label_ = pick_Label(range_no, startNM, stopNM)
@@ -736,7 +736,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             norm_num = 0
 
-        self.set_up_EQE_plot(number, norm_num)
+        self.axEQE_1, self.axEQE_2 = set_up_EQE_plot(number, norm_num)
 
         if self.ui.plotBox_1.isChecked():
             ok_EQE_1 = self.plot_EQE(self.EQE_1, self.ui.startEQE_1, self.ui.stopEQE_1, self.ui.textBox_p2_1, self.ui.textBox_p2_2, self.ui.textBox_p2_3, 1, number)
@@ -770,8 +770,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         if ok_EQE_1 and ok_EQE_2 and ok_EQE_3 and ok_EQE_4 and ok_EQE_5 and ok_EQE_6 and ok_EQE_7 and ok_EQE_8 and ok_EQE_9 and ok_EQE_10:
-            self.ax3.legend()
-            self.ax4.legend()
+            self.axEQE_1.legend()
+            self.axEQE_2.legend()
             plt.show()
         else:
             plt.close()
@@ -799,11 +799,11 @@ class MainWindow(QtWidgets.QMainWindow):
            color_ = pick_EQE_Color(color_Box, file_no)
 
            if number == 0:
-               self.ax3.plot(wave, eqe, linewidth = 3, label = label_, color = color_)
-               self.ax4.semilogy(wave, eqe, linewidth = 3, label = label_, color = color_)
+               self.axEQE_1.plot(wave, eqe, linewidth = 3, label = label_, color = color_)
+               self.axEQE_2.semilogy(wave, eqe, linewidth = 3, label = label_, color = color_)
            elif number == 1:
-               self.ax3.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
-               self.ax4.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
+               self.axEQE_1.plot(energy, eqe, linewidth = 3, label = label_, color = color_)
+               self.axEQE_2.semilogy(energy, eqe, linewidth = 3, label = label_, color = color_)
 
            return True
 
@@ -823,7 +823,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Change this if you want to plot on the same graph 
         if self.fit_plot:
-            self.set_up_EQE_fit_plot() # This sets up a plot with x-axis "Energy" and y-label of "EQE" / "Log EQE"
+            self.axFit_1, self.axFit_2 = set_up_EQE_plot() # This sets up a plot with x-axis "Energy" and y-label of "EQE" / "Log EQE"
             self.fit_plot = False
 
         ok_plot_Fit = self.plot_fit_EQE(eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box, color_Box, file_no)
@@ -1412,7 +1412,7 @@ class MainWindow(QtWidgets.QMainWindow):
         stopE = stopE.value()
 
         if self.do_plot_EL:
-            self.set_up_EL_plot()
+            self.axEL_1, self.axEL_2 = set_up_EL_plot()
             self.do_plot_EL = False
 
         if data_no < 2: # EL data
@@ -2252,7 +2252,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     os.chdir(self.data_dir)  # Change the directory back
 
 
-            self.set_up_EQE_sub_plot()
+            self.axSub_1, self.axSub_2 = set_up_EQE_plot()
+
             self.axSub_1.plot(data_Fit['Energy'], data_Fit['Signal'], linewidth=2, linestyle='--', color = color_fit, label = label_fit)
             self.axSub_1.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color = color_eqe, label = label_eqe)
             self.axSub_1.plot(data_EQE['Energy'], sub_EQE, linewidth=2, linestyle='-', color = '#1f77b4', label = 'Subtracted EQE')
@@ -2352,178 +2353,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to set up "Calculate EQE" plot
-
-    def set_up_plot(self):
-
-#        style.use('ggplot')
-        fig1 = plt.figure()
-
-        self.ax1 = fig1.add_subplot(2,1,1)
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.grid(False)
-#        plt.box()
-        plt.rcParams['figure.facecolor']='xkcd:white'
-        plt.rcParams['figure.edgecolor']='xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-
-        self.ax2 = fig1.add_subplot(2,1,2)
-        self.ax2.set_yscale('log') # To generate log scale axis
-        plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.grid(False)
-#        plt.box()
-        plt.rcParams['figure.facecolor']='xkcd:white'
-        plt.rcParams['figure.edgecolor']='xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to set up EQE plot
-
-    def set_up_EQE_plot(self, number, norm_num):
-
-        plt.ion()
-
-        self.fig3, self.ax3 = plt.subplots()
-        if number == 0: # number determines whether the x-axis is in wavelength or energy
-            plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
-        elif number == 1:
-            plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-
-        if norm_num == 0: # norm_num determines whether the y-axis is "EQE" or "Normalized EQE"
-            plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        elif norm_num == 1:
-            plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor']='xkcd:white'
-        plt.rcParams['figure.edgecolor']='xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-
-        self.fig4, self.ax4 = plt.subplots()
-        self.ax4.set_yscale('log')  # To generate log scale axis
-        if number == 0:
-            plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
-        elif number == 1:
-            plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        if norm_num == 0:
-            plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        elif norm_num == 1:
-            plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
-        elif norm_num == 2:
-            plt.ylabel('Reduced EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to set up EQE fit plot
-
-    def set_up_EQE_fit_plot(self):
-
-        plt.ion()
-
-        self.figFit_1, self.axFit_1 = plt.subplots()
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-        self.figFit_2, self.axFit_2 = plt.subplots()
-        self.axFit_2.set_yscale('log')  # To generate log scale axis
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-# -----------------------------------------------------------------------------------------------------------
-
-### Function to set up EL and EQE plot
-
-    def set_up_EL_plot(self):
-
-        plt.ion()
-
-        self.figEL_1, self.axEL_1 = plt.subplots()
-        plt.ylabel('Red. EL (1/eV), Red. EQE (eV)', fontsize=17, fontweight='medium')
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.grid(False)
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-        self.figEL_2, self.axEL_2 = plt.subplots()
-        self.axEL_2.set_yscale('log')
-        plt.ylabel('Red. EL (1/eV), Red. EQE (eV)', fontsize=17, fontweight='medium')
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.grid(False)
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-# -----------------------------------------------------------------------------------------------------------
-
-### Function to set up EQE subtraction plot
-
-    def set_up_EQE_sub_plot(self):
-
-        plt.ion()
-
-        self.figSub_1, self.axSub_1 = plt.subplots()
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-        self.figSub_2, self.axSub_2 = plt.subplots()
-        self.axSub_2.set_yscale('log')  # To generate log scale axis
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-        
-# -----------------------------------------------------------------------------------------------------------
-
     ### Function to clear plot        
 
     def clear_plot(self):
 
         plt.close() # Close the current plot
-        self.set_up_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
+        self.ax1, self.ax2 = set_up_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -2533,7 +2368,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         plt.close() # Close the current plot
         plt.close()
-        self.set_up_EQE_fit_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
+        self.axFit_1, self.axFit_2 = set_up_EQE_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -2543,7 +2378,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         plt.close()
         plt.close()
-        self.set_up_EL_plot()
+        self.axEl_1, self.axEL_2 = set_up_EL_plot()
 
 # -----------------------------------------------------------------------------------------------------------
 
