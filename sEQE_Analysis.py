@@ -255,11 +255,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Import Photodiode Calibration Files
 
-        Si_file = pd.ExcelFile("FDS100-CAL.xlsx") # The files are in the sEQE Analysis folder, just as this program
+        Si_file = pd.ExcelFile("calibration_files/FDS100-CAL.xlsx") # The files are in the sEQE Analysis folder, just as this program
 #        print(Si_file.sheet_names)
         self.Si_cal = Si_file.parse('Sheet1')
 
-        InGaAs_file = pd.ExcelFile("FGA21-CAL.xlsx")
+        InGaAs_file = pd.ExcelFile("calibration_files/FGA21-CAL.xlsx")
         self.InGaAs_cal = InGaAs_file.parse('Sheet1')
 
 
@@ -291,7 +291,7 @@ class MainWindow(QtWidgets.QMainWindow):
 # -----------------------------------------------------------------------------------------------------------
 
     def writeText(self, text_Box, textBox_no):
-        self.change_dir(self.data_dir)
+        os.chdir(self.data_dir)
         file_ = filedialog.askopenfilename()
         if len(file_) != 0:
             path_, filename_ = os.path.split(file_)
@@ -727,10 +727,10 @@ class MainWindow(QtWidgets.QMainWindow):
             EQE_file = filedialog.asksaveasfilename() # Prompt the user to pick a folder & name to save data to
             export_path, export_filename = os.path.split(EQE_file)
             if len(export_path) != 0: # Check if the user actually selected a path
-                self.change_dir(export_path) # Change the working directory
+                os.chdir(export_path) # Change the working directory
                 export_file.to_csv(export_filename) # Save data to csv
                 print('Saving data to: %s' % str(EQE_file))
-                self.change_dir(self.data_dir) # Change the directory back
+                os.chdir(self.data_dir) # Change the directory back
 
         self.export = False
 
@@ -993,10 +993,10 @@ class MainWindow(QtWidgets.QMainWindow):
                                save_fit_file = filedialog.asksaveasfilename()  # Prompt the user to pick a folder & name to save data to
                                save_fit_path, save_fit_filename = os.path.split(save_fit_file)
                                if len(save_fit_path) != 0:  # Check if the user actually selected a path
-                                   self.change_dir(save_fit_path)  # Change the working directory
+                                   os.chdir(save_fit_path)  # Change the working directory
                                    fit_file.to_csv(save_fit_filename)  # Save data to csv
                                    print('Saving fit data to: %s' % str(save_fit_file))
-                                   self.change_dir(self.data_dir)  # Change the directory back
+                                   os.chdir(self.data_dir)  # Change the directory back
 
                            return True
                            break
@@ -2311,10 +2311,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 save_sub_file = filedialog.asksaveasfilename()  # Prompt the user to pick a folder & name to save data to
                 save_sub_path, save_sub_filename = os.path.split(save_sub_file)
                 if len(save_sub_path) != 0:  # Check if the user actually selected a path
-                    self.change_dir(save_sub_path)  # Change the working directory
+                    os.chdir(save_sub_path)  # Change the working directory
                     sub_file.to_csv(save_sub_filename)  # Save data to csv
                     print('Saving fit data to: %s' % str(save_sub_file))
-                    self.change_dir(self.data_dir)  # Change the directory back
+                    os.chdir(self.data_dir)  # Change the directory back
 
 
             self.set_up_EQE_sub_plot()
@@ -3035,14 +3035,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         f = interp1d(x, y)
         return f(num)
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to change working directory
-
-    def change_dir(self, directory):
-
-        os.chdir(directory)
 
 # -----------------------------------------------------------------------------------------------------------
 
