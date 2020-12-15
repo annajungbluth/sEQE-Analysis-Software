@@ -79,7 +79,7 @@ def pick_Label(range_no, startNM, stopNM):
     :return: label: string of the lable to plot [string]
     """
 
-    label = str("Range") + str(range_no) + "_" + str(int(startNM)) + "nm" + "-" + str(int(stopNM)) + "nm" # Range1_360nm_800nm
+    label = str("Range") + str(range_no) + "_" + str(int(startNM)) + "nm" + "-" + str(int(stopNM)) + "nm" # Example: Range1_360nm_800nm
     return label
 
 # -----------------------------------------------------------------------------------------------------------

@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn
-
 # for the gui
 from PyQt5 import QtWidgets
 from numpy import exp, linspace
@@ -24,10 +23,12 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 import sEQE_Analysis_template
-
 from source.utils import interpolate, R_squared
 from source.utils_el import bb_spectrum
 from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
+from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
+    StartStop_is_valid
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -459,7 +460,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def pre_EQE(self, ref_df, data_df, start, stop, range_no):
         startNM = start.value()
         stopNM = stop.value()
-        if self.Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
+        if Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
             self.calculate_EQE(ref_df, data_df, startNM, stopNM, range_no)
 
 # -----------------------------------------------------------------------------------------------------------
@@ -642,7 +643,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.exportBox_1.isChecked(): # If the checkBox is checked
             startNM1 = self.ui.startNM_1.value() # Pick start wavelength
             stopNM1 = self.ui.stopNM_1.value() # Pick stop wavelength
-            if self.Ref_Data_is_valid(self.ref_1, self.data_1, startNM1, stopNM1, 1): # Check that files are non-empty and within wavelength range
+            if Ref_Data_is_valid(self.ref_1, self.data_1, startNM1, stopNM1, 1): # Check that files are non-empty and within wavelength range
                 Wave_1, Energy_1, EQE_1, log_EQE_1 = self.calculate_EQE(self.ref_1, self.data_1, startNM1, stopNM1, 1) # Extract data
                 export_1 = pd.DataFrame({'Wavelength': Wave_1, 'Energy': Energy_1, 'EQE': EQE_1, 'Log_EQE': log_EQE_1}) # Create dataFrame with EQE data
                 wave_inc['1'] = Wave_1[0] # Add the first wavelength value to the wave_inc list
@@ -652,7 +653,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.exportBox_2.isChecked():
             startNM2 = self.ui.startNM_2.value()
             stopNM2 = self.ui.stopNM_2.value()
-            if self.Ref_Data_is_valid(self.ref_2, self.data_2, startNM2, stopNM2, 2):
+            if Ref_Data_is_valid(self.ref_2, self.data_2, startNM2, stopNM2, 2):
                 Wave_2, Energy_2, EQE_2, log_EQE_2 = self.calculate_EQE(self.ref_2, self.data_2, startNM2, stopNM2, 2)
                 export_2 = pd.DataFrame({'Wavelength': Wave_2, 'Energy': Energy_2, 'EQE': EQE_2, 'Log_EQE': log_EQE_2})
                 wave_inc['2'] = Wave_2[0]
@@ -662,7 +663,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.exportBox_3.isChecked():
             startNM3 = self.ui.startNM_3.value()
             stopNM3 = self.ui.stopNM_3.value()
-            if self.Ref_Data_is_valid(self.ref_3, self.data_3, startNM3, stopNM3, 3):
+            if Ref_Data_is_valid(self.ref_3, self.data_3, startNM3, stopNM3, 3):
                 Wave_3, Energy_3, EQE_3, log_EQE_3 = self.calculate_EQE(self.ref_3, self.data_3, startNM3, stopNM3, 3)
                 export_3 = pd.DataFrame({'Wavelength': Wave_3, 'Energy': Energy_3, 'EQE': EQE_3, 'Log_EQE': log_EQE_3})
                 wave_inc['3'] = Wave_3[0]
@@ -672,7 +673,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.exportBox_4.isChecked():
             startNM4 = self.ui.startNM_4.value()
             stopNM4 = self.ui.stopNM_4.value()
-            if self.Ref_Data_is_valid(self.ref_4, self.data_4, startNM4, stopNM4, 4):
+            if Ref_Data_is_valid(self.ref_4, self.data_4, startNM4, stopNM4, 4):
                 Wave_4, Energy_4, EQE_4, log_EQE_4 = self.calculate_EQE(self.ref_4, self.data_4, startNM4, stopNM4, 4)
                 export_4 = pd.DataFrame({'Wavelength': Wave_4, 'Energy': Energy_4, 'EQE': EQE_4, 'Log_EQE': log_EQE_4})
                 wave_inc['4'] = Wave_4[0]
@@ -682,7 +683,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.exportBox_5.isChecked():
             startNM5 = self.ui.startNM_5.value()
             stopNM5 = self.ui.stopNM_5.value()
-            if self.Ref_Data_is_valid(self.ref_5, self.data_5, startNM5, stopNM5, 5):
+            if Ref_Data_is_valid(self.ref_5, self.data_5, startNM5, stopNM5, 5):
                 Wave_5, Energy_5, EQE_5, log_EQE_5 = self.calculate_EQE(self.ref_5, self.data_5, startNM5, stopNM5, 5)
                 export_5 = pd.DataFrame({'Wavelength': Wave_5, 'Energy': Energy_5, 'EQE': EQE_5, 'Log_EQE': log_EQE_5})
                 wave_inc['5'] = Wave_5[0]
@@ -692,7 +693,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.exportBox_6.isChecked():
             startNM6 = self.ui.startNM_6.value()
             stopNM6 = self.ui.stopNM_6.value()
-            if self.Ref_Data_is_valid(self.ref_6, self.data_6, startNM6, stopNM6, 6):
+            if Ref_Data_is_valid(self.ref_6, self.data_6, startNM6, stopNM6, 6):
                 Wave_6, Energy_6, EQE_6, log_EQE_6 = self.calculate_EQE(self.ref_6, self.data_6, startNM6, stopNM6, 6)
                 export_6 = pd.DataFrame({'Wavelength': Wave_6, 'Energy': Energy_6, 'EQE': EQE_6, 'Log_EQE': log_EQE_6})
                 wave_inc['6'] = Wave_6[0]
@@ -808,11 +809,11 @@ class MainWindow(QtWidgets.QMainWindow):
        startNM = startNM.value() # Pick start wavelength
        stopNM = stopNM.value() # Pick stop wavelength
 
-       if self.EQE_is_valid(eqe_df, startNM, stopNM, file_no): # Check that files are non-empty and within wavelength range
+       if EQE_is_valid(eqe_df, startNM, stopNM, file_no): # Check that files are non-empty and within wavelength range
 
            if self.ui.normalizeBox.isChecked():
                normNM = self.ui.normalizeNM.value()
-               if self.Normalization_is_valid(eqe_df, normNM, file_no):
+               if Normalization_is_valid(eqe_df, normNM, file_no):
                    wave, energy, eqe, log_eqe = self.normalize_EQE(eqe_df, startNM, stopNM, normNM)
                else:
                    return False
@@ -877,7 +878,7 @@ class MainWindow(QtWidgets.QMainWindow):
        startPlotFit = startPlotFit.value()
        stopPlotFit = stopPlotFit.value()
 
-       if self.Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no): # Check that files are non-empty and within energy range
+       if Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no): # Check that files are non-empty and within energy range
            wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startE, stopE, 1) # Compile EQE file
            wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, startFit, stopFit, 1) # Compile fit range of EQE file
            wave_plot_fit, energy_plot_fit, eqe_plot_fit, log_eqe_plot_fit = self.compile_EQE(eqe_df, startPlotFit, stopPlotFit, 1)
@@ -1101,9 +1102,9 @@ class MainWindow(QtWidgets.QMainWindow):
         stopStartE = stopStartE.value()
         stopStopE = stopStopE.value()
 
-        startStart_ok = self.StartStop_is_valid(startStartE, startStopE) # Check that start energy is lower than stop energy
-        startStop_ok = self.StartStop_is_valid(startStopE, stopStartE)
-        stopStop_ok = self.StartStop_is_valid(stopStartE, stopStopE)
+        startStart_ok = StartStop_is_valid(startStartE, startStopE) # Check that start energy is lower than stop energy
+        startStop_ok = StartStop_is_valid(startStopE, stopStartE)
+        stopStop_ok = StartStop_is_valid(stopStartE, stopStopE)
 
         if startStart_ok and startStop_ok and stopStop_ok: # If all operations are valid, proceed with heat map calculations
 
@@ -1132,7 +1133,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 for stop in stopEnergies: # Iterature through stop energies
 
                     #### Fix this! startE / stopE need to be replaced by the first and last value in the EQE
-                    if self.Fit_is_valid(eqe_df, startE, stopE, start, stop, file_no): # If the fit is valid, perform the heat map calculations
+                    if Fit_is_valid(eqe_df, startE, stopE, start, stop, file_no): # If the fit is valid, perform the heat map calculations
 
                         wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startE, stopE, 1)
                         wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, start, stop, 1)
@@ -1484,7 +1485,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 data_df['Energy'] = Energy
 
-                if self.Data_is_valid(data_df, startE, stopE) and self.StartStop_is_valid(startE, stopE):
+                if Data_is_valid(data_df, startE, stopE) and StartStop_is_valid(startE, stopE):
 
                     EL_wave, EL_energy, EL_signal = self.compile_EL(data_df, startE, stopE, 1)
                     red_EL_scaled = [EL_signal[x] / (scaleFactor * EL_energy[x])  for x in range(len(EL_signal))] # Divide by energy to reduce
@@ -1521,7 +1522,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         elif data_no == 2: # EQE Data
 
-            if self.Data_is_valid(data_df, startE, stopE) and self.StartStop_is_valid(startE, stopE):
+            if Data_is_valid(data_df, startE, stopE) and StartStop_is_valid(startE, stopE):
 
                 self.Red_EQE_meas = pd.DataFrame() # For determining the intersect between abs and emission
                 EQE_wave, EQE_energy, EQE, EQE_log = self.compile_EQE(data_df, startE, stopE, 1)
@@ -1560,7 +1561,7 @@ class MainWindow(QtWidgets.QMainWindow):
         df = pd.DataFrame()
         df['Energy'] = energy
 
-        if self.Data_is_valid(df, startFit, stopFit):
+        if Data_is_valid(df, startFit, stopFit):
 
             energy_fit, y_fit = self.compile_Data(energy, y, startFit, stopFit)
 
@@ -1836,16 +1837,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Check that all start and stop energies are valid
 
-        startOpt_ok = self.StartStop_is_valid(startStart_Opt, startStop_Opt)
-        stopOpt_ok = self.StartStop_is_valid(stopStart_Opt, stopStop_Opt)
-        startStopOpt_ok = self.StartStop_is_valid(startStop_Opt, stopStart_Opt)
+        startOpt_ok = StartStop_is_valid(startStart_Opt, startStop_Opt)
+        stopOpt_ok = StartStop_is_valid(stopStart_Opt, stopStop_Opt)
+        startStopOpt_ok = StartStop_is_valid(startStop_Opt, stopStart_Opt)
 
-        startCT_ok = self.StartStop_is_valid(startStart_CT, startStop_CT)
-        stopCT_ok = self.StartStop_is_valid(stopStart_CT, stopStop_CT)
-        startStopCT_ok = self.StartStop_is_valid(startStop_CT, stopStart_CT)
+        startCT_ok = StartStop_is_valid(startStart_CT, startStop_CT)
+        stopCT_ok = StartStop_is_valid(stopStart_CT, stopStop_CT)
+        startStopCT_ok = StartStop_is_valid(startStop_CT, stopStart_CT)
 
-        guessOpt_ok = self.StartStop_is_valid(startGuess_Opt, stopGuess_Opt)
-        guessCT_ok = self.StartStop_is_valid(startGuess_CT, stopGuess_CT)
+        guessOpt_ok = StartStop_is_valid(startGuess_Opt, stopGuess_Opt)
+        guessCT_ok = StartStop_is_valid(startGuess_CT, stopGuess_CT)
 
         # Compile all start / stop energies for Opt and CT fit
 
@@ -2550,163 +2551,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    #### Validity functions
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to check if reference & data files are non-empty and within wavelength range              
-
-    def Ref_Data_is_valid(self, ref_df, data_df, startNM, stopNM, range_no):
-
-        if len(ref_df) !=0 and len(data_df) != 0:
-
-            if startNM >= data_df['Wavelength'][0] and \
-               startNM >= ref_df['Wavelength'][0] and \
-               stopNM <= data_df['Wavelength'][int(len(data_df['Wavelength']))-1] and \
-               stopNM <= ref_df['Wavelength'][int(len(ref_df['Wavelength']))-1]:
-                return True
-
-            elif startNM < data_df['Wavelength'][0] or startNM < ref_df['Wavelength'][0]:
-                print('Please select a valid start wavelength for Range %s.' % str(range_no))
-                return False
-
-            elif stopNM > data_df['Wavelength'][int(len(data_df['Wavelength']))-1] or stopNM > ref_df['Wavelength'][int(len(ref_df['Wavelength']))-1]:
-                print('Please select a valid stop wavelength for Range %s.' % str(range_no))
-                return False
-
-            else:
-                print('Please select a valid wavelength range for Range %s.' % str(range_no))
-                return False
-
-
-        elif len(ref_df) == 0 and len(data_df) != 0: # If reference file is empty / hasn't been selected
-            print('Please import a valid reference file for Range %s.' % str(range_no))
-            return False
-
-        elif len(ref_df) != 0 and len(data_df) == 0: # If data file is empty / hasn't been selected
-            print('Please import a valid data file for Range %s.' % str(range_no))
-            return False
-
-        else: # If reference and data files are empty / haven't been selected
-            print('Please import valid reference and data files for Range %s.' % str(range_no))
-            return False
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to check if EQE files are non-empty and within wavelength range              
-
-    def EQE_is_valid(self, eqe_df, startNM, stopNM, EQE_no):
-
-        if len(eqe_df) != 0:
-
-            if startNM >= eqe_df['Wavelength'][0] and \
-               stopNM <= eqe_df['Wavelength'][int(len(eqe_df['Wavelength']))-1]:
-
-                   return True
-
-            elif startNM < eqe_df['Wavelength'][0] and stopNM <= eqe_df['Wavelength'][int(len(eqe_df['Wavelength']))-1]:
-                print('Please select a valid start wavelength for EQE File %s.' % str(EQE_no))
-                return False
-
-            elif startNM >= eqe_df['Wavelength'][0] and stopNM > eqe_df['Wavelength'][int(len(eqe_df['Wavelength']))-1]:
-                print('Please select a valid stop wavelength for EQE File %s.' % str(EQE_no))
-                return False
-
-            else:
-                print('Please select a valid wavelength range for EQE File %s.' % str(EQE_no))
-                return False
-
-        else: # If EQE file is empty / hasn't been selected
-            print('Please import a valid file for EQE File %s.' % str(EQE_no))
-            return False
-
-# -----------------------------------------------------------------------------------------------------------
-
-    def Data_is_valid(self, df, startE, stopE):
-
-        if len(df) != 0:
-
-            if startE <= max(df['Energy']) and stopE >= min(df['Energy']):
-                return True
-
-            elif startE > max(df['Energy']) and stopE >= min(df['Energy']):
-                print('Please select a valid start energy.')
-                return False
-
-            elif startE <= max(df['Energy']) and stopE < min(df['Energy']):
-                print('Please select a valid stop energy.')
-                return False
-
-            else:
-                print('Please select a valid energy range.')
-                return False
-
-        else: # If file is empty / hasn't been selected
-            print('Please import a valid file.')
-            return False
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to check if normalization wavelength is within wavelength range   
-
-    def Normalization_is_valid(self, eqe_df, normNM, EQE_no):
-
-        if len(eqe_df) != 0:
-
-            min_wave = int(eqe_df['Wavelength'].min())
-            max_wave = int(eqe_df['Wavelength'].max())
-
-            if min_wave <= int(normNM) <= max_wave:
-                return True
-
-            else:
-                print('Please select a valid normalization wavelength for EQE file %s.' % str(EQE_no))
-                return False
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to check if EQE files are non-empty and within energy range              
-
-    def Fit_is_valid(self, eqe_df, startE, stopE, startFitE, stopFitE, EQE_no):
-
-        if len(eqe_df) != 0:
-
-            if startE <= eqe_df['Energy'][0] and \
-               startFitE <= eqe_df['Energy'][0] and \
-               stopE >= eqe_df['Energy'][int(len(eqe_df['Energy']))-1] and \
-               stopFitE >= eqe_df['Energy'][int(len(eqe_df['Energy']))-1]:
-                return True
-
-            elif startE > eqe_df['Energy'][0] and stopE >= eqe_df['Energy'][int(len(eqe_df['Energy']))-1]:
-                print('Please select a valid start energy for EQE File %s.' % str(EQE_no))
-                return False
-
-            elif startE <= eqe_df['Energy'][0] and stopE <eqe_df['Energy'][int(len(eqe_df['Energy']))-1]:
-                print('Please select a valid stop energy for EQE File %s.' % str(EQE_no))
-                return False
-
-            else:
-                print('Please select a valid energy range for EQE File %s.' % str(EQE_no))
-                return False
-
-        else: # If EQE file is empty / hasn't been selected
-            print('Please import a valid file for EQE File %s.' % str(EQE_no))
-            return False
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to check if start fit energy is smaller than stop fit energy
-
-    def StartStop_is_valid(self, startE, stopE):
-        if startE < stopE:
-            return True
-        else:
-            print('Please select valid start and stop energies.')
-            return False
-
-
-# -----------------------------------------------------------------------------------------------------------
-
     #### Funtions to set up plot
 
 # -----------------------------------------------------------------------------------------------------------
@@ -2881,6 +2725,7 @@ class MainWindow(QtWidgets.QMainWindow):
     ### Function to set up EQE subtraction plot
 
     def set_up_EQE_add_plot(self):
+
         plt.ion()
 
         self.figAdd_1, self.axAdd_1 = plt.subplots()
@@ -2912,7 +2757,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         plt.close() # Close the current plot
         self.set_up_plot() # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
-#        self.do_plot = True
 
 # -----------------------------------------------------------------------------------------------------------
 
