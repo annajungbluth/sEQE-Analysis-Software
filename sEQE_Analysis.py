@@ -28,7 +28,7 @@ from tqdm import tqdm
 import sEQE_Analysis_template
 
 from source.EL_utils import bb_spectrum
-from source.utils import interpolate
+from source.utils import interpolate, R_squared
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -1449,7 +1449,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         best_vals, covar = curve_fit(function, energy_fit, eqe_fit, p0=p0)
         y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
-        r_squared = self.R_squared(eqe_fit, y_fit)
+        r_squared = R_squared(eqe_fit, y_fit)
 
         return best_vals, covar, y_fit, r_squared
 
@@ -2098,7 +2098,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     #     total_Energy.append(e)
                     #     total_Fit.append(Opt_fit + CT_fit)
 
-                    total_R_Squared = self.R_squared(eqe_data, total_Fit.tolist())
+                    total_R_Squared = R_squared(eqe_data, total_Fit.tolist())
 
                     start_Opt.append(Opt_df['Start'][x_opt])
                     stop_Opt.append(Opt_df['Stop'][x_opt])
@@ -2184,7 +2184,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     assert len(total_Fit) == len(CT_fit)
                     assert len(total_Fit) == len(Opt_fit)
 
-                    total_R_Squared = self.R_squared(eqe_data, total_Fit.tolist())
+                    total_R_Squared = R_squared(eqe_data, total_Fit.tolist())
 
                     start_Opt.append(sub_df['Start_Opt'][x])
                     stop_Opt.append(sub_df['Stop_Opt'][x])
@@ -3012,21 +3012,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    def R_squared(self, y_data, yfit_data):
-
-        if len(y_data)==len(yfit_data):
-
-            y_data = np.array(y_data)
-            yfit_data = np.array(yfit_data)
-
-            residuals = y_data - yfit_data
-            ss_res = np.sum(residuals**2)
-            ss_tot = np.sum((y_data - np.mean(y_data))**2)
-            r_squared = 1 - (ss_res/ss_tot)
-
-            return r_squared
-        else:
-            print('Error Code 1: Length mismatch.')
+    # def R_squared(self, y_data, yfit_data):
+    #
+    #     if len(y_data)==len(yfit_data):
+    #
+    #         y_data = np.array(y_data)
+    #         yfit_data = np.array(yfit_data)
+    #
+    #         residuals = y_data - yfit_data
+    #         ss_res = np.sum(residuals**2)
+    #         ss_tot = np.sum((y_data - np.mean(y_data))**2)
+    #         r_squared = 1 - (ss_res/ss_tot)
+    #
+    #         return r_squared
+    #     else:
+    #         print('Error Code 1: Length mismatch.')
 
 # -----------------------------------------------------------------------------------------------------------
 
