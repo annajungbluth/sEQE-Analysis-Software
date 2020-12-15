@@ -29,7 +29,7 @@ import sEQE_Analysis_template
 
 from source.utils import interpolate, R_squared
 from source.utils_el import bb_spectrum
-from source.utils_plots import is_Colour
+from source.utils_plots import is_Colour, pick_EQE_Color
 
 
 
@@ -824,7 +824,7 @@ class MainWindow(QtWidgets.QMainWindow):
                wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startNM, stopNM, 0)
 
            label_ = self.pick_EQE_Label(label_Box, filename_Box)
-           color_ = self.pick_EQE_Color(color_Box, file_no)
+           color_ = pick_EQE_Color(color_Box, file_no)
 
            if number == 0:
                self.ax3.plot(wave, eqe, linewidth = 3, label = label_, color = color_)
@@ -887,7 +887,7 @@ class MainWindow(QtWidgets.QMainWindow):
            wave_plot_fit, energy_plot_fit, eqe_plot_fit, log_eqe_plot_fit = self.compile_EQE(eqe_df, startPlotFit, stopPlotFit, 1)
 
            label_ = self.pick_EQE_Label(label_Box, filename_Box)
-           color_ = self.pick_EQE_Color(color_Box, file_no)
+           color_ = pick_EQE_Color(color_Box, file_no)
 
            if (str(file_no)).isnumeric(): # For Marcus theory fitting
 
@@ -1497,7 +1497,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         if not fit:
                             label_ = self.pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
-                            #color_ = self.pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
+                            #color_ = pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
                             color_ = '#1f77b4' # Blue
                             self.plot_EL_EQE(EL_energy, red_EL_scaled, label_, color_)
 
@@ -1512,7 +1512,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         if not fit:
                             #label_ = self.pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
-                            #color_ = self.pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
+                            #color_ = pick_EQE_Color(self.ui.textBox_EL3, 100) # not currently used
                             label_ = '$\mathregular{Red. EQE_{cal}}$'
                             color_ = '#ff7716' # Orange
                             self.plot_EL_EQE(EL_energy, red_EL_abs_scaled, label_, color_)
@@ -1533,7 +1533,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 if not fit:
                     label_ = self.pick_EQE_Label(self.ui.textBox_EL5, self.ui.textBox_EL4)
-                    #color_ = self.pick_EQE_Color(self.ui.textBox_EL6, 100)
+                    #color_ = pick_EQE_Color(self.ui.textBox_EL6, 100)
                     color_ = '#000000' # Black
                     self.plot_EL_EQE(EQE_energy, red_EQE, label_, color_)
 
@@ -2964,49 +2964,6 @@ class MainWindow(QtWidgets.QMainWindow):
             return label
         else: # We don't need to check that there is a filename, as the "pick_label" function is only called after checking "EQE_is_valid"
             return filename
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to pick plot color
-
-    def pick_EQE_Color(self, colour_Box, file_no):
-
-        colour = colour_Box.toPlainText()
-        colour = colour.replace(" ", "") # If the user inputs "Sky Blue" instead of "SkyBlue" etc.
-
-        color_list = ['#808080', '#000000', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF', '#000080', '#FF00FF', '#800080']
-#        random_colour = random.choice(color_list)
-
-        color_comp = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
-        color_choice = [random.choice(color_comp) for j in range(6)]
-        random_colour = '#'+''.join(color_choice)
-
-#        random_colour = '#'+''.join([random.choice('0123456789ABCDEF') for j in range(6)])
-#        print(random_colour)
-
-        if len(colour) != 0:
-            if is_Colour(colour):
-                return colour
-            else:
-                if file_no == 100:
-                    print('Please name a valid colour.')
-                else:
-                    print('Please name a valid colour for EQE File %s.' % str(file_no))
-                return random_colour
-        else:
-            return random_colour
-
-# -----------------------------------------------------------------------------------------------------------
-
-    # ### Function to check if input is a color
-    #
-    # def is_Colour(self, colour):
-    #
-    #     try:
-    #         Color(colour)
-    #         return True
-    #     except:
-    #         return False
 
 # -----------------------------------------------------------------------------------------------------------
 
