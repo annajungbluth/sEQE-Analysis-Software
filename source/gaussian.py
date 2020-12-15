@@ -1,4 +1,5 @@
 import math
+from numpy import exp
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -6,12 +7,12 @@ import math
 
 def calculate_gaussian_absorption(x, f, l, E, T):
     """
-    :param x: List of energy values
-    :param f: Oscillator strength
-    :param l: Reorganization Energy
-    :param E: Peak Energy
-    :param T: Temperature
-    :return: EQE value
+    :param x: List of energy values [list]
+    :param f: Oscillator strength [float]
+    :param l: Reorganization Energy [float]
+    :param E: Peak Energy [float]
+    :param T: Temperature [float or int]
+    :return: EQE value [float]
     """
 
     # Define variables

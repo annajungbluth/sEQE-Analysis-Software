@@ -27,12 +27,12 @@ from source.compilation import compile_EQE, compile_EL, compile_Data
 from source.normalization import normalize_EQE
 from source.utils import interpolate, R_squared
 from source.electroluminescence import bb_spectrum
-from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
+from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
 from source.reference_correction import calculate_Power
 from source.gaussian import calculate_gaussian_absorption
-
+from source.plot import set_up_EQE_plot
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -2020,26 +2020,16 @@ class MainWindow(QtWidgets.QMainWindow):
             for x_opt in tqdm(range(len(Opt_df))):
                 wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), Opt_df['Stop'][x_opt], 1)
 
-                Opt_fit = np.array([self.gaussian_double(e, Opt_df['f'][x_opt], Opt_df['l'][x_opt], Opt_df['E'][x_opt]) for e in energy_data])
+                Opt_fit = np.array([calculate_gaussian_absorption(e, Opt_df['f'][x_opt], Opt_df['l'][x_opt], Opt_df['E'][x_opt], self.T_double) for e in energy_data])
 
                 for x_ct in range(len(CT_df)):
 
-                    total_Energy = []
-                    total_Fit = []
-
-                    CT_fit = np.array([self.gaussian_double(e, CT_df['f'][x_ct], CT_df['l'][x_ct], CT_df['E'][x_ct]) for e in energy_data])
+                    CT_fit = np.array([calculate_gaussian_absorption(e, CT_df['f'][x_ct], CT_df['l'][x_ct], CT_df['E'][x_ct], self.T_double) for e in energy_data])
 
                     total_Fit = Opt_fit + CT_fit
 
                     assert len(total_Fit) == len(CT_fit)
                     assert len(total_Fit) == len(Opt_fit)
-
-                    # for e in energy_data:
-                    #     Opt_fit = self.gaussian_double(e, Opt_df['f'][x_opt], Opt_df['l'][x_opt], Opt_df['E'][x_opt])
-                    #     CT_fit = self.gaussian_double(e, CT_df['f'][x_ct], CT_df['l'][x_ct], CT_df['E'][x_ct])
-                    #
-                    #     total_Energy.append(e)
-                    #     total_Fit.append(Opt_fit + CT_fit)
 
                     total_R_Squared = R_squared(eqe_data, total_Fit.tolist())
 
@@ -2076,19 +2066,19 @@ class MainWindow(QtWidgets.QMainWindow):
             print('Opt Fit : ', total_df['Start_Opt'][max_index], total_df['Stop_Opt'][max_index])
             print('CT Fit : ', total_df['Start_CT'][max_index], total_df['Stop_CT'][max_index])
 
-            self.set_up_EQE_add_plot()
+            self.axDouble_1, self.axDouble_2 = set_up_EQE_plot()
 
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['EQE'][max_index], linewidth=2, linestyle='-', label='EQE')
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
-            self.axAdd_1.legend()
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['EQE'][max_index], linewidth=2, linestyle='-', label='EQE')
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+            self.axDouble_1.legend()
 
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['EQE'][max_index], linewidth=2, linestyle='-', label='EQE')
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
-            self.axAdd_2.legend()
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['EQE'][max_index], linewidth=2, linestyle='-', label='EQE')
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+            self.axDouble_2.legend()
 
             return total_df
 
@@ -2119,8 +2109,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), sub_df['Stop_Opt'][x], 1)
 
-                    Opt_fit = np.array([self.gaussian_double(e, sub_df['f_Opt'][x], sub_df['l_Opt'][x], sub_df['E_Opt'][x]) for e in energy_data])
-                    CT_fit = np.array([self.gaussian_double(e, sub_df['f_CT'][x], sub_df['l_CT'][x], sub_df['E_CT'][x]) for e in energy_data])
+                    Opt_fit = np.array([calculate_gaussian_absorption(e, sub_df['f_Opt'][x], sub_df['l_Opt'][x], sub_df['E_Opt'][x], self.T_double) for e in energy_data])
+                    CT_fit = np.array([calculate_gaussian_absorption(e, sub_df['f_CT'][x], sub_df['l_CT'][x], sub_df['E_CT'][x], self.T_double) for e in energy_data])
 
                     total_Fit = Opt_fit + CT_fit
 
@@ -2162,19 +2152,19 @@ class MainWindow(QtWidgets.QMainWindow):
             print('Opt Fit : ', total_df['Start_Opt'][max_index], total_df['Stop_Opt'][max_index])
             print('CT Fit : ', total_df['Start_CT'][max_index], total_df['Stop_CT'][max_index])
 
-            self.set_up_EQE_add_plot()
+            self.axDouble_1, self.axDouble_2 = set_up_EQE_plot()
 
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
-            self.axAdd_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
-            self.axAdd_1.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
-            self.axAdd_1.legend()
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
+            self.axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
+            self.axDouble_1.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+            self.axDouble_1.legend()
 
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
-            self.axAdd_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
-            self.axAdd_2.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
-            self.axAdd_2.legend()
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['Opt_Fit'][max_index], linewidth=2, linestyle='--', label='Optical Fit')
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
+            self.axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
+            self.axDouble_2.plot(total_df['Energy'][max_index], total_df['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+            self.axDouble_2.legend()
 
             return total_df
 
@@ -2184,7 +2174,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         eqe = eqe.copy()
 
-        Opt_fit = np.array([self.gaussian_double(e, best_vals[0], best_vals[1], best_vals[2]) for e in eqe['Energy']])
+        Opt_fit = np.array([calculate_gaussian_absorption(e, best_vals[0], best_vals[1], best_vals[2], self.T_double) for e in eqe['Energy']])
         EQE_data = np.array(eqe['EQE'])
 
         subtracted_EQE = EQE_data - Opt_fit
@@ -2327,7 +2317,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     add_Energy.append(data_EQE['Energy'][x])
                     add_Fits.append(OptFit_value + CTFit_value)
 
-            self.set_up_EQE_add_plot()
+            self.axAdd_1, self.axAdd_2 = set_up_EQE_plot()
 
             self.axAdd_1.plot(data_OptFit['Energy'], data_OptFit['Signal'], linewidth=2, linestyle='--', color=color_OptFit, label=label_OptFit)
             self.axAdd_1.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--', color=color_CTFit, label=label_CTFit)
@@ -2525,36 +2515,7 @@ class MainWindow(QtWidgets.QMainWindow):
         plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
         plt.minorticks_on()
         plt.show()
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to set up EQE subtraction plot
-
-    def set_up_EQE_add_plot(self):
-
-        plt.ion()
-
-        self.figAdd_1, self.axAdd_1 = plt.subplots()
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
-        self.figAdd_2, self.axAdd_2 = plt.subplots()
-        self.axAdd_2.set_yscale('log')  # To generate log scale axis
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
-        plt.rcParams['figure.facecolor'] = 'xkcd:white'
-        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-        plt.minorticks_on()
-        plt.show()
-
+        
 # -----------------------------------------------------------------------------------------------------------
 
     ### Function to clear plot        
