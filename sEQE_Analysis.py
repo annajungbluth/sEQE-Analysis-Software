@@ -23,13 +23,13 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 import sEQE_Analysis_template
+from source.compilation import compile_EQE, compile_EL, compile_Data
+from source.normalization import normalize_EQE
 from source.utils import interpolate, R_squared
 from source.utils_el import bb_spectrum
 from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.compilation import compile_EL, compile_Data
-from source.normalization import normalize_EQE
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -820,7 +820,7 @@ class MainWindow(QtWidgets.QMainWindow):
                else:
                    return False
            else:
-               wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startNM, stopNM, 0)
+               wave, energy, eqe, log_eqe = compile_EQE(eqe_df, startNM, stopNM, 0)
 
            label_ = pick_EQE_Label(label_Box, filename_Box)
            color_ = pick_EQE_Color(color_Box, file_no)
@@ -881,9 +881,9 @@ class MainWindow(QtWidgets.QMainWindow):
        stopPlotFit = stopPlotFit.value()
 
        if Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no): # Check that files are non-empty and within energy range
-           wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startE, stopE, 1) # Compile EQE file
-           wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, startFit, stopFit, 1) # Compile fit range of EQE file
-           wave_plot_fit, energy_plot_fit, eqe_plot_fit, log_eqe_plot_fit = self.compile_EQE(eqe_df, startPlotFit, stopPlotFit, 1)
+           wave, energy, eqe, log_eqe = compile_EQE(eqe_df, startE, stopE, 1) # Compile EQE file
+           wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, startFit, stopFit, 1) # Compile fit range of EQE file
+           wave_plot_fit, energy_plot_fit, eqe_plot_fit, log_eqe_plot_fit = compile_EQE(eqe_df, startPlotFit, stopPlotFit, 1)
 
            label_ = pick_EQE_Label(label_Box, filename_Box)
            color_ = pick_EQE_Color(color_Box, file_no)
@@ -1137,8 +1137,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     #### Fix this! startE / stopE need to be replaced by the first and last value in the EQE
                     if Fit_is_valid(eqe_df, startE, stopE, start, stop, file_no): # If the fit is valid, perform the heat map calculations
 
-                        wave, energy, eqe, log_eqe = self.compile_EQE(eqe_df, startE, stopE, 1)
-                        wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe_df, start, stop, 1)
+                        wave, energy, eqe, log_eqe = compile_EQE(eqe_df, startE, stopE, 1)
+                        wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, start, stop, 1)
 
                         if (str(file_no)).isnumeric():
 
@@ -1527,7 +1527,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if Data_is_valid(data_df, startE, stopE) and StartStop_is_valid(startE, stopE):
 
                 self.Red_EQE_meas = pd.DataFrame() # For determining the intersect between abs and emission
-                EQE_wave, EQE_energy, EQE, EQE_log = self.compile_EQE(data_df, startE, stopE, 1)
+                EQE_wave, EQE_energy, EQE, EQE_log = compile_EQE(data_df, startE, stopE, 1)
                 red_EQE = [EQE[x] * EQE_energy[x] for x in range(len(EQE))]
 
                 if not fit:
@@ -2022,7 +2022,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             y_fit = []
 
-            wave_fit, energy_fit, eqe_fit, log_eqe_fit = self.compile_EQE(eqe, startE, stopE, 1)
+            wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, startE, stopE, 1)
 
             ### FIX and ADD Disorder ###
             # if self.ui.STATIC_DISORDER.isChecked():
@@ -2076,7 +2076,7 @@ class MainWindow(QtWidgets.QMainWindow):
             print('Determining best fit combination ...')
 
             for x_opt in tqdm(range(len(Opt_df))):
-                wave_data, energy_data, eqe_data, log_eqe_data = self.compile_EQE(eqe, min(eqe['Energy']), Opt_df['Stop'][x_opt], 1)
+                wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), Opt_df['Stop'][x_opt], 1)
 
                 Opt_fit = np.array([self.gaussian_double(e, Opt_df['f'][x_opt], Opt_df['l'][x_opt], Opt_df['E'][x_opt]) for e in energy_data])
 
@@ -2175,7 +2175,7 @@ class MainWindow(QtWidgets.QMainWindow):
             for x in tqdm(range(len(sub_df))):
                 if sub_df['R2_Opt'][x] != 0:
 
-                    wave_data, energy_data, eqe_data, log_eqe_data = self.compile_EQE(eqe, min(eqe['Energy']), sub_df['Stop_Opt'][x], 1)
+                    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), sub_df['Stop_Opt'][x], 1)
 
                     Opt_fit = np.array([self.gaussian_double(e, sub_df['f_Opt'][x], sub_df['l_Opt'][x], sub_df['E_Opt'][x]) for e in energy_data])
                     CT_fit = np.array([self.gaussian_double(e, sub_df['f_CT'][x], sub_df['l_CT'][x], sub_df['E_CT'][x]) for e in energy_data])
@@ -2427,74 +2427,6 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: EQE value
         """
         return (f / (x * math.sqrt(4 * math.pi * l * T * self.k))) * exp(-(E + l - x) ** 2 / (4 * l * self.k * T))
-
-# -----------------------------------------------------------------------------------------------------------
-
-    #### Functions to compile & normalize EQE data
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to compile EQE data  
-
-    def compile_EQE(self, eqe_df, start, stop, number):
-
-        Wavelength = []
-        Energy = []
-        EQE = []
-        log_EQE = []
-
-        if number == 0: # If a wavelength range is given
-            startNM = start
-            stopNM = stop
-
-        elif number == 1: # If an energy range is given
-            startNM = (self.h * self.c * math.pow(10,9)) / (stop * self.q) # The start wavelength corresponds to the high energy stop value
-            stopNM = (self.h * self.c * math.pow(10,9)) / (start * self.q) # The stop wavelength corresponds to the low energy start value
-
-
-        for y in range(len(eqe_df['Wavelength'])): # Iterate through columns of EQE file
-            if startNM <= eqe_df['Wavelength'][y] <= stopNM: # Compile EQE only if start <= wavelength <= stop, otherwise ignore
-                Wavelength.append(eqe_df['Wavelength'][y])
-                Energy.append(eqe_df['Energy'][y])
-                EQE.append(eqe_df['EQE'][y]) #  * eqe_df['Energy'][y] - Eventually this might need to be added for fitting
-                log_EQE.append(eqe_df['Log_EQE'][y]) #  (math.log10(eqe_df['EQE'][y] * eqe_df['Energy'][y]) - Eventually this might need to be added for fitting
-
-        if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE): # Check that the lengths are the same
-            return Wavelength, Energy, EQE, log_EQE
-
-        else:
-            print('Error Code 1: Length mismatch.')
-
-# # -----------------------------------------------------------------------------------------------------------
-#
-#     ### Function to normalize EQE data
-#
-#     def normalize_EQE(self, eqe_df, startNM, stopNM, normNM):
-#
-#         Wavelength = []
-#         Energy = []
-#         EQE = []
-#         log_EQE = []
-#
-#
-#         norm_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['EQE'])
-#         norm_log_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['Log_EQE'])
-#
-#         print(norm_EQE)
-#         print(norm_log_EQE)
-#
-#         for y in range(len(eqe_df['Wavelength'])): # Iterate through columns of EQE file
-#             if startNM <= eqe_df['Wavelength'][y] <= stopNM: # Compile EQE only if start <= wavelength <= stop, otherwise ignore
-#                 Wavelength.append(eqe_df['Wavelength'][y])
-#                 Energy.append(eqe_df['Energy'][y])
-#                 EQE.append(eqe_df['EQE'][y] / norm_EQE)
-#                 log_EQE.append(eqe_df['Log_EQE'][y] / norm_log_EQE)
-#
-#         if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE): # Check that the lengths are the same
-#             return Wavelength, Energy, EQE, log_EQE
-#
-#         else:
-#             print('Error Code 1: Length mismatch.')
 
 
 # -----------------------------------------------------------------------------------------------------------
