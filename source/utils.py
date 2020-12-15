@@ -1,7 +1,9 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-# Function to interpolate values
+# -----------------------------------------------------------------------------------------------------------
+
+### Function to interpolate values
 
 def interpolate(num, x, y):
     """
@@ -13,8 +15,9 @@ def interpolate(num, x, y):
     f = interp1d(x, y)
     return f(num)
 
+# -----------------------------------------------------------------------------------------------------------
 
-# Function to calculate R Squared of fit
+### Function to calculate R Squared of fit
 
 def R_squared(y_data, yfit_data):
     """
@@ -36,3 +39,5 @@ def R_squared(y_data, yfit_data):
         return r_squared
     else:
         print('Error Code 1: Length mismatch.')
+
+# -----------------------------------------------------------------------------------------------------------

@@ -27,8 +27,10 @@ from tqdm import tqdm
 
 import sEQE_Analysis_template
 
-from source.EL_utils import bb_spectrum
 from source.utils import interpolate, R_squared
+from source.utils_el import bb_spectrum
+from source.utils_plots import is_Colour
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -2275,10 +2277,10 @@ class MainWindow(QtWidgets.QMainWindow):
         color_eqe = color_EQE.toPlainText()
         color_eqe = color_eqe.replace(" ", "")
 
-        if len(color_fit) == 0 or not self.is_Colour(color_fit):
+        if len(color_fit) == 0 or not is_Colour(color_fit):
             color_fit = '#ff7716'
 
-        if len(color_eqe) == 0 or not self.is_Colour(color_eqe):
+        if len(color_eqe) == 0 or not is_Colour(color_eqe):
             color_eqe = 'black'
 
         try: # Check if fit for an optical peak was imported
@@ -2353,13 +2355,13 @@ class MainWindow(QtWidgets.QMainWindow):
         color_EQE = self.ui.textBox_p7_9.toPlainText()
         color_EQE = color_EQE.replace(" ", "")
 
-        if len(color_OptFit) == 0 or not self.is_Colour(color_OptFit):
+        if len(color_OptFit) == 0 or not is_Colour(color_OptFit):
             color_OptFit = '#ff7716'
 
-        if len(color_CTFit) == 0 or not self.is_Colour(color_CTFit):
+        if len(color_CTFit) == 0 or not is_Colour(color_CTFit):
             color_CTFit = '#1f77b4'
 
-        if len(color_EQE) == 0 or not self.is_Colour(color_EQE):
+        if len(color_EQE) == 0 or not is_Colour(color_EQE):
             color_EQE = 'black'
 
         try: # Check if fit for an optical peak was imported
@@ -2983,7 +2985,7 @@ class MainWindow(QtWidgets.QMainWindow):
 #        print(random_colour)
 
         if len(colour) != 0:
-            if self.is_Colour(colour):
+            if is_Colour(colour):
                 return colour
             else:
                 if file_no == 100:
@@ -2996,37 +2998,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
 # -----------------------------------------------------------------------------------------------------------
 
-    ### Function to check if input is a color
-
-    def is_Colour(self, colour):
-
-        try:
-            Color(colour)
-            return True
-        except:
-            return False
-
-# -----------------------------------------------------------------------------------------------------------
-
-    #### Other helper functions
-
-# -----------------------------------------------------------------------------------------------------------
-
-    # def R_squared(self, y_data, yfit_data):
+    # ### Function to check if input is a color
     #
-    #     if len(y_data)==len(yfit_data):
+    # def is_Colour(self, colour):
     #
-    #         y_data = np.array(y_data)
-    #         yfit_data = np.array(yfit_data)
-    #
-    #         residuals = y_data - yfit_data
-    #         ss_res = np.sum(residuals**2)
-    #         ss_tot = np.sum((y_data - np.mean(y_data))**2)
-    #         r_squared = 1 - (ss_res/ss_tot)
-    #
-    #         return r_squared
-    #     else:
-    #         print('Error Code 1: Length mismatch.')
+    #     try:
+    #         Color(colour)
+    #         return True
+    #     except:
+    #         return False
 
 # -----------------------------------------------------------------------------------------------------------
 
