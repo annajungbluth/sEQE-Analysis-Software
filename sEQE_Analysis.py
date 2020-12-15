@@ -26,10 +26,11 @@ import sEQE_Analysis_template
 from source.compilation import compile_EQE, compile_EL, compile_Data
 from source.normalization import normalize_EQE
 from source.utils import interpolate, R_squared
-from source.utils_el import bb_spectrum
+from source.electroluminescence import bb_spectrum
 from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
+from source.reference_correction import calculate_Power
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -277,8 +278,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.c = 2.998 * math.pow(10,8) # [m/s]
         self.q = 1.602 * math.pow(10,-19) # [C]
         self.k = 8.617 * math.pow(10, -5) # [ev/K]
-        #self.T = 300 # [K]
-
 
         # To Export Calculated EQE Files
 
@@ -298,8 +297,6 @@ class MainWindow(QtWidgets.QMainWindow):
         file_ = filedialog.askopenfilename()
         if len(file_) != 0:
             path_, filename_ = os.path.split(file_)
-#            print("Path : ", path_)
-#            print("Filename : ", filename_)
 
             text_Box.clear() # Clear the text box in case sth has been uploaded already
             text_Box.insertPlainText(filename_) # Insert filename into text box
@@ -427,34 +424,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.data_double = pd.read_csv(file_)
 
 # -----------------------------------------------------------------------------------------------------------
-
-    #### Functions to calculate EQE
-
-# -----------------------------------------------------------------------------------------------------------
-
-    # Function to calculate the reference power
-
-    def calculatePower(self, ref_df, cal_df):
-        cal_wave_dict = {} # Create an empty dictionary
-        power = [] # Create an empty list
-
-        for x in range(len(cal_df['Wavelength [nm]'])): # Iterate through columns of calibration file
-            cal_wave_dict[cal_df['Wavelength [nm]'][x]] = cal_df['Responsivity [A/W]'][x] # Add wavelength and corresponding responsivity to dictionary
-
-
-        for y in range(len(ref_df['Wavelength'])): # Iterate through columns of reference file
-#            print(ref_df['Wavelength'][y])
-            if ref_df['Wavelength'][y] in cal_wave_dict.keys(): # Check if reference wavelength is in calibraton file
-                power.append(float(ref_df['Mean Current'][y]) / float(cal_wave_dict[ref_df['Wavelength'][y]])) # Add power to the list
-            else: # If reference wavelength is not in calibration file
-                resp_int = interpolate(ref_df['Wavelength'][y], cal_df['Wavelength [nm]'], cal_df['Responsivity [A/W]']) # Interpolate responsivity
-                power.append(float(ref_df['Mean Current'][y]) / float(resp_int)) # Add power to the list
-
-        ref_df['Power'] = power # Create new column in reference file
-#        print(ref_df['Power'])
-
-        return ref_df['Power']
-
+#
+#     #### Functions to calculate EQE
+#
 # -----------------------------------------------------------------------------------------------------------
 
     ### Function to select data and reference file   
@@ -484,12 +456,12 @@ class MainWindow(QtWidgets.QMainWindow):
             if range_no == 1:
                 if self.ui.Range1_Si_button.isChecked() and not self.ui.Range1_InGaAs_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
                         print('Please select a valid reference diode.')
                 elif self.ui.Range1_InGaAs_button.isChecked() and not self.ui.Range1_Si_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
                         print('Please select a valid reference diode.')
                 else:
@@ -498,12 +470,12 @@ class MainWindow(QtWidgets.QMainWindow):
             elif range_no == 2:
                 if self.ui.Range2_Si_button.isChecked() and not self.ui.Range2_InGaAs_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
                         print('Please select a valid reference diode.')
                 elif self.ui.Range2_InGaAs_button.isChecked() and not self.ui.Range2_Si_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
                         print('Please select a valid reference diode.')
                 else:
@@ -512,12 +484,12 @@ class MainWindow(QtWidgets.QMainWindow):
             elif range_no == 3:
                 if self.ui.Range3_Si_button.isChecked() and not self.ui.Range3_InGaAs_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
                         print('Please select a valid reference diode.')
                 elif self.ui.Range3_InGaAs_button.isChecked() and not self.ui.Range3_Si_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
                         print('Please select a valid reference diode.')
                 else:
@@ -526,12 +498,12 @@ class MainWindow(QtWidgets.QMainWindow):
             elif range_no == 4:
                 if self.ui.Range4_Si_button.isChecked() and not self.ui.Range4_InGaAs_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
                         print('Please select a valid reference diode.')
                 elif self.ui.Range4_InGaAs_button.isChecked() and not self.ui.Range4_Si_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
                         print('Please select a valid reference diode.')
                 else:
@@ -540,12 +512,12 @@ class MainWindow(QtWidgets.QMainWindow):
             elif range_no == 5:
                 if self.ui.Range5_Si_button.isChecked() and not self.ui.Range5_InGaAs_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
                         print('Please select a valid reference diode.')
                 elif self.ui.Range5_InGaAs_button.isChecked() and not self.ui.Range5_Si_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
                         print('Please select a valid reference diode.')
                 else:
@@ -554,12 +526,12 @@ class MainWindow(QtWidgets.QMainWindow):
             elif range_no == 6:
                 if self.ui.Range6_Si_button.isChecked() and not self.ui.Range6_InGaAs_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.Si_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
                         print('Please select a valid reference diode.')
                 elif self.ui.Range6_InGaAs_button.isChecked() and not self.ui.Range6_Si_button.isChecked():
                     try:
-                        ref_df['Power'] = self.calculatePower(ref_df, self.InGaAs_cal)
+                        ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
                         print('Please select a valid reference diode.')
                 else:
