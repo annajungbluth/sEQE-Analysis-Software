@@ -32,7 +32,6 @@ def Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
             print('Please select a valid wavelength range for Range %s.' % str(range_no))
             return False
 
-
     elif len(ref_df) == 0 and len(data_df) != 0: # If reference file is empty / hasn't been selected
         print('Please import a valid reference file for Range %s.' % str(range_no))
         return False

@@ -31,6 +31,7 @@ from source.utils_plots import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_L
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
 from source.reference_correction import calculate_Power
+from source.gaussian import calculate_gaussian_absorption
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -293,15 +294,20 @@ class MainWindow(QtWidgets.QMainWindow):
 # -----------------------------------------------------------------------------------------------------------
 
     def writeText(self, text_Box, textBox_no):
+
         os.chdir(self.data_dir)
         file_ = filedialog.askopenfilename()
+
         if len(file_) != 0:
             path_, filename_ = os.path.split(file_)
 
             text_Box.clear() # Clear the text box in case sth has been uploaded already
             text_Box.insertPlainText(filename_) # Insert filename into text box
 
-            # For reference files:
+
+            # Page 1 - Calculate EQE
+
+            # Reference files:
 
             if textBox_no == 1:
                 self.ref_1 = pd.read_csv(file_) # Turn file into dataFrame
@@ -321,7 +327,7 @@ class MainWindow(QtWidgets.QMainWindow):
             elif textBox_no == 11:
                 self.ref_6 = pd.read_csv(file_)
 
-            # For data files:
+            # Data files:
 
             elif textBox_no == 2:
                 self.data_1 = pd.read_csv(file_)
@@ -341,7 +347,8 @@ class MainWindow(QtWidgets.QMainWindow):
             elif textBox_no == 12:
                 self.data_6 = pd.read_csv(file_)
 
-            # For EQE files:
+
+            # Page 2 - Plot EQE
 
             elif textBox_no == 'p1':
                 self.EQE_1 = pd.read_csv(file_)
@@ -374,7 +381,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.EQE_10 = pd.read_csv(file_)
 
 
-            # For Marcus fit files
+            # Page 3 - Marcus theory fitting
 
             elif textBox_no == 'f1':
                 self.data_fit_1 = pd.read_csv(file_)
@@ -382,8 +389,19 @@ class MainWindow(QtWidgets.QMainWindow):
             elif textBox_no == 'f4':
                 self.data_fit_2 = pd.read_csv(file_)
 
+            # For double fits
 
-            # For El files
+            elif textBox_no == 'double1':
+                self.data_double = pd.read_csv(file_)
+
+
+            # Page 4 - MLJ theory fitting
+
+            elif textBox_no == 'xF1':
+                self.data_xFit_1 = pd.read_csv(file_)
+
+
+            # Page 5 - EL and EQE fitting
 
             elif textBox_no == 'el1':
                 self.EL = pd.read_table(file_, sep= ',', index_col=0)
@@ -392,12 +410,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.EL_EQE = pd.read_csv((file_))
 
 
-            # For extra fit files
-
-            elif textBox_no == 'xF1':
-                self.data_xFit_1 = pd.read_csv(file_)
-
-            # For removing fit files
+            # Page 6 - Subtracting fits
 
             elif textBox_no == 'sub1':
                 self.data_subFit = pd.read_csv(file_)
@@ -406,7 +419,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.data_subEQE = pd.read_csv(file_)
 
 
-            # For adding fit files
+            # Page 7 - Adding fits
 
             elif textBox_no == 'add1':
                 self.data_addOptFit = pd.read_csv(file_)
@@ -418,22 +431,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.data_addEQE = pd.read_csv(file_)
 
 
-            # For double fits
-
-            elif textBox_no == 'double1':
-                self.data_double = pd.read_csv(file_)
-
 # -----------------------------------------------------------------------------------------------------------
-#
-#     #### Functions to calculate EQE
-#
+
+    #### Functions to calculate EQE
+
 # -----------------------------------------------------------------------------------------------------------
 
     ### Function to select data and reference file   
 
     def pre_EQE(self, ref_df, data_df, start, stop, range_no):
+
         startNM = start.value()
         stopNM = stop.value()
+
         if Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
             self.calculate_EQE(ref_df, data_df, startNM, stopNM, range_no)
 
@@ -544,15 +554,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
             for y in range(len(data_df['Wavelength'])): # Iterate through columns of data file
                 if startNM <= data_df['Wavelength'][y] <= stopNM: # Calculate EQE only if start <= wavelength <= stop, otherwise ignore
-    #                print(data_df['Wavelength'][y])
 
                     if data_df['Wavelength'][y] in power_dict.keys():  # Check if data wavelength is in reference file
                         Wavelength.append(data_df['Wavelength'][y])
                         Energy_val = (self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * self.q) # Calculate energy in eV
                         Energy.append(Energy_val)
                         EQE_val = (data_df['Mean Current'][y] * Energy_val) / (power_dict[data_df['Wavelength'][y]]) # Easier way to calculate EQE
-    #                    EQE_val = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * power_dict[data_df['Wavelength'][y]] * self.q))
-    #                    EQE_val = (100 * data_df['Mean Current'][y] * Energy_val) / (power_dict[data_df['Wavelength'][y]]) # *100 to turn into percent
+                        # EQE_val = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * power_dict[data_df['Wavelength'][y]] * self.q))
+                        # EQE_val = (100 * data_df['Mean Current'][y] * Energy_val) / (power_dict[data_df['Wavelength'][y]]) # *100 to turn into percent
                         EQE.append(EQE_val)
                         log_EQE.append(math.log10(EQE_val))
 
@@ -562,10 +571,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         Energy.append(Energy_val)
                         Power_int = interpolate(data_df['Wavelength'][y], ref_df['Wavelength'], ref_df['Power']) # Interpolate power
                         EQE_int = (data_df['Mean Current'][y] * Energy_val) / (Power_int)
-    #                    EQE_int = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * Power_int * self.q))
+                        # EQE_int = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * Power_int * self.q))
                         EQE.append(EQE_int)
                         log_EQE.append(math.log10(EQE_int))
-
 
         if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE): # Check if the lists have the same length
 
@@ -578,18 +586,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.do_plot = False # Set self.do_plot to False to plot on the same graph
 
                 label_ = pick_Label(range_no, startNM, stopNM)
+
                 self.ax1.plot(Wavelength, EQE, linewidth = 3, label = label_)
-#                self.ax2.plot(Wavelength, log_EQE, linewidth = 3)
                 self.ax2.semilogy(Wavelength, EQE, linewidth = 3) # Equivalent to the line above but with proper log scale axes
-
-#                self.ax1.plot(Energy, EQE, linewidth = 3)
-#                self.ax2.semilogy(Energy, EQE, linewidth = 3)
-
                 self.ax1.legend()
                 plt.draw()
 
         else:
             print('Error Code 1: Length mismatch.')
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -674,17 +679,12 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 ok_6 = False
 
-
         if ok_1 and ok_2 and ok_3 and ok_4 and ok_5 and ok_6: # Check if all operations are ok or if fields are left empty
 
             for x in range(len(wave_inc.keys())): # Iterate through wave_inc list
-#                print(x)
-#                print(wave_inc)
                 minimum = min(wave_inc, key = wave_inc.get) # Find key corresponding to minimum value
-#                print(minimum)
                 if minimum == '1': # Append correct dataFrame in order of decending wavelength
                     export_file = export_file.append(export_1, ignore_index = True)
-#                    print(export_file)
                 elif minimum == '2':
                     export_file = export_file.append(export_2, ignore_index = True)
                 elif minimum == '3':
@@ -697,10 +697,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     export_file = export_file.append(export_6, ignore_index=True)
 
                 del wave_inc[minimum] # Delete recently appended value
-#            print(export_file)
 
             EQE_file = filedialog.asksaveasfilename() # Prompt the user to pick a folder & name to save data to
             export_path, export_filename = os.path.split(EQE_file)
+
             if len(export_path) != 0: # Check if the user actually selected a path
                 os.chdir(export_path) # Change the working directory
                 export_file.to_csv(export_filename) # Save data to csv
@@ -708,6 +708,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 os.chdir(self.data_dir) # Change the directory back
 
         self.export = False
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -1142,37 +1143,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                 elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
                                     print('Please select a valid peak to fit.')
                                 elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
-                                    print('Please select a valid peak to fit.')
-
-
-                            elif file_no == 3:
-                                self.T_CT = self.ui.Temperature_3.value()
-                                guessStart = self.ui.guessStart_3.value()
-                                guessStop = self.ui.guessStop_3.value()
-                                if self.ui.static_Disorder_3.isChecked():
-                                    include_Disorder = True
-                                    self.sig = self.ui.Disorder_3.value()
-
-                                if self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
-                                    fit_opticalPeak = True
-                                elif self.ui.OptButton_3.isChecked() and self.ui.CTButton_3.isChecked():
-                                    print('Please select a valid peak to fit.')
-                                elif not self.ui.OptButton_3.isChecked() and not self.ui.CTButton_3.isChecked():
-                                    print('Please select a valid peak to fit.')
-
-                            elif file_no == 4:
-                                self.T_CT = self.ui.Temperature_4.value()
-                                guessStart = self.ui.guessStart_4.value()
-                                guessStop = self.ui.guessStop_4.value()
-                                if self.ui.static_Disorder_4.isChecked():
-                                    include_Disorder = True
-                                    self.sig = self.ui.Disorder_4.value()
-
-                                if self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
-                                    fit_opticalPeak = True
-                                elif self.ui.OptButton_4.isChecked() and self.ui.CTButton_4.isChecked():
-                                    print('Please select a valid peak to fit.')
-                                elif not self.ui.OptButton_4.isChecked() and not self.ui.CTButton_4.isChecked():
                                     print('Please select a valid peak to fit.')
 
                             # Attempt peak fit:
@@ -2271,7 +2241,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if E_fit != 0: # Only progress if a valid energy was imported
 
             for x in range(len(data_EQE['Energy'])):
-                fit_value = self.gaussian_absorption(data_EQE['Energy'][x], f_fit, l_fit, E_fit, T_fit)
+                fit_value = calculate_gaussian_absorption(data_EQE['Energy'][x], f_fit, l_fit, E_fit, T_fit)
                 sub_EQE.append(data_EQE['EQE'][x] - fit_value)
 
             ###### Save fit data ######
@@ -2352,8 +2322,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
             for x in range(len(data_EQE['Energy'])):
                 if data_EQE['Energy'][x] < max(data_OptFit['Energy']):
-                    OptFit_value = self.gaussian_absorption(data_EQE['Energy'][x], f_OptFit, l_OptFit, E_OptFit, T_OptFit)
-                    CTFit_value = self.gaussian_absorption(data_EQE['Energy'][x], f_CTFit, l_CTFit, E_CTFit, T_CTFit)
+                    OptFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x], f_OptFit, l_OptFit, E_OptFit, T_OptFit)
+                    CTFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x], f_CTFit, l_CTFit, E_CTFit, T_CTFit)
                     add_Energy.append(data_EQE['Energy'][x])
                     add_Fits.append(OptFit_value + CTFit_value)
 
@@ -2384,21 +2354,6 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: EQE value
         """
         return (f / (x * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(-(E + l - x) ** 2 / (4 * l * self.k * self.T_double))
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Gaussian fitting function
-
-    def gaussian_absorption(self, x, f, l, E, T):
-        """
-        :param x: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param E: Peak Energy
-        :param T: Temperature
-        :return: EQE value
-        """
-        return (f / (x * math.sqrt(4 * math.pi * l * T * self.k))) * exp(-(E + l - x) ** 2 / (4 * l * self.k * T))
 
 
 # -----------------------------------------------------------------------------------------------------------
