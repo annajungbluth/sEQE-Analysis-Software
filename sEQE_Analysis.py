@@ -22,11 +22,13 @@ import seaborn
 from PyQt5 import QtWidgets
 from colour import Color
 from numpy import exp, linspace, random
-from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 import sEQE_Analysis_template
+
+from source.EL_utils import bb_spectrum
+from source.utils import interpolate
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -444,7 +446,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if ref_df['Wavelength'][y] in cal_wave_dict.keys(): # Check if reference wavelength is in calibraton file
                 power.append(float(ref_df['Mean Current'][y]) / float(cal_wave_dict[ref_df['Wavelength'][y]])) # Add power to the list
             else: # If reference wavelength is not in calibration file
-                resp_int = self.interpolate(ref_df['Wavelength'][y], cal_df['Wavelength [nm]'], cal_df['Responsivity [A/W]']) # Interpolate responsivity
+                resp_int = interpolate(ref_df['Wavelength'][y], cal_df['Wavelength [nm]'], cal_df['Responsivity [A/W]']) # Interpolate responsivity
                 power.append(float(ref_df['Mean Current'][y]) / float(resp_int)) # Add power to the list
 
         ref_df['Power'] = power # Create new column in reference file
@@ -585,7 +587,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         Wavelength.append(data_df['Wavelength'][y])
                         Energy_val = (self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * self.q)
                         Energy.append(Energy_val)
-                        Power_int = self.interpolate(data_df['Wavelength'][y], ref_df['Wavelength'], ref_df['Power']) # Interpolate power
+                        Power_int = interpolate(data_df['Wavelength'][y], ref_df['Wavelength'], ref_df['Power']) # Interpolate power
                         EQE_int = (data_df['Mean Current'][y] * Energy_val) / (Power_int)
     #                    EQE_int = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * Power_int * self.q))
                         EQE.append(EQE_int)
@@ -1502,7 +1504,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     elif data_no == 1: # Abs Data
 
-                        bb_dict = self.bb_spectrum(EL_energy)
+                        bb_dict = bb_spectrum(EL_energy, self.T_EL)
                         EL_abs = [EL_signal[x] / bb_dict[EL_energy[x]] for x in range(len(EL_energy))]
                         red_EL_abs_scaled = [EL_abs[x] / (scaleFactor * EL_energy[x]) for x in range(len(EL_abs))]
 
@@ -2474,8 +2476,8 @@ class MainWindow(QtWidgets.QMainWindow):
         log_EQE = []
 
 
-        norm_EQE = self.interpolate(normNM, eqe_df['Wavelength'], eqe_df['EQE'])
-        norm_log_EQE = self.interpolate(normNM, eqe_df['Wavelength'], eqe_df['Log_EQE'])
+        norm_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['EQE'])
+        norm_log_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['Log_EQE'])
 
         print(norm_EQE)
         print(norm_log_EQE)
@@ -3025,32 +3027,6 @@ class MainWindow(QtWidgets.QMainWindow):
             return r_squared
         else:
             print('Error Code 1: Length mismatch.')
-
-
-# -----------------------------------------------------------------------------------------------------------
-
-    ### Function to interpolate values    
-
-    def interpolate(self, num, x, y):
-
-        f = interp1d(x, y)
-        return f(num)
-
-# -----------------------------------------------------------------------------------------------------------
-
-    #### Additional function
-
-# -----------------------------------------------------------------------------------------------------------
-
-    def bb_spectrum(self, E_list):
-
-        phi_bb_dict = {}
-
-        for energy in E_list:
-            phi_bb = 2 * math.pi * (energy)**2 * math.exp(-1 * energy / (self.k * self.T_EL)) / (self.h_2**3 * self.c**2) # -1) - without -1 as an approximation
-            phi_bb_dict[energy] = phi_bb
-
-        return phi_bb_dict #[s/kg m^4]
 
 # -----------------------------------------------------------------------------------------------------------
 
