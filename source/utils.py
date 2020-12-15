@@ -1,9 +1,10 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to interpolate values
+# Function to interpolate values
 
 def interpolate(num, x, y):
     """
@@ -15,9 +16,10 @@ def interpolate(num, x, y):
     f = interp1d(x, y)
     return f(num)
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to calculate R Squared of fit
+# Function to calculate R Squared of fit
 
 def R_squared(y_data, yfit_data):
     """
@@ -26,15 +28,15 @@ def R_squared(y_data, yfit_data):
     :return: r_squared: R Squared of fit to data [float]
     """
 
-    if len(y_data)==len(yfit_data):
+    if len(y_data) == len(yfit_data):
 
         y_data = np.array(y_data)
         yfit_data = np.array(yfit_data)
 
         residuals = y_data - yfit_data
-        ss_res = np.sum(residuals**2)
-        ss_tot = np.sum((y_data - np.mean(y_data))**2)
-        r_squared = 1 - (ss_res/ss_tot)
+        ss_res = np.sum(residuals ** 2)
+        ss_tot = np.sum((y_data - np.mean(y_data)) ** 2)
+        r_squared = 1 - (ss_res / ss_tot)
 
         return r_squared
     else:

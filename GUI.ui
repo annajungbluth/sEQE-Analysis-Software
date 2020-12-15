@@ -7964,7 +7964,7 @@
     </widget>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
-      <string>Subtract Peak Fits</string>
+      <string>Subtract and Add Fits</string>
      </attribute>
      <widget class="Line" name="line_449">
       <property name="geometry">
@@ -7985,7 +7985,7 @@
         <x>20</x>
         <y>30</y>
         <width>20</width>
-        <height>441</height>
+        <height>351</height>
        </rect>
       </property>
       <property name="orientation">
@@ -7998,7 +7998,7 @@
         <x>1140</x>
         <y>30</y>
         <width>20</width>
-        <height>441</height>
+        <height>351</height>
        </rect>
       </property>
       <property name="orientation">
@@ -8011,7 +8011,7 @@
         <x>40</x>
         <y>40</y>
         <width>1101</width>
-        <height>421</height>
+        <height>331</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_31">
@@ -8224,7 +8224,7 @@
       <property name="geometry">
        <rect>
         <x>930</x>
-        <y>500</y>
+        <y>410</y>
         <width>221</width>
         <height>51</height>
        </rect>
@@ -8245,7 +8245,7 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>460</y>
+        <y>370</y>
         <width>1121</width>
         <height>20</height>
        </rect>
@@ -8258,7 +8258,7 @@
       <property name="geometry">
        <rect>
         <x>770</x>
-        <y>510</y>
+        <y>420</y>
         <width>121</width>
         <height>31</height>
        </rect>
@@ -8279,7 +8279,7 @@
       <property name="geometry">
        <rect>
         <x>760</x>
-        <y>490</y>
+        <y>400</y>
         <width>141</width>
         <height>20</height>
        </rect>
@@ -8292,7 +8292,7 @@
       <property name="geometry">
        <rect>
         <x>890</x>
-        <y>500</y>
+        <y>410</y>
         <width>20</width>
         <height>51</height>
        </rect>
@@ -8305,7 +8305,7 @@
       <property name="geometry">
        <rect>
         <x>750</x>
-        <y>500</y>
+        <y>410</y>
         <width>20</width>
         <height>51</height>
        </rect>
@@ -8318,7 +8318,7 @@
       <property name="geometry">
        <rect>
         <x>760</x>
-        <y>540</y>
+        <y>450</y>
         <width>141</width>
         <height>20</height>
        </rect>
@@ -8327,16 +8327,11 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-    </widget>
-    <widget class="QWidget" name="tab_7">
-     <attribute name="title">
-      <string>Add Peak Fits</string>
-     </attribute>
-     <widget class="Line" name="line_514">
+     <widget class="Line" name="line_418">
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>20</y>
+        <y>500</y>
         <width>1121</width>
         <height>20</height>
        </rect>
@@ -8345,39 +8340,52 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-     <widget class="Line" name="line_516">
+     <widget class="Line" name="line_510">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>30</y>
+        <y>510</y>
         <width>20</width>
-        <height>441</height>
+        <height>351</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
-     <widget class="Line" name="line_518">
+     <widget class="Line" name="line_512">
       <property name="geometry">
        <rect>
         <x>1140</x>
-        <y>30</y>
+        <y>510</y>
         <width>20</width>
-        <height>441</height>
+        <height>351</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_419">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>850</y>
+        <width>1121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
      <widget class="QWidget" name="gridLayoutWidget_9">
       <property name="geometry">
        <rect>
         <x>40</x>
-        <y>40</y>
+        <y>520</y>
         <width>1101</width>
-        <height>421</height>
+        <height>331</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_32">
@@ -8656,24 +8664,11 @@
        </item>
       </layout>
      </widget>
-     <widget class="Line" name="line_537">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>460</y>
-        <width>1121</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
      <widget class="QPushButton" name="plotAddButton">
       <property name="geometry">
        <rect>
         <x>930</x>
-        <y>500</y>
+        <y>890</y>
         <width>221</width>
         <height>51</height>
        </rect>
@@ -8687,30 +8682,9 @@
        </font>
       </property>
       <property name="text">
-       <string>Plot</string>
+       <string>Plot All</string>
       </property>
      </widget>
-     <widget class="Line" name="line_673">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>580</y>
-        <width>20</width>
-        <height>161</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <zorder>line_514</zorder>
-     <zorder>line_516</zorder>
-     <zorder>line_518</zorder>
-     <zorder>gridLayoutWidget_9</zorder>
-     <zorder>line_537</zorder>
-     <zorder>plotAddButton</zorder>
-     <zorder>line_673</zorder>
-     <zorder>label_114</zorder>
     </widget>
    </widget>
   </widget>

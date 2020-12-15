@@ -1,8 +1,9 @@
 import math
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to compile EQE data
+# Function to compile EQE data
 
 def compile_EQE(eqe_df, start, stop, number):
     """
@@ -29,31 +30,35 @@ def compile_EQE(eqe_df, start, stop, number):
     EQE = []
     log_EQE = []
 
-    if number == 0: # If a wavelength range is given
+    if number == 0:  # If a wavelength range is given
         startNM = start
         stopNM = stop
 
-    elif number == 1: # If an energy range is given
-        startNM = (h * c * math.pow(10,9)) / (stop * q) # The start wavelength corresponds to the high energy stop value
-        stopNM = (h * c * math.pow(10,9)) / (start * q) # The stop wavelength corresponds to the low energy start value
+    elif number == 1:  # If an energy range is given
+        startNM = (h * c * math.pow(10, 9)) / (
+                stop * q)  # The start wavelength corresponds to the high energy stop value
+        stopNM = (h * c * math.pow(10, 9)) / (
+                start * q)  # The stop wavelength corresponds to the low energy start value
 
-
-    for y in range(len(eqe_df['Wavelength'])): # Iterate through columns of EQE file
-        if startNM <= eqe_df['Wavelength'][y] <= stopNM: # Compile EQE only if start <= wavelength <= stop, otherwise ignore
+    for y in range(len(eqe_df['Wavelength'])):  # Iterate through columns of EQE file
+        if startNM <= eqe_df['Wavelength'][
+            y] <= stopNM:  # Compile EQE only if start <= wavelength <= stop, otherwise ignore
             Wavelength.append(eqe_df['Wavelength'][y])
             Energy.append(eqe_df['Energy'][y])
-            EQE.append(eqe_df['EQE'][y]) #  * eqe_df['Energy'][y] - Eventually this might need to be added for fitting
-            log_EQE.append(eqe_df['Log_EQE'][y]) #  (math.log10(eqe_df['EQE'][y] * eqe_df['Energy'][y]) - Eventually this might need to be added for fitting
+            EQE.append(eqe_df['EQE'][y])  # * eqe_df['Energy'][y] - Eventually this might need to be added for fitting
+            log_EQE.append(eqe_df['Log_EQE'][
+                               y])  # (math.log10(eqe_df['EQE'][y] * eqe_df['Energy'][y]) - Eventually this might need to be added for fitting
 
-    if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE): # Check that the lengths are the same
+    if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE):  # Check that the lengths are the same
         return Wavelength, Energy, EQE, log_EQE
 
     else:
         print('Error Code 1: Length mismatch.')
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to compile EL data
+# Function to compile EL data
 
 def compile_EL(el_df, start, stop, number):
     """
@@ -83,11 +88,14 @@ def compile_EL(el_df, start, stop, number):
         stopNM = stop
 
     elif number == 1:  # If an energy range is given
-        startNM = (h * c * math.pow(10, 9)) / (stop * q)  # The start wavelength corresponds to the high energy stop value
-        stopNM = (h * c * math.pow(10, 9)) / (start * q)  # The stop wavelength corresponds to the low energy start value
+        startNM = (h * c * math.pow(10, 9)) / (
+                stop * q)  # The start wavelength corresponds to the high energy stop value
+        stopNM = (h * c * math.pow(10, 9)) / (
+                start * q)  # The stop wavelength corresponds to the low energy start value
 
     for y in range(len(el_df['Wavelength'])):  # Iterate through columns of EL file
-        if startNM <= el_df['Wavelength'][y] <= stopNM:  # Compile EL only if start <= wavelength <= stop, otherwise ignore
+        if startNM <= el_df['Wavelength'][
+            y] <= stopNM:  # Compile EL only if start <= wavelength <= stop, otherwise ignore
             Wavelength.append(el_df['Wavelength'][y])
             Energy.append(el_df['Energy'][y])
             EL.append(el_df['Signal'][y])
@@ -98,9 +106,10 @@ def compile_EL(el_df, start, stop, number):
     else:
         print('Error Code 1: Length mismatch.')
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to compile any data
+# Function to compile any data
 
 def compile_Data(energy, y, startE, stopE):
     """
@@ -117,7 +126,7 @@ def compile_Data(energy, y, startE, stopE):
     y_comp = []
 
     for x in range(len(energy)):
-        if startE <= energy[x] <= stopE :  # Compile data only if start <= energy <= stop, otherwise ignore
+        if startE <= energy[x] <= stopE:  # Compile data only if start <= energy <= stop, otherwise ignore
             Energy_comp.append(energy[x])
             y_comp.append(y[x])
 

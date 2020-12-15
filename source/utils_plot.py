@@ -1,10 +1,12 @@
 import random
+
 from colour import Color
 from numpy import random
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to check if input is a color
+# Function to check if input is a color
 
 def is_Colour(colour):
     """
@@ -18,9 +20,10 @@ def is_Colour(colour):
     except:
         return False
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to pick plot color
+# Function to pick plot color
 
 def pick_EQE_Color(colour_Box, file_no):
     """
@@ -30,11 +33,11 @@ def pick_EQE_Color(colour_Box, file_no):
     """
 
     colour = colour_Box.toPlainText()
-    colour = colour.replace(" ", "") # If the user inputs "Sky Blue" instead of "SkyBlue" etc.
+    colour = colour.replace(" ", "")  # If the user inputs "Sky Blue" instead of "SkyBlue" etc.
 
     color_comp = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
     color_choice = [random.choice(color_comp) for j in range(6)]
-    random_colour = '#'+''.join(color_choice)
+    random_colour = '#' + ''.join(color_choice)
 
     if len(colour) != 0:
         if is_Colour(colour):
@@ -48,9 +51,10 @@ def pick_EQE_Color(colour_Box, file_no):
     else:
         return random_colour
 
+
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to pick EQE plot label
+# Function to pick EQE plot label
 
 def pick_EQE_Label(label_Box, filename_Box):
     """
@@ -64,12 +68,13 @@ def pick_EQE_Label(label_Box, filename_Box):
 
     if len(label) != 0:
         return label
-    else: # We don't need to check that there is a filename, as the "pick_label" function is only called after checking "EQE_is_valid"
+    else:  # We don't need to check that there is a filename, as the "pick_label" function is only called after checking "EQE_is_valid"
         return filename
+
 
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to pick "Calculate EQE" plot label
+# Function to pick "Calculate EQE" plot label
 
 def pick_Label(range_no, startNM, stopNM):
     """
@@ -79,7 +84,8 @@ def pick_Label(range_no, startNM, stopNM):
     :return: label: string of the lable to plot [string]
     """
 
-    label = str("Range") + str(range_no) + "_" + str(int(startNM)) + "nm" + "-" + str(int(stopNM)) + "nm" # Example: Range1_360nm_800nm
+    label = str("Range") + str(range_no) + "_" + str(int(startNM)) + "nm" + "-" + str(
+        int(stopNM)) + "nm"  # Example: Range1_360nm_800nm
     return label
 
 # -----------------------------------------------------------------------------------------------------------

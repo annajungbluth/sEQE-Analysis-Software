@@ -1,9 +1,11 @@
 import math
+
 from numpy import exp
+
 
 # -----------------------------------------------------------------------------------------------------------
 
-### Function to caluclate gaussian absorption
+# Function to caluclate gaussian absorption
 
 def calculate_gaussian_absorption(x, f, l, E, T):
     """
