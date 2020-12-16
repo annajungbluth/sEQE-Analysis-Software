@@ -43,3 +43,15 @@ def R_squared(y_data, yfit_data):
         print('Error Code 1: Length mismatch.')
 
 # -----------------------------------------------------------------------------------------------------------
+
+# Function to separate out elements from a list
+
+def sep_list(list_, n):
+    """
+    :param list_: list of values [list]
+    :param n: number of element to extract [int]
+    :return: nth element of list
+    """
+    return list_[n]
+
+# -----------------------------------------------------------------------------------------------------------
