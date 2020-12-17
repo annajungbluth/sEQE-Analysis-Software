@@ -55,3 +55,18 @@ def sep_list(list_, n):
     return list_[n]
 
 # -----------------------------------------------------------------------------------------------------------
+
+# Function to separate a list of lists
+
+def sep_list_list(list_list):
+    """
+    :param list_list: list of lists [list]
+    :return: one_list: list of all individual elements in list_list [list]
+    """
+    one_list = []
+
+    for list in list_list:
+        for x in list:
+            one_list.append(x)
+
+    return one_list
