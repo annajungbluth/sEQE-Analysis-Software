@@ -2441,20 +2441,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.axDouble_1, self.axDouble_2 = set_up_EQE_plot()
 
-            self.axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Fit')
+            self.axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
+            self.axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='dotted', label='Optical Peak Fit')
             self.axDouble_1.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2,
-                                 linestyle='--', label='CT Fit')
-            self.axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
+                                 linestyle='--', label='CT State Fit')
             self.axDouble_1.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2,
-                                 linestyle='dotted', color='grey', label='Optical + CT Fit')
+                                 linestyle='dashdot', label='Total Fit')
+            self.axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
             self.axDouble_1.legend()
 
-            self.axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Fit')
+            self.axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
+            self.axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Peak Fit')
             self.axDouble_2.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2,
-                                 linestyle='--', label='CT Fit')
-            self.axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
+                                 linestyle='--', label='CT State Fit')
             self.axDouble_2.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2,
-                                 linestyle='dotted', color='grey', label='Optical + CT Fit')
+                                 linestyle='dashdot', label='Total Fit')
+            self.axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
             self.axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
             self.axDouble_2.legend()
 
@@ -2525,16 +2527,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.axDouble_1, self.axDouble_2 = set_up_EQE_plot()
 
-                self.axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Fit')
-                self.axDouble_1.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
-                self.axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
-                self.axDouble_1.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+                self.axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color = 'black')
+                self.axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='dotted', label='Optical Peak Fit')
+                self.axDouble_1.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
+                self.axDouble_1.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+                self.axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
                 self.axDouble_1.legend()
 
-                self.axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Fit')
-                self.axDouble_2.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT Fit')
-                self.axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label='EQE')
-                self.axDouble_2.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dotted', color='grey', label='Optical + CT Fit')
+                self.axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color = 'black')
+                self.axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Peak Fit')
+                self.axDouble_2.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
+                self.axDouble_2.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+                self.axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
                 self.axDouble_2.set_ylim([10**(-7), max(eqe['EQE'])*1.4])
                 self.axDouble_2.legend()
 
