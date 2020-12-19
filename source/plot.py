@@ -27,37 +27,66 @@ def plot(ax1, ax2, x, y, label_, color_):
 
 # Function to set up "Calculate EQE" plot
 
-def set_up_plot():
+def set_up_plot(flag='Wavelength'):
     """
     :return: ax_1: plt axis object to plot EQE on linear scale
              ax_2: plt axis objects to plot EQE on log scale
     """
 
-    # style.use('ggplot')
-    fig1 = plt.figure()
+    if flag =='Wavelength':
 
-    ax1 = fig1.add_subplot(2, 1, 1)
-    plt.ylabel('EQE', fontsize=17, fontweight='medium')
-    plt.grid(False)
-    # plt.box()
-    plt.rcParams['figure.facecolor'] = 'xkcd:white'
-    plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-    plt.minorticks_on()
+        # style.use('ggplot')
+        fig1 = plt.figure()
 
-    ax2 = fig1.add_subplot(2, 1, 2)
-    ax2.set_yscale('log')
-    plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
-    plt.ylabel('EQE', fontsize=17, fontweight='medium')
-    plt.grid(False)
-    # plt.box()
-    plt.rcParams['figure.facecolor'] = 'xkcd:white'
-    plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
-    plt.minorticks_on()
-    plt.show()
+        ax1 = fig1.add_subplot(2, 1, 1)
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.grid(False)
+        # plt.box()
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+
+        ax2 = fig1.add_subplot(2, 1, 2)
+        ax2.set_yscale('log')
+        plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.grid(False)
+        # plt.box()
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+        plt.show()
+
+    elif flag == 'Energy':
+
+        fig1 = plt.figure(figsize=(7, 10))
+
+        ax1 = fig1.add_subplot(2, 1, 1)
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.grid(False)
+        # plt.box()
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+
+        ax2 = fig1.add_subplot(2, 1, 2)
+        ax2.set_yscale('log')
+        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.grid(False)
+        # plt.box()
+        plt.rcParams['figure.facecolor'] = 'xkcd:white'
+        plt.rcParams['figure.edgecolor'] = 'xkcd:white'
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
+        plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+        plt.minorticks_on()
+        plt.show()
 
     return ax1, ax2
 
