@@ -163,6 +163,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Double Fits
 
+        self.bias = False
+        self.tolerance = None
+
         self.data_double = []
 
         # Handle Import Data Button
@@ -2010,6 +2013,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Import relevant parameters
 
+        if self.ui.bias_DoubleFit.isChecked():
+            self.bias = True
+            self.tolerance = float(self.ui.tolerance.value())/100
+            print('Constraining fit below EQE data.')
+        else:
+            self.bias = False
+            print('Not constraining fit.')
+
         eqe = self.data_double
         self.T_double = self.ui.double_Temperature.value()
 
@@ -2286,6 +2297,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # # Determine R Squared of total fit
                 # self.combined_fit(eqe=eqe, df_both=df_results)
+
+        self.bias = False
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -2613,7 +2626,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if len(Opt_fit) == len(CT_fit):
                     combined_Fit = Opt_fit + CT_fit
-                    combined_R_Squared = R_squared(eqe_data, combined_Fit.tolist())
+                    combined_R_Squared = R_squared(eqe_data, combined_Fit.tolist(), bias=self.bias, tolerance=self.tolerance)
 
         else: # if any of the fits were unsuccessful
             Opt_fit = 0
@@ -2649,7 +2662,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if len(Opt_fit) == len(CT_fit):
                     combined_Fit = Opt_fit + CT_fit
-                    combined_R_Squared = R_squared(eqe_data, combined_Fit.tolist())
+                    combined_R_Squared = R_squared(eqe_data, combined_Fit.tolist(), bias=self.bias, tolerance=self.tolerance)
 
         else: # if any of the fits were unsuccessful
             Opt_fit = 0
