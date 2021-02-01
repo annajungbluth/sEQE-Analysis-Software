@@ -2564,6 +2564,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     print(best_vals)
 
+                    
+
                     start_Opt_list.append(startSim_Opt)
                     stop_Opt_list.append(stopSim_Opt)
                     start_CT_list.append(df_CT['Start'][y])
