@@ -15,13 +15,13 @@ def plot(ax1, ax2, x, y, label_, color_):
     :param color_: color to plot [string]
     :return:
     """
-
     ax1.plot(x, y, linewidth=3, label=label_, color=color_)
-    ax2.plot(x, y, linewidth=3, label=label_, color=color_)
     ax1.legend()
-    ax2.legend()
-    plt.draw()
 
+    ax2.plot(x, y, linewidth=3, label=label_, color=color_)
+    ax2.legend()
+
+    plt.draw()
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -29,6 +29,7 @@ def plot(ax1, ax2, x, y, label_, color_):
 
 def set_up_plot(flag='Wavelength'):
     """
+    :param flag: Flag to specify if wavelength or energy are plotted [string]
     :return: ax_1: plt axis object to plot EQE on linear scale
              ax_2: plt axis objects to plot EQE on log scale
     """

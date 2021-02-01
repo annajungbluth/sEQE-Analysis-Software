@@ -186,13 +186,13 @@ def Fit_is_valid(eqe_df, startE, stopE, startFitE, stopFitE, EQE_no):
 
 # Function to check if start fit energy is smaller than stop fit energy
 
-def StartStop_is_valid(startE, stopE):
+def StartStop_is_valid(start, stop):
     """
-    :param startE: energy value of plot / fit start [float]
-    :param stopE: energy value of plot / fit stop [float]
+    :param start: start value (i.e. start energy or fit start) [float]
+    :param stop: stop value (i.e. stop energy or fit stop) [float]
     :return: True or False
     """
-    if startE < stopE:
+    if start < stop:
         return True
     else:
         print('Please select valid start and stop energies.')
