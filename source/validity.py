@@ -1,3 +1,7 @@
+from source.utils import get_logger
+
+logger = get_logger()
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if reference & data files are non-empty and within wavelength range
@@ -21,28 +25,28 @@ def Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
             return True
 
         elif startNM < data_df['Wavelength'][0] or startNM < ref_df['Wavelength'][0]:
-            print('Please select a valid start wavelength for Range %s.' % str(range_no))
+            logger.error('Please select a valid start wavelength for Range %s.' % str(range_no))
             return False
 
         elif stopNM > data_df['Wavelength'][int(len(data_df['Wavelength'])) - 1] or stopNM > ref_df['Wavelength'][
             int(len(ref_df['Wavelength'])) - 1]:
-            print('Please select a valid stop wavelength for Range %s.' % str(range_no))
+            logger.error('Please select a valid stop wavelength for Range %s.' % str(range_no))
             return False
 
         else:
-            print('Please select a valid wavelength range for Range %s.' % str(range_no))
+            logger.error('Please select a valid wavelength range for Range %s.' % str(range_no))
             return False
 
     elif len(ref_df) == 0 and len(data_df) != 0:  # If reference file is empty / hasn't been selected
-        print('Please import a valid reference file for Range %s.' % str(range_no))
+        logger.error('Please import a valid reference file for Range %s.' % str(range_no))
         return False
 
     elif len(ref_df) != 0 and len(data_df) == 0:  # If data file is empty / hasn't been selected
-        print('Please import a valid data file for Range %s.' % str(range_no))
+        logger.error('Please import a valid data file for Range %s.' % str(range_no))
         return False
 
     else:  # If reference and data files are empty / haven't been selected
-        print('Please import valid reference and data files for Range %s.' % str(range_no))
+        logger.error('Please import valid reference and data files for Range %s.' % str(range_no))
         return False
 
 
@@ -67,19 +71,19 @@ def EQE_is_valid(eqe_df, startNM, stopNM, EQE_no):
             return True
 
         elif startNM < eqe_df['Wavelength'][0] and stopNM <= eqe_df['Wavelength'][int(len(eqe_df['Wavelength'])) - 1]:
-            print('Please select a valid start wavelength for EQE File %s.' % str(EQE_no))
+            logger.error('Please select a valid start wavelength for EQE File %s.' % str(EQE_no))
             return False
 
         elif startNM >= eqe_df['Wavelength'][0] and stopNM > eqe_df['Wavelength'][int(len(eqe_df['Wavelength'])) - 1]:
-            print('Please select a valid stop wavelength for EQE File %s.' % str(EQE_no))
+            logger.error('Please select a valid stop wavelength for EQE File %s.' % str(EQE_no))
             return False
 
         else:
-            print('Please select a valid wavelength range for EQE File %s.' % str(EQE_no))
+            logger.error('Please select a valid wavelength range for EQE File %s.' % str(EQE_no))
             return False
 
     else:  # If EQE file is empty / hasn't been selected
-        print('Please import a valid file for EQE File %s.' % str(EQE_no))
+        logger.error('Please import a valid file for EQE File %s.' % str(EQE_no))
         return False
 
 
@@ -101,19 +105,19 @@ def Data_is_valid(df, startE, stopE):
             return True
 
         elif startE > max(df['Energy']) and stopE >= min(df['Energy']):
-            print('Please select a valid start energy.')
+            logger.error('Please select a valid start energy.')
             return False
 
         elif startE <= max(df['Energy']) and stopE < min(df['Energy']):
-            print('Please select a valid stop energy.')
+            logger.error('Please select a valid stop energy.')
             return False
 
         else:
-            print('Please select a valid energy range.')
+            logger.error('Please select a valid energy range.')
             return False
 
     else:  # If file is empty / hasn't been selected
-        print('Please import a valid file.')
+        logger.error('Please import a valid file.')
         return False
 
 
@@ -138,7 +142,7 @@ def Normalization_is_valid(eqe_df, normNM, EQE_no):
             return True
 
         else:
-            print('Please select a valid normalization wavelength for EQE file %s.' % str(EQE_no))
+            logger.error('Please select a valid normalization wavelength for EQE file %s.' % str(EQE_no))
             return False
 
 
@@ -166,19 +170,19 @@ def Fit_is_valid(eqe_df, startE, stopE, startFitE, stopFitE, EQE_no):
             return True
 
         elif startE > eqe_df['Energy'][0] and stopE >= eqe_df['Energy'][int(len(eqe_df['Energy'])) - 1]:
-            print('Please select a valid start energy for EQE File %s.' % str(EQE_no))
+            logger.error('Please select a valid start energy for EQE File %s.' % str(EQE_no))
             return False
 
         elif startE <= eqe_df['Energy'][0] and stopE < eqe_df['Energy'][int(len(eqe_df['Energy'])) - 1]:
-            print('Please select a valid stop energy for EQE File %s.' % str(EQE_no))
+            logger.error('Please select a valid stop energy for EQE File %s.' % str(EQE_no))
             return False
 
         else:
-            print('Please select a valid energy range for EQE File %s.' % str(EQE_no))
+            logger.error('Please select a valid energy range for EQE File %s.' % str(EQE_no))
             return False
 
     else:  # If EQE file is empty / hasn't been selected
-        print('Please import a valid file for EQE File %s.' % str(EQE_no))
+        logger.error('Please import a valid file for EQE File %s.' % str(EQE_no))
         return False
 
 
@@ -195,7 +199,7 @@ def StartStop_is_valid(start, stop):
     if start < stop:
         return True
     else:
-        print('Please select valid start and stop energies.')
+        logger.info('Please select valid start and stop energies.')
         return False
 
 # -----------------------------------------------------------------------------------------------------------

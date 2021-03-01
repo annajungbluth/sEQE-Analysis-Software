@@ -144,7 +144,7 @@ def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eq
              eqe_data: original EQE data [list]
     """
 
-    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE * 1.05, 1) # Increase the stop energy if you want to expand the fit!
+    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE * 1.25, 1) # (1.05) Increase the stop energy if you want to expand the fit!
 
     if R2_Opt != 0 and R2_CT != 0:
 

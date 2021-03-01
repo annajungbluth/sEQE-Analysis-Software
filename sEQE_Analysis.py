@@ -32,11 +32,11 @@ from source.gaussian import calculate_gaussian_absorption
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
-from source.utils import interpolate, sep_list
+from source.utils import interpolate, sep_list, get_logger
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.utils_fit import subtract_Opt, guess_fit, fit_function, calculate_guess_fit, calculate_combined_fit, map_fit
+from source.utils_fit import subtract_Opt, guess_fit, fit_function, calculate_guess_fit, calculate_combined_fit
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -51,6 +51,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Tkinter
         root = tk.Tk()
         root.withdraw()
+
+        # Logger
+        self.logger = get_logger()
 
         # Page 1 - Calculate EQE
 
@@ -130,6 +133,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Handle Plot EQE Buttons
         self.ui.plotEQEButton_Wavelength.clicked.connect(lambda: self.pre_plot_EQE(0))
         self.ui.plotEQEButton_Energy.clicked.connect(lambda: self.pre_plot_EQE(1))
+
+        self.ref_label = '$C_{60}$'
 
         # Page 3 - Fit EQE (Marcus Theory)
 
@@ -479,91 +484,91 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if 'Power' not in ref_df.columns:
 
-            print('Calculating power values.')
+            self.logger.info('Calculating power values.')
 
             if range_no == 1:
                 if self.ui.Range1_Si_button.isChecked() and not self.ui.Range1_InGaAs_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 elif self.ui.Range1_InGaAs_button.isChecked() and not self.ui.Range1_Si_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 else:
-                    print('Please select a valid reference diode.')
+                    self.logger.error('Please select a valid reference diode.')
 
             elif range_no == 2:
                 if self.ui.Range2_Si_button.isChecked() and not self.ui.Range2_InGaAs_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 elif self.ui.Range2_InGaAs_button.isChecked() and not self.ui.Range2_Si_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 else:
-                    print('Please select a valid reference diode.')
+                    self.logger.error('Please select a valid reference diode.')
 
             elif range_no == 3:
                 if self.ui.Range3_Si_button.isChecked() and not self.ui.Range3_InGaAs_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 elif self.ui.Range3_InGaAs_button.isChecked() and not self.ui.Range3_Si_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 else:
-                    print('Please select a valid reference diode.')
+                    self.logger.error('Please select a valid reference diode.')
 
             elif range_no == 4:
                 if self.ui.Range4_Si_button.isChecked() and not self.ui.Range4_InGaAs_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 elif self.ui.Range4_InGaAs_button.isChecked() and not self.ui.Range4_Si_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 else:
-                    print('Please select a valid reference diode.')
+                    self.logger.error('Please select a valid reference diode.')
 
             elif range_no == 5:
                 if self.ui.Range5_Si_button.isChecked() and not self.ui.Range5_InGaAs_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 elif self.ui.Range5_InGaAs_button.isChecked() and not self.ui.Range5_Si_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 else:
-                    print('Please select a valid reference diode.')
+                    self.logger.error('Please select a valid reference diode.')
 
             elif range_no == 6:
                 if self.ui.Range6_Si_button.isChecked() and not self.ui.Range6_InGaAs_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.Si_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 elif self.ui.Range6_InGaAs_button.isChecked() and not self.ui.Range6_Si_button.isChecked():
                     try:
                         ref_df['Power'] = calculate_Power(ref_df, self.InGaAs_cal)
                     except:
-                        print('Please select a valid reference diode.')
+                        self.logger.error('Please select a valid reference diode.')
                 else:
-                    print('Please select a valid reference diode.')
+                    self.logger.error('Please select a valid reference diode.')
 
         if 'Power' in ref_df.columns:  # Check if the power has been calculated already
 
@@ -617,7 +622,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 plt.draw()
 
         else:
-            print('Error Code 1: Length mismatch.')
+            self.logger.error('Length mismatch.')
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -728,7 +733,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if len(export_path) != 0:  # Check if the user actually selected a path
                 os.chdir(export_path)  # Change the working directory
                 export_file.to_csv(export_filename)  # Save data to csv
-                print('Saving data to: %s' % str(EQE_file))
+                self.logger.info('Saving data to: %s' % str(EQE_file))
                 os.chdir(self.data_dir)  # Change the directory back
 
         self.export = False
@@ -834,12 +839,17 @@ class MainWindow(QtWidgets.QMainWindow):
             label_ = pick_EQE_Label(label_Box, filename_Box)
             color_ = pick_EQE_Color(color_Box, file_no)
 
+            ls_ = '-'
+
+            if label_ == self.ref_label:
+                ls_ = '--'
+
             if number == 0:
-                self.axEQE_1.plot(wave, eqe, linewidth=3, label=label_, color=color_)
-                self.axEQE_2.semilogy(wave, eqe, linewidth=3, label=label_, color=color_)
+                self.axEQE_1.plot(wave, eqe, linewidth=3, linestyle=ls_, label=label_, color=color_)
+                self.axEQE_2.semilogy(wave, eqe, linewidth=3, linestyle=ls_, label=label_, color=color_)
             elif number == 1:
-                self.axEQE_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
-                self.axEQE_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                self.axEQE_1.plot(energy, eqe, linewidth=3, linestyle=ls_, label=label_, color=color_)
+                self.axEQE_2.semilogy(energy, eqe, linewidth=3, linestyle=ls_, label=label_, color=color_)
 
             return True
 
@@ -914,9 +924,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check if CT state or optical gap are fitted.
                         fit_opticalPeak = True
                     elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
-                        print('Please select a valid peak to fit.')
+                        self.logger.error('Please select a valid peak to fit.')
                     elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
-                        print('Please select a valid peak to fit.')
+                        self.logger.error('Please select a valid peak to fit.')
 
                 elif file_no == 2:
                     self.T_CT = self.ui.Temperature_2.value()
@@ -928,9 +938,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
                         fit_opticalPeak = True
                     elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
-                        print('Please select a valid peak to fit.')
+                        self.logger.error('Please select a valid peak to fit.')
                     elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
-                        print('Please select a valid peak to fit.')
+                        self.logger.error('Please select a valid peak to fit.')
 
                 # Attempt peak fit:
                 x_gaussian = linspace(startPlotFit, stopPlotFit, 50)
@@ -954,6 +964,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                 y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
                         if r_squared > 0:
+                            self.logger.info('Fit Results: ')
+                            print("")
                             print('Initial Guess (eV) : ', p0)
 
                             print('-' * 80)
@@ -970,6 +982,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                       format(math.sqrt(covar[2, 2]), '.6f'))
                             print('R_Squared : ', format(r_squared, '.6f'))
                             print('-' * 80)
+                            print("")
 
                             # Plot EQE data and CT fit
                             self.axFit_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
@@ -1029,7 +1042,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 if len(save_fit_path) != 0:  # Check if the user actually selected a path
                                     os.chdir(save_fit_path)  # Change the working directory
                                     fit_file.to_csv(save_fit_filename)  # Save data to csv
-                                    print('Saving fit data to: %s' % str(save_fit_file))
+                                    self.logger.info('Saving fit data to: %s' % str(save_fit_file))
                                     os.chdir(self.data_dir)  # Change the directory back
 
                             return True  # This breaks the fore loop
@@ -1040,7 +1053,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     except:
                         p0 = [0.001, 0.1, round(ECT, 3)]
 
-                print('Optimal parameters not found.')
+                self.logger.info('Optimal parameters not found.')
                 return False
 
             # Fit EQE (MLJ Theory)
@@ -1079,6 +1092,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                 y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
                         if r_squared > 0:
+                            self.logger.info('Fit Results: ')
+                            print("")
                             print('Initial Guess (eV) : ', p0)
 
                             print('-' * 80)
@@ -1091,6 +1106,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                   format(math.sqrt(covar[2, 2]), '.6f'))
                             print('R_Squared : ', format(r_squared, '.6f'))
                             print('-' * 80)
+                            print("")
 
                             # Plot EQE data and CT fit
                             self.axFit_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
@@ -1121,7 +1137,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     except:
                         p0 = [0.001, 0.1, round(ECT, 3)]
 
-                print('Optimal parameters not found.')
+                self.logger.info('Optimal parameters not found.')
                 return False
 
         else:
@@ -1188,9 +1204,9 @@ class MainWindow(QtWidgets.QMainWindow):
                             if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check if CT state or optical gap are fitted.
                                 fit_opticalPeak = True
                             elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
-                                print('Please select a valid peak to fit.')
+                                self.logger.error('Please select a valid peak to fit.')
                             elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
-                                print('Please select a valid peak to fit.')
+                                self.logger.error('Please select a valid peak to fit.')
 
                         elif file_no == 2:
                             self.T_CT = self.ui.Temperature_2.value()
@@ -1203,9 +1219,9 @@ class MainWindow(QtWidgets.QMainWindow):
                             if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
                                 fit_opticalPeak = True
                             elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
-                                print('Please select a valid peak to fit.')
+                                self.logger.error('Please select a valid peak to fit.')
                             elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
-                                print('Please select a valid peak to fit.')
+                                self.logger.error('Please select a valid peak to fit.')
 
                         # Attempt peak fit:
                         ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
@@ -1232,7 +1248,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             except:
                                 p0 = [0.001, 0.1, ECT]
                                 if ECT == ECT_guess[-1]:
-                                    print('Optimal parameters not found.')
+                                    self.logger.info('Optimal parameters not found.')
 
                     # Fit EQE (MLJ Theory)
                     elif file_no == 'x1':
@@ -1272,13 +1288,15 @@ class MainWindow(QtWidgets.QMainWindow):
                             except:
                                 p0 = [0.001, 0.1, ECT]
                                 if ECT == ECT_guess[-1]:
-                                    print('Optimal parameters not found.')
+                                    self.logger.info('Optimal parameters not found.')
 
             if len(R_df) != 0:
                 parameter_df = pd.DataFrame({'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df,
                                              'R_Squared': R_df})  # Create a dataFrame with all results
                 max_index = parameter_df[parameter_df['R_Squared'] == max(parameter_df['R_Squared'])].index.values[0]
 
+                self.logger.info('Fit Results: ')
+                print("")
                 print('-' * 80)
                 if file_no == 'x1':
                     print('Temperature [T] (K) : ', self.T_x)
@@ -1328,6 +1346,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     print('Start Energy (eV) : ', parameter_df['Start'][max_index])
                     print('Stop Energy (eV) : ', parameter_df['Stop'][max_index])
                 print('-' * 80)
+                print("")
 
                 f_df = parameter_df.pivot('Stop', 'Start',
                                           'f')  # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
@@ -1392,7 +1411,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 plt.show()
 
             else:
-                print('No fits determined.')
+                self.logger.info('No fits determined.')
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -1552,7 +1571,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             self.fit_EL_EQE(EL_energy, red_EL_abs_scaled, self.ui.startFit_EL2, self.ui.stopFit_EL2, 1)
 
             else:
-                print('Please select a valid EL file.')
+                self.logger.error('Please select a valid EL file.')
 
         elif data_no == 2:  # EQE Data
 
@@ -1632,6 +1651,8 @@ class MainWindow(QtWidgets.QMainWindow):
                             for value in x_gaussian:
                                 y_gaussian.append(self.gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
 
+                    self.logger.info('Fit Results: ')
+                    print("")
                     print('-' * 80)
                     print('Temperature [T] (K): ', self.T_EL)
                     print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-',
@@ -1641,6 +1662,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',
                           format(math.sqrt(covar[2, 2]), '.6f'))
                     print('-' * 80)
+                    print("")
 
                     if include_Disorder:
                         self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder',
@@ -1690,6 +1712,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                 y_gaussian.append(
                                     self.MLJ_gaussian_EQE(value, best_vals[0], best_vals[1], best_vals[2]))
 
+                    self.logger.info('Fit Results: ')
+                    print("")
                     print('-' * 80)
                     print('Temperature [T] (K): ', self.T_EL)
                     print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-',
@@ -1699,6 +1723,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',
                           format(math.sqrt(covar[2, 2]), '.6f'))
                     print('-' * 80)
+                    print("")
 
                     if include_Disorder:
                         self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder',
@@ -1714,7 +1739,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     plt.draw()
 
             except:
-                print('Optimal parameters not found.')
+                self.logger.info('Optimal parameters not found.')
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -1898,7 +1923,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 l_fit = data_Fit['Reorganization Energy (eV)'][0]
                 E_fit = data_Fit['CT State Energy (eV)'][0]
             except:
-                print('Please import a valid fit file.')
+                self.logger.error('Please import a valid fit file.')
 
         if E_fit != 0:  # Only progress if a valid energy was imported
 
@@ -1920,7 +1945,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if len(save_sub_path) != 0:  # Check if the user actually selected a path
                     os.chdir(save_sub_path)  # Change the working directory
                     sub_file.to_csv(save_sub_filename)  # Save data to csv
-                    print('Saving fit data to: %s' % str(save_sub_file))
+                    self.logger.info('Saving fit data to: %s' % str(save_sub_file))
                     os.chdir(self.data_dir)  # Change the directory back
 
             self.axSub_1, self.axSub_2 = set_up_EQE_plot()
@@ -1976,7 +2001,7 @@ class MainWindow(QtWidgets.QMainWindow):
             l_OptFit = data_OptFit['Reorganization Energy (eV)'][0]
             E_OptFit = data_OptFit['Optical Peak Energy (eV)'][0]
         except:
-            print('No optical peak fit imported.')
+            self.logger.error('No optical peak fit imported.')
 
         try: # Check if fit for a CT state fit was importated
             T_CTFit = data_CTFit['Temperature'][0]
@@ -1984,7 +2009,7 @@ class MainWindow(QtWidgets.QMainWindow):
             l_CTFit = data_CTFit['Reorganization Energy (eV)'][0]
             E_CTFit = data_CTFit['CT State Energy (eV)'][0]
         except:
-            print('No CT state fit imported.')
+            self.logger.error('No CT state fit imported.')
 
         if E_OptFit != 0 and E_CTFit != 0:  # Only progress if a valid energy was imported
 
@@ -2022,7 +2047,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.axAdd_2.legend()
 
             else:
-                print('Please import a valid EQE file.')
+                self.logger.error('Please import a valid EQE file.')
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -2039,10 +2064,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.bias_DoubleFit.isChecked():
             self.bias = True
             self.tolerance = float(self.ui.tolerance.value())/100
-            print('Constraining fit below EQE data.')
+            self.logger.info('Constraining fit below EQE data.')
         else:
             self.bias = False
-            print('Not constraining fit.')
+            self.logger.info('Not constraining fit.')
 
         eqe = self.data_double
         self.T_double = self.ui.double_Temperature.value()
@@ -2090,7 +2115,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Compile a dataFrame with all combinations of start / stop values for Opt and CT fit
 
-            print('Compiling Fit Ranges ...')
+            self.logger.info('Compiling Fit Ranges ...')
 
             df_Opt = pd.DataFrame()
             df_CT = pd.DataFrame()
@@ -2118,11 +2143,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Calculate all optical peak fits
 
-            print('Calculating Optical Peak Fits ...')
+            self.logger.info('Calculating Optical Peak Fits ...')
 
             cal_vals_Opt = list(map(lambda x: calculate_guess_fit(x, df_Opt, eqe, guessRange_Opt, self.gaussian_double), tqdm(range(len(df_Opt)))))
-
-            print(cal_vals_Opt)
 
             best_vals_Opt = list(map(lambda list_: sep_list(list_, 0), cal_vals_Opt))
             R2_Opt = list(map(lambda list_: sep_list(list_, 1), cal_vals_Opt))
@@ -2153,7 +2176,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             df_results = pd.DataFrame()
 
-            print('Calculating CT State Fits ...')
+            self.logger.info('Calculating CT State Fits ...')
 
             # If Optical peak to be subtracted before CT fit
             if self.ui.subtract_DoubleFit.isChecked():
@@ -2328,13 +2351,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # Find best fit
 
-                print('Determining Best Fit ...')
+                self.logger.info('Determining Best Fit ...')
+                self.logger.info('Fit Results: ')
+                print("")
                 for x in np.arange(1,6,1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
                     df_results = self.find_best_fit(df_both = df_results, eqe=eqe, T = self.T_double, n_fit=x)
 
                 print('-' * 80)
+                print("")
 
         self.bias = False
 
@@ -2346,7 +2372,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if len(df_both) != 0:
 
-            #print('Determining Best Fit ...')
+            #self.logger.info('Determining Best Fit ...')
 
             # Determine best fit
             max_index = df_both[df_both['Total_R2'] == max(df_both['Total_R2'])].index.values[0]
@@ -2441,10 +2467,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.ui.bias_simFit.isChecked():
             self.sim_Bias = True
             self.sim_Tolerance = float(self.ui.sim_Tolerance.value())/100
-            print('Constraining fit below EQE data.')
+            self.logger.info('Constraining fit below EQE data.')
         else:
             self.sim_Bias = False
-            print('Not constraining fit.')
+            self.logger.info('Not constraining fit.')
 
         eqe = self.data_sim
         self.T_sim = self.ui.sim_Temperature.value()
@@ -2487,7 +2513,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             # Compile a dataFrame with all combinations of start / stop values for CT fit
 
-            print('Compiling CT Fit Ranges ...')
+            self.logger.info('Compiling CT Fit Ranges ...')
 
             df_CT = pd.DataFrame()
 
@@ -2509,7 +2535,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             simRange_l = np.round(np.arange(start_l_Opt, stop_l_Opt + 0.005, 0.01), 3).tolist()
 
-            print('Compiling Optical Peak Fits ...')
+            self.logger.info('Compiling Optical Peak Fits ...')
 
             # Insure that the x-position and height don't change
             sim_E_total = sim_E_Opt + max(simRange_l)
@@ -2548,7 +2574,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             df_results = pd.DataFrame()
 
-            print('Calculating CT State Fits ...')
+            self.logger.info('Calculating CT State Fits ...')
 
             for x in tqdm(range(len(df_Opt))):
                 for y in tqdm(range(len(df_CT))):
@@ -2561,10 +2587,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                                            stopE=df_CT['Stop'][y],
                                                            guessRange=guessRange_CT,
                                                            function = self.gaussian_sim)
-
-                    print(best_vals)
-
-                    
 
                     start_Opt_list.append(startSim_Opt)
                     stop_Opt_list.append(stopSim_Opt)
@@ -2613,13 +2635,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # Find best fit
 
-                print('Determining Best Fit ...')
+                self.logger.info('Determining Best Fit ...')
+                self.logger.info('Fit Results: ')
                 for x in np.arange(1,6,1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
                     df_results = self.find_best_fit(df_both = df_results, eqe=eqe, T=self.T_sim, n_fit=x)
 
-                print('-' * 80)
+                self.logger.info('-' * 80)
 
         self.sim_Bias = False
 
@@ -2679,7 +2702,6 @@ def main():
     monoUI = MainWindow()
     monoUI.show()
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     try:

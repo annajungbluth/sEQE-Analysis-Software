@@ -1,5 +1,6 @@
-from source.utils import interpolate
+from source.utils import get_logger, interpolate
 
+logger = get_logger()
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -37,6 +38,6 @@ def normalize_EQE(eqe_df, startNM, stopNM, normNM):
         return Wavelength, Energy, EQE, log_EQE
 
     else:
-        print('Error Code 1: Length mismatch.')
+        logger.error('Error Code 1: Length mismatch.')
 
 # -----------------------------------------------------------------------------------------------------------

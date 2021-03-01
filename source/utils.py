@@ -1,6 +1,7 @@
+import logging
+import sys
 import numpy as np
 from scipy.interpolate import interp1d
-
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -55,12 +56,12 @@ def R_squared(y_data, yfit_data, bias = False, tolerance = None):
         if bias == True and tolerance is not None:
             mean_percent = abs(np.mean(residuals[residuals<0]/y_data[residuals<0]))
             if mean_percent > tolerance:
-                r_squared = 0.1
-                r_squared_log = 0.1 # These values are artificially set very low to discard fit
+                r_squared = 0.0001
+                r_squared_log = 0.0001 # These values are artificially set very low to discard fit
 
         return (r_squared + r_squared_log)/2
     else:
-        print('Error Code 1: Length mismatch.')
+        logger.error('Error Code 1: Length mismatch.')
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -90,3 +91,31 @@ def sep_list_list(list_list):
             one_list.append(x)
 
     return one_list
+
+# -----------------------------------------------------------------------------------------------------------
+
+# Function to set up logger
+
+def get_logger():
+    """
+    Return a logger for current module
+    Returns
+    -------
+    logger : logger instance
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter(fmt="%(asctime)s %(levelname)s %(name)s: %(message)s",
+                                  datefmt="%Y-%m-%d - %H:%M:%S")
+    if logger.hasHandlers():
+        logger.handlers.clear()
+
+    console = logging.StreamHandler(sys.stdout)
+    console.setLevel(logging.INFO)
+    console.setFormatter(formatter)
+
+    logger.addHandler(console)
+
+    return logger
+
+logger = get_logger()

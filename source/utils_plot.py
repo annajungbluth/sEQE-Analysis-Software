@@ -3,6 +3,10 @@ import random
 from colour import Color
 from numpy import random
 
+from source.utils import get_logger
+
+logger = get_logger()
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -44,9 +48,9 @@ def pick_EQE_Color(colour_Box, file_no):
             return colour
         else:
             if file_no == 100:
-                print('Please name a valid colour.')
+                logger.error('Please name a valid colour.')
             else:
-                print('Please name a valid colour for EQE File %s.' % str(file_no))
+                logger.error('Please name a valid colour for EQE File %s.' % str(file_no))
             return random_colour
     else:
         return random_colour

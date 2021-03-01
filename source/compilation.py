@@ -1,5 +1,8 @@
 import math
 
+from source.utils import get_logger
+
+logger = get_logger()
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -53,7 +56,7 @@ def compile_EQE(eqe_df, start, stop, number):
         return Wavelength, Energy, EQE, log_EQE
 
     else:
-        print('Error Code 1: Length mismatch.')
+        logger.error('Error Code 1: Length mismatch.')
 
 
 # -----------------------------------------------------------------------------------------------------------
@@ -104,7 +107,7 @@ def compile_EL(el_df, start, stop, number):
         return Wavelength, Energy, EL
 
     else:
-        print('Error Code 1: Length mismatch.')
+        logger.error('Error Code 1: Length mismatch.')
 
 
 # -----------------------------------------------------------------------------------------------------------
@@ -134,6 +137,6 @@ def compile_Data(energy, y, startE, stopE):
         return Energy_comp, y_comp
 
     else:
-        print('Error Code 1: Length mismatch.')
+        logger.error('Error Code 1: Length mismatch.')
 
 # -----------------------------------------------------------------------------------------------------------
