@@ -2,7 +2,6 @@ import math
 
 from numpy import exp
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to caluclate gaussian absorption

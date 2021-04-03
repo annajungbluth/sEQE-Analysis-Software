@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import curve_fit
+from lmfit import Model
 
 from source.compilation import compile_EQE
 from source.gaussian import calculate_gaussian_absorption
@@ -124,7 +125,7 @@ def calculate_guess_fit(x, df, eqe, guessRange, function):
 
 # -----------------------------------------------------------------------------------------------------------
 
-def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eqe, T, bias = False, tolerance = 0):
+def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eqe, T, bias = False, tolerance = 0, range = 0.15):
     """
     :param stopE: stop energy of fit [float]
     :param best_vals_Opt: Opt fit values [list]
@@ -135,6 +136,7 @@ def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eq
     :param T: Temperature [float]
     :param bias: bias fit below data [boolean]
     :param tolerance: tolerance accepted of fit above data [float]
+    :param range: defines upper bound of R2 calculation [float]
     :return: list of :
              combined_R_Squared: R2 of sum of CT and Opt fit [float]
              combined_Fit: sum of CT and Opt fit [list]
@@ -144,7 +146,7 @@ def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eq
              eqe_data: original EQE data [list]
     """
 
-    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE * 1.25, 1) # (1.05) Increase the stop energy if you want to expand the fit!
+    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE + range, 1) # (1.05) Increase the stop energy if you want to expand the fit!
 
     if R2_Opt != 0 and R2_CT != 0:
 
@@ -266,3 +268,37 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
     return best_vals_Opt, R2_Opt, best_vals_CT, R2_CT, start_Opt_list, stop_Opt_list, start_CT_list, stop_CT_list, combined_R2_list, combined_Fit_list, Opt_Fit_list, CT_Fit_list, Energy_list, EQE_list
 
 # -----------------------------------------------------------------------------------------------------------
+
+# Wrapper function to perform curve fit using lmfit.Model
+
+def fit_model(function, energy_fit, eqe_fit, p0=None):
+    """
+    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
+    :param energy_fit: energy values to fit against [list or array]
+    :param eqe_fit: EQE values to fit against [list or array]
+    :param p0: list of initial guesses for curve_fit function [list]
+    :return: best_vals: list of best fit parameters [list]
+             covar: covariance matrix of fit
+             y_fit: calculated EQE values of the fit [list]
+             r_squared: R^2 of the fit [float]
+    """
+    gmodel = Model(function)
+
+    gmodel.set_param_hint('Ect', min=0.5, max=2.5)
+
+    # if p0 is not None:
+    #     gmodel.make_params(f=p0[0], l=p0[1], Ect=p0[2])
+    #     if len(p0) == 4:
+    #         gmodel.make_params(sig=p0[3])
+
+    if len(p0 == 3):
+        y_fit = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], E=energy_fit)
+    elif len(p0 ==4):
+        y_fit = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], sig=p0[3], E=energy_fit)
+
+
+
+    y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
+    r_squared = R_squared(eqe_fit, y_fit)
+
+    return best_vals, covar, y_fit, r_squared
