@@ -305,11 +305,7 @@ def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
 
         best_vals = [f, l, Ect, sig]
 
-        covar = np.zeros((4,4))
-        # covar[0,0] = float(result.params['f'].stderr) * float(result.params['f'].stderr)
-        # covar[1,1] = float(result.params['l'].stderr) * float(result.params['l'].stderr)
-        # covar[2,2] = float(result.params['Ect'].stderr) * float(result.params['Ect'].stderr)
-        # covar[3,3] = float(result.params['sig'].stderr) * float(result.params['sig'].stderr)
+        covar = result.covar
 
         y_fit = gmodel.eval(E=energy_fit, f=f, l=l, Ect=Ect, sig=sig)
     else:
