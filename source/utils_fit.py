@@ -39,19 +39,23 @@ def subtract_Opt(eqe, best_vals, T):
 
 # Wrapper function to perform curve fit
 
-def fit_function(function, energy_fit, eqe_fit, p0=None):
+def fit_function(function, energy_fit, eqe_fit, p0=None, include_disorder = False):
     """
     :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
     :param energy_fit: energy values to fit against [list or array]
     :param eqe_fit: EQE values to fit against [list or array]
     :param p0: list of initial guesses for curve_fit function [list]
+    :param include_disorder: boolean
     :return: best_vals: list of best fit parameters [list]
              covar: covariance matrix of fit
              y_fit: calculated EQE values of the fit [list]
              r_squared: R^2 of the fit [float]
     """
     best_vals, covar = curve_fit(function, energy_fit, eqe_fit, p0=p0)
-    y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
+    if include_disorder:
+        y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2], best_vals[3]) for x in energy_fit]
+    else:
+        y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
     r_squared = R_squared(eqe_fit, y_fit)
 
     return best_vals, covar, y_fit, r_squared
@@ -271,12 +275,13 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
 
 # Wrapper function to perform curve fit using lmfit.Model
 
-def fit_model(function, energy_fit, eqe_fit, p0=None):
+def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
     """
     :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
     :param energy_fit: energy values to fit against [list or array]
     :param eqe_fit: EQE values to fit against [list or array]
     :param p0: list of initial guesses for curve_fit function [list]
+    :param include_disorder: boolean value
     :return: best_vals: list of best fit parameters [list]
              covar: covariance matrix of fit
              y_fit: calculated EQE values of the fit [list]
@@ -284,21 +289,42 @@ def fit_model(function, energy_fit, eqe_fit, p0=None):
     """
     gmodel = Model(function)
 
-    gmodel.set_param_hint('Ect', min=0.5, max=2.5)
+    gmodel.set_param_hint('Ect', min=0.8, max=1.6)
+    gmodel.set_param_hint('l', min=0.01, max=0.3)
+    gmodel.set_param_hint('f', min=0.001, max=0.4)
 
-    # if p0 is not None:
-    #     gmodel.make_params(f=p0[0], l=p0[1], Ect=p0[2])
-    #     if len(p0) == 4:
-    #         gmodel.make_params(sig=p0[3])
+    if include_disorder:
+        gmodel.set_param_hint('sig', min=0.002, max=0.2)
 
-    if len(p0 == 3):
-        y_fit = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], E=energy_fit)
-    elif len(p0 ==4):
-        y_fit = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], sig=p0[3], E=energy_fit)
+        result = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], sig=p0[3], E=energy_fit)
 
+        f = float(result.params['f'].value)
+        l = float(result.params['l'].value)
+        Ect = float(result.params['Ect'].value)
+        sig = float(result.params['sig'].value)
 
+        best_vals = [f, l, Ect, sig]
 
-    y_fit = [function(x, best_vals[0], best_vals[1], best_vals[2]) for x in energy_fit]
+        covar = np.zeros((4,4))
+        # covar[0,0] = float(result.params['f'].stderr) * float(result.params['f'].stderr)
+        # covar[1,1] = float(result.params['l'].stderr) * float(result.params['l'].stderr)
+        # covar[2,2] = float(result.params['Ect'].stderr) * float(result.params['Ect'].stderr)
+        # covar[3,3] = float(result.params['sig'].stderr) * float(result.params['sig'].stderr)
+
+        y_fit = gmodel.eval(E=energy_fit, f=f, l=l, Ect=Ect, sig=sig)
+    else:
+        result = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], E=energy_fit)
+
+        f = float(result.params['f'].value)
+        l = float(result.params['l'].value)
+        Ect = float(result.params['Ect'].value)
+
+        best_vals = [f, l, Ect]
+
+        covar = np.zeros((3,3))
+
+        y_fit = gmodel.eval(E=energy_fit, f=f, l=l, Ect=Ect)
+
     r_squared = R_squared(eqe_fit, y_fit)
 
     return best_vals, covar, y_fit, r_squared

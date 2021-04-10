@@ -36,7 +36,7 @@ from source.utils import interpolate, sep_list, get_logger
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.utils_fit import subtract_Opt, guess_fit, fit_function, calculate_guess_fit, calculate_combined_fit
+from source.utils_fit import subtract_Opt, guess_fit, fit_function, calculate_guess_fit, calculate_combined_fit, fit_model
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -296,7 +296,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Define Variables
 
-        self.data_dir = '/home/jungbluth/Desktop'  # FIX: change this if needed
+        self.data_dir = '/home/jungbluth/Desktop'  ### FIX: change this if needed
 
         self.h = 6.626 * math.pow(10, -34)  # [m^2 kg/s]
         self.h_2 = 4.136 * math.pow(10, -15)  # [eV s]
@@ -892,6 +892,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         include_Disorder = False
         fit_opticalPeak = False
+        fit_ok = False
 
         startE = startE.value()  # Pick start energy
         stopE = stopE.value()  # Pick stop energy
@@ -902,11 +903,9 @@ class MainWindow(QtWidgets.QMainWindow):
         startPlotFit = startPlotFit.value()
         stopPlotFit = stopPlotFit.value()
 
-        if Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit,
-                        file_no):  # Check that files are non-empty and within energy range
+        if Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no):  # Check that files are non-empty and within energy range
             wave, energy, eqe, log_eqe = compile_EQE(eqe_df, startE, stopE, 1)  # Compile EQE file
-            wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, startFit, stopFit,
-                                                                     1)  # Compile fit range of EQE file
+            wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, startFit, stopFit, 1)  # Compile fit range of EQE file
 
             label_ = pick_EQE_Label(label_Box, filename_Box)
             color_ = pick_EQE_Color(color_Box, file_no)
@@ -914,13 +913,14 @@ class MainWindow(QtWidgets.QMainWindow):
             # Fit EQE (Marcus Theory)
             if (str(file_no)).isnumeric():
 
-                if file_no == 1:
+                if file_no == 1: # Data in first row
                     self.T_CT = self.ui.Temperature_1.value()
                     guessStart = self.ui.guessStart_1.value()
                     guessStop = self.ui.guessStop_1.value()
-                    if self.ui.static_Disorder_1.isChecked():
+                    guessStart_sig = self.ui.guessStartSig_1.value()
+                    guessStop_sig = self.ui.guessStopSig_1.value()
+                    if self.ui.disorder_1.isChecked():
                         include_Disorder = True
-                        self.sig = self.ui.Disorder_1.value()
                     if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check if CT state or optical gap are fitted.
                         fit_opticalPeak = True
                     elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
@@ -928,13 +928,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
                         self.logger.error('Please select a valid peak to fit.')
 
-                elif file_no == 2:
+                elif file_no == 2: # Data in second row
                     self.T_CT = self.ui.Temperature_2.value()
                     guessStart = self.ui.guessStart_2.value()
                     guessStop = self.ui.guessStop_2.value()
-                    if self.ui.static_Disorder_2.isChecked():
+                    guessStart_sig = self.ui.guessStartSig_2.value()
+                    guessStop_sig = self.ui.guessStopSig_2.value()
+                    if self.ui.disorder_2.isChecked():
                         include_Disorder = True
-                        self.sig = self.ui.Disorder_2.value()
                     if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
                         fit_opticalPeak = True
                     elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
@@ -945,117 +946,132 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Attempt peak fit:
                 x_gaussian = linspace(startPlotFit, stopPlotFit, 50)
 
-                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05) # Extract peak guess range
+                Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.01, 0.01) # Extract sigma guess range
+
                 p0 = None
 
-                for ECT in ECT_guess:
-                    y_gaussian = []
-                    try:
-                        if include_Disorder:
-                            best_vals, covar, y_fit, r_squared = fit_function(self.gaussian_disorder, energy_fit,
-                                                                                   eqe_fit, p0=p0)
-                            for value in x_gaussian:
-                                y_gaussian.append(
-                                    self.gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
-                        else:
-                            best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit, eqe_fit,
-                                                                                   p0=p0)
+                if include_Disorder:
+                    best_guess_df = pd.DataFrame()
+                    p0_list = []
+                    R2_list = []
+                    for ECT in ECT_guess:
+                        for sig in Sig_guess:
+                            y_gaussian = []
+                            try:
+                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_sigma_test, energy_fit, eqe_fit, p0=p0, include_disorder=True)
+                                if r_squared > 0:
+                                    p0_list.append(p0)
+                                    R2_list.append(r_squared)
+                                else:
+                                    raise Exception('Wrong fit determined.')
+                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
+                            except:
+                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
+
+                    best_guess_df['p0'] = p0_list
+                    best_guess_df['R2'] = R2_list
+
+                    best_R2 = max(best_guess_df['R2'])
+                    best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0] # Find best initial guess
+
+                    # Determine fit values of fit with best intial guess
+                    best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_sigma_test, energy_fit, eqe_fit, p0=best_p0, include_disorder=True)
+                    for value in x_gaussian:
+                        y_gaussian.append(self.gaussian_disorder_sigma(value, best_vals[0], best_vals[1], best_vals[2], best_vals[3]))
+                    fit_ok = True # Accept fit
+
+                else: # if disorder is not to be included
+                    for ECT in ECT_guess:
+                        y_gaussian = []
+                        try:
+                            best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit, eqe_fit, p0=p0)
                             for value in x_gaussian:
                                 y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
-
-                        if r_squared > 0:
-                            self.logger.info('Fit Results: ')
-                            print("")
-                            print('Initial Guess (eV) : ', p0)
-
-                            print('-' * 80)
-                            print('Temperature [T] (K) : ', self.T_CT)
-                            print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-',
-                                  format(math.sqrt(covar[0, 0]), '.6f'))
-                            print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-',
-                                  format(math.sqrt(covar[1, 1]), '.6f'))
-                            if fit_opticalPeak:
-                                print('Optical Peak Energy [E_Opt] (eV) : ', format(best_vals[2], '.6f'), '+/-',
-                                      format(math.sqrt(covar[2, 2]), '.6f'))
+                            if r_squared > 0:
+                                fit_ok = True
+                                best_p0 = p0
+                                break # This breaks the for loop
                             else:
-                                print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',
-                                      format(math.sqrt(covar[2, 2]), '.6f'))
-                            print('R_Squared : ', format(r_squared, '.6f'))
-                            print('-' * 80)
-                            print("")
+                                raise Exception('Wrong fit determined.')
+                        except:
+                            p0 = [0.001, 0.1, round(ECT, 3)]
 
-                            # Plot EQE data and CT fit
-                            self.axFit_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
-                            plt.draw()
-                            if include_Disorder:
-                                if fit_opticalPeak:
-                                    self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2,
-                                                      label='Gaussian Fit + Disorder', color='#000000',
-                                                      linestyle='dotted')
-                                else:
-                                    self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2,
-                                                      label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
-                            else:
-                                if fit_opticalPeak:
-                                    self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit',
-                                                      color='#000000', linestyle='dotted')
-                                else:
-                                    self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit',
-                                                      color='#000000', linestyle='--')
-                            # plt.draw()
+                if fit_ok:
+                    self.logger.info('Fit Results: ')
+                    print("")
+                    print('Initial Guess (eV) : ', best_p0)
 
-                            self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
-                            plt.draw()
-                            if include_Disorder:
-                                if fit_opticalPeak:
-                                    self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2,
-                                                      label='Gaussian Fit + Disorder', color='#000000',
-                                                      linestyle='dotted')
-                                else:
-                                    self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2,
-                                                      label='Gaussian Fit + Disorder', color='#000000', linestyle='--')
-                            else:
-                                if fit_opticalPeak:
-                                    self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit',
-                                                      color='#000000', linestyle='dotted')
-                                else:
-                                    self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit',
-                                                      color='#000000', linestyle='--')
-                            # plt.draw()
+                    print('-' * 80)
+                    print('Temperature [T] (K) : ', self.T_CT)
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0, 0]), '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1, 1]), '.6f'))
 
-                            # Save fit data
-                            if self.ui.save_gaussianFit.isChecked():
-                                fit_file = pd.DataFrame()
-                                fit_file['Energy'] = x_gaussian
-                                fit_file['Signal'] = y_gaussian
+                    if fit_opticalPeak:
+                        print('Optical Peak Energy [E_Opt] (eV) : ', format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
+                    else:
+                        print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
 
-                                # FIX to add as header rather than columns
-                                fit_file['Temperature'] = self.T_CT
-                                fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
-                                fit_file['Reorganization Energy (eV)'] = best_vals[1]
-                                if fit_opticalPeak:
-                                    fit_file['Optical Peak Energy (eV)'] = best_vals[2]
-                                else:
-                                    fit_file['CT State Energy (eV)'] = best_vals[2]
-                                save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
-                                save_fit_path, save_fit_filename = os.path.split(save_fit_file)
-                                if len(save_fit_path) != 0:  # Check if the user actually selected a path
-                                    os.chdir(save_fit_path)  # Change the working directory
-                                    fit_file.to_csv(save_fit_filename)  # Save data to csv
-                                    self.logger.info('Saving fit data to: %s' % str(save_fit_file))
-                                    os.chdir(self.data_dir)  # Change the directory back
+                    if include_Disorder:
+                        print('Disorder (eV) : ', format(best_vals[3], '.6f'), '+/-', format(math.sqrt(covar[3, 3]), '.6f'))
 
-                            return True  # This breaks the fore loop
+                    print('R_Squared : ', format(r_squared, '.6f'))
+                    print('-' * 80)
+                    print("")
 
+                    # Plot EQE data and CT fit
+                    if include_Disorder:
+                        fit_label = 'Gaussian Fit + Disorder'
+                    else:
+                        fit_label = 'Gaussian Fit'
+
+                    if fit_opticalPeak:
+                        fit_linestyle = 'dotted'
+                    else:
+                        fit_linestyle = '--'
+
+                    self.axFit_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
+                    plt.draw()
+                    self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label=fit_label, color='#000000', linestyle=fit_linestyle)
+
+                    self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                    plt.draw()
+                    self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label=fit_label, color='#000000', linestyle=fit_linestyle)
+
+                    # Save fit data
+                    if self.ui.save_gaussianFit.isChecked():
+                        fit_file = pd.DataFrame()
+                        fit_file['Energy'] = x_gaussian
+                        fit_file['Signal'] = y_gaussian
+
+                        ### FIX to add as header rather than columns
+                        fit_file['Temperature'] = self.T_CT
+                        fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
+                        fit_file['Reorganization Energy (eV)'] = best_vals[1]
+
+                        if fit_opticalPeak:
+                            fit_file['Optical Peak Energy (eV)'] = best_vals[2]
                         else:
-                            raise Exception('Wrong fit determined.')
+                            fit_file['CT State Energy (eV)'] = best_vals[2]
 
-                    except:
-                        p0 = [0.001, 0.1, round(ECT, 3)]
+                        if include_Disorder:
+                            fit_file['Sigma (eV)'] = best_vals[3]
 
-                self.logger.info('Optimal parameters not found.')
-                return False
+                        save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
+                        save_fit_path, save_fit_filename = os.path.split(save_fit_file)
+                        if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                            os.chdir(save_fit_path)  # Change the working directory
+                            fit_file.to_csv(save_fit_filename)  # Save data to csv
+                            self.logger.info('Saving fit data to: %s' % str(save_fit_file))
+                            os.chdir(self.data_dir)  # Change the directory back
 
+                    return True
+
+                else:
+                    self.logger.info('Optimal parameters not found.')
+                    return False
+
+            ### FIX: MLJ Theory Fitting + new disorder implementation!
             # Fit EQE (MLJ Theory)
             elif file_no == 'x1':
 
@@ -1440,6 +1456,28 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         return (f / (E * math.sqrt(4 * math.pi * l * self.T_CT * self.k + 2 * self.sig ** 2))) * exp(
             -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_CT + 2 * self.sig ** 2))
+
+    def gaussian_disorder_sigma(self, E, f, l, Ect, sig):
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
+            -((Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - E) ** 2 / (4 * l * self.k * self.T_CT + 2 * sig ** 2)))
+
+    def gaussian_disorder_sigma_test(self, E, f, l, Ect, sig):
+        """
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
+            -(Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - e) ** 2 / (4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
 
     # -----------------------------------------------------------------------------------------------------------
 
