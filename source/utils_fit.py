@@ -1,9 +1,10 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from lmfit import Model
+import pandas as pd
 
 from source.compilation import compile_EQE
-from source.gaussian import calculate_gaussian_absorption
+from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption
 from source.utils import R_squared
 from source.utils import sep_list
 
@@ -64,13 +65,15 @@ def fit_function(function, energy_fit, eqe_fit, p0=None, include_disorder = Fals
 
 # Function to perform fit with guess range
 
-def guess_fit(eqe, startE, stopE, guessRange, function):
+def guess_fit(eqe, startE, stopE, guessRange, function, guessRange_sig=None, include_disorder=False):
     """
     :param eqe: EQE data [list]
     :param startE: fit start energy value [float]
     :param stopE: fit stop energy value [float]
     :param guessRange: CT state energy initial values [list]
     :param function: function to fit [function]
+    :param guessRange_sig: sigma initial values [list]
+    :param include_disorder: boolean value to see whether to include disorder [bool]
     :return: best_vals: fit result [list]
              r_squared: R2 of fit [float]
     """
@@ -82,25 +85,50 @@ def guess_fit(eqe, startE, stopE, guessRange, function):
         # Attempt peak fit:
         p0 = None
 
-        for E_guess in guessRange:
-            try:
-                # if include_Disorder:
-                #     # Fit gaussian with disorder
-                # else:
-                #     # Fit gaussian without disorder
+        if include_disorder:
+            best_guess_df = pd.DataFrame()
+            p0_list = []
+            R2_list = []
+            for E_guess in guessRange:
+                for sig_guess in guessRange_sig:
+                    try:
+                        best_vals, covar, y_fit, r_squared = fit_model(function, energy_fit, eqe_fit, p0=p0, include_disorder=True)
+                        if r_squared > 0:
+                            p0_list.append(p0)
+                            R2_list.append(r_squared)
+                        else:
+                            raise Exception('Wrong fit determined.')
+                        p0 = [0.001, 0.1, round(E_guess, 3), round(sig_guess, 3)]
+                    except:
+                        p0 = [0.001, 0.1, round(E_guess, 3), round(sig_guess, 3)]
+                    # except Exception as e:
+                    #     p0 = [0.001, 0.1, round(E_guess, 3), round(sig_guess, 3)]
+                    #     print(e)
 
-                best_vals, covar, y_fit, r_squared = fit_function(function, energy_fit, eqe_fit, p0=p0)
-                if r_squared > 0:
-                    return best_vals, r_squared
-                else:
-                    raise ArithmeticError
-            except:
-                p0 = [0.001, 0.1, E_guess]
-                if E_guess == guessRange[-1]:
-                    best_vals = [0, 0, 0]
-                    r_squared = 0
+            best_guess_df['p0'] = p0_list
+            best_guess_df['R2'] = R2_list
 
-                    return best_vals, r_squared
+            best_R2 = max(best_guess_df['R2'])
+            best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
+
+            # Determine fit values of fit with best intial guess
+            best_vals, covar, y_fit, r_squared = fit_model(function, energy_fit, eqe_fit, p0=best_p0, include_disorder=True)
+
+        else:
+            for E_guess in guessRange:
+                try:
+                    best_vals, covar, y_fit, r_squared = fit_function(function, energy_fit, eqe_fit, p0=p0)
+                    if r_squared > 0:
+                        return best_vals, r_squared
+                    else:
+                        raise ArithmeticError
+                except:
+                    p0 = [0.001, 0.1, E_guess]
+                    if E_guess == guessRange[-1]:
+                        best_vals = [0, 0, 0]
+                        r_squared = 0
+
+        return best_vals, r_squared
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -129,7 +157,7 @@ def calculate_guess_fit(x, df, eqe, guessRange, function):
 
 # -----------------------------------------------------------------------------------------------------------
 
-def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eqe, T, bias = False, tolerance = 0, range = 0.15):
+def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eqe, T, bias = False, tolerance = 0, range = 1.05, include_disorder=False):
     """
     :param stopE: stop energy of fit [float]
     :param best_vals_Opt: Opt fit values [list]
@@ -141,6 +169,7 @@ def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eq
     :param bias: bias fit below data [boolean]
     :param tolerance: tolerance accepted of fit above data [float]
     :param range: defines upper bound of R2 calculation [float]
+    :param include_disorder: boolean value to see whether to include disorder [bool]
     :return: list of :
              combined_R_Squared: R2 of sum of CT and Opt fit [float]
              combined_Fit: sum of CT and Opt fit [list]
@@ -150,7 +179,7 @@ def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eq
              eqe_data: original EQE data [list]
     """
 
-    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE + range, 1) # (1.05) Increase the stop energy if you want to expand the fit!
+    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE * range, 1) # (+ 0.15) Increase the stop energy if you want to expand the fit!
 
     if R2_Opt != 0 and R2_CT != 0:
 
@@ -160,12 +189,22 @@ def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eq
                                                           best_vals_Opt[2],
                                                           T)
                             for e in energy_data])
-        CT_fit = np.array([calculate_gaussian_absorption(e,
-                                                         best_vals_CT[0],
-                                                         best_vals_CT[1],
-                                                         best_vals_CT[2],
-                                                         T)
-                           for e in energy_data])
+        if include_disorder:
+            CT_fit = np.array([calculate_gaussian_disorder_absorption(e,
+                                                             best_vals_CT[0],
+                                                             best_vals_CT[1],
+                                                             best_vals_CT[2],
+                                                             best_vals_CT[3],
+                                                             T)
+                               for e in energy_data])
+
+        else:
+            CT_fit = np.array([calculate_gaussian_absorption(e,
+                                                             best_vals_CT[0],
+                                                             best_vals_CT[1],
+                                                             best_vals_CT[2],
+                                                             T)
+                               for e in energy_data])
 
         if len(Opt_fit) == len(CT_fit):
                 combined_Fit = Opt_fit + CT_fit

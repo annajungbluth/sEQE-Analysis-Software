@@ -32,7 +32,7 @@ from source.gaussian import calculate_gaussian_absorption
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
-from source.utils import interpolate, sep_list, get_logger
+from source.utils import interpolate, sep_list, get_logger, R_squared
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
@@ -2169,6 +2169,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def pre_double_fit(self):
 
+        increase_factor = 1.05 # Adding 5% to the selected data
+        include_disorder = False
+        guessRange_Sig = None
+
         # Import relevant parameters
 
         if self.ui.bias_DoubleFit.isChecked():
@@ -2178,6 +2182,19 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.bias = False
             self.logger.info('Not constraining fit.')
+
+        if self.ui.disorder_DoubleFit.isChecked():
+            include_disorder = True
+            startGuess_Sig = float(self.ui.guessStartSig_CT.value())
+            stopGuess_Sig = float(self.ui.guessStopSig_CT.value())
+            guessSig_ok = StartStop_is_valid(startGuess_Sig, stopGuess_Sig)
+            if guessSig_ok:
+                guessRange_Sig = np.round(np.arange(startGuess_Sig, stopGuess_Sig + 0.01, 0.01), 3).tolist()
+            else:
+                guessRange_Sig = np.round(np.arange(startGuess_Sig, startGuess_Sig + 0.1, 0.01), 3).tolist()
+
+        print(guessRange_Sig)
+        print(len(guessRange_Sig))
 
         eqe = self.data_double
         self.T_double = self.ui.double_Temperature.value()
@@ -2288,19 +2305,32 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.logger.info('Calculating CT State Fits ...')
 
+            if include_disorder:
+                self.logger.info('Including CT State Disorder ...')
+
             # If Optical peak to be subtracted before CT fit
-            if self.ui.subtract_DoubleFit.isChecked():
+            if self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit_2.isChecked():
+                self.logger.info('Subtracting All Optical Peak Fits ...')
                 for x in tqdm(range(len(df_Opt))):
                     for y in tqdm(range(len(df_CT))):
                         if df_Opt['R2'][x] > 0:  # Check that the optical peak fit was successful
 
                             new_eqe = subtract_Opt(eqe, df_Opt['Fit'][x], T=self.T_double)
 
-                            best_vals, r_squared = guess_fit(eqe=new_eqe,
-                                                                   startE=df_CT['Start'][y],
-                                                                   stopE=df_CT['Stop'][y],
-                                                                   guessRange=guessRange_CT,
-                                                                   function=self.gaussian_double)
+                            if include_disorder:
+                                best_vals, r_squared = guess_fit(eqe=new_eqe,
+                                                                 startE=df_CT['Start'][y],
+                                                                 stopE=df_CT['Stop'][y],
+                                                                 guessRange=guessRange_CT,
+                                                                 guessRange_sig = guessRange_Sig,
+                                                                 function=self.gaussian_disorder_double,
+                                                                 include_disorder=True)
+                            else:
+                                best_vals, r_squared = guess_fit(eqe=new_eqe,
+                                                                 startE=df_CT['Start'][y],
+                                                                 stopE=df_CT['Stop'][y],
+                                                                 guessRange=guessRange_CT,
+                                                                 function=self.gaussian_double)
                         else:
                             best_vals = [0, 0, 0]
                             r_squared = 0
@@ -2323,7 +2353,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                 eqe = eqe,
                                                                 T = self.T_double,
                                                                 bias = self.bias,
-                                                                tolerance = self.tolerance)
+                                                                tolerance = self.tolerance,
+                                                                range = increase_factor,
+                                                                include_disorder=include_disorder)
 
                         combined_R2_list.append(parameter_list[0])
                         combined_Fit_list.append(parameter_list[1])
@@ -2332,16 +2364,95 @@ class MainWindow(QtWidgets.QMainWindow):
                         Energy_list.append(parameter_list[4])
                         EQE_list.append(parameter_list[5])
 
+            # If only best Optical peak is to be subtracted before CT fit
+            elif self.ui.bestSubtract_DoubleFit_2.isChecked() and not self.ui.subtract_DoubleFit.isChecked():
+                self.logger.info('Subtracting Only Best Optical Peak Fit ...')
+
+                # best_fit_index = df_Opt['Fit'][df_Opt['R2']==max(df_Opt['R2'])].index[0]
+                # print(best_fit_index)
+
+                # To avoid picking a fit that has a high R2 but moves above the data
+                advanced_R2_list = []
+                for x in range(len(df_Opt)):
+                    wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, df_Opt['Start'][x], df_Opt['Stop'][x] * increase_factor, 1)
+                    y_fit = [self.gaussian_double(e, df_Opt['Fit'][x][0], df_Opt['Fit'][x][1], df_Opt['Fit'][x][2]) for e in energy_fit]
+                    advanced_R2_list.append(R_squared(eqe_fit, y_fit))
+
+                df_Opt['Advanced R2'] = advanced_R2_list
+
+                best_fit_index = df_Opt['Fit'][df_Opt['Advanced R2']==max(df_Opt['Advanced R2'])].index[0]
+                print(best_fit_index)
+
+
+                new_eqe = subtract_Opt(eqe, df_Opt['Fit'][best_fit_index], T=self.T_double)
+
+                for y in tqdm(range(len(df_CT))):
+
+                    if include_disorder:
+                        best_vals, r_squared = guess_fit(eqe=new_eqe,
+                                                         startE=df_CT['Start'][y],
+                                                         stopE=df_CT['Stop'][y],
+                                                         guessRange=guessRange_CT,
+                                                         guessRange_sig=guessRange_Sig,
+                                                         function=self.gaussian_disorder_double,
+                                                         include_disorder=True)
+                    else:
+                        best_vals, r_squared = guess_fit(eqe=new_eqe,
+                                                         startE=df_CT['Start'][y],
+                                                         stopE=df_CT['Stop'][y],
+                                                         guessRange=guessRange_CT,
+                                                         function=self.gaussian_double)
+
+                    start_Opt_list.append(df_Opt['Start'][best_fit_index])
+                    stop_Opt_list.append(df_Opt['Stop'][best_fit_index])
+                    start_CT_list.append(df_CT['Start'][y])
+                    stop_CT_list.append(df_CT['Stop'][y])
+                    best_vals_Opt.append(df_Opt['Fit'][best_fit_index])
+                    best_vals_CT.append(best_vals)
+                    R2_Opt.append(df_Opt['R2'][best_fit_index])
+                    R2_CT.append(r_squared)
+
+                    # Calculate combined fit here
+                    parameter_list = calculate_combined_fit(stopE = df_Opt['Stop'][best_fit_index],
+                                                            best_vals_Opt = df_Opt['Fit'][best_fit_index],
+                                                            best_vals_CT = best_vals,
+                                                            R2_Opt = df_Opt['R2'][best_fit_index],
+                                                            R2_CT = r_squared,
+                                                            eqe = eqe,
+                                                            T = self.T_double,
+                                                            bias = self.bias,
+                                                            tolerance = self.tolerance,
+                                                            range = increase_factor,
+                                                            include_disorder = include_disorder)
+
+                    combined_R2_list.append(parameter_list[0])
+                    combined_Fit_list.append(parameter_list[1])
+                    Opt_Fit_list.append(parameter_list[2])
+                    CT_Fit_list.append(parameter_list[3])
+                    Energy_list.append(parameter_list[4])
+                    EQE_list.append(parameter_list[5])
 
             # If Optical peak not to be subtracted before CT fit
-            else:
+            elif not self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit_2.isChecked():
+                self.logger.info('Not Subtracting Optical Peak Fits.')
                 for x in tqdm(range(len(df_Opt))):
                     for y in tqdm(range(len(df_CT))):
-                        best_vals, r_squared = guess_fit(eqe=eqe,
-                                                               startE=df_CT['Start'][y],
-                                                               stopE=df_CT['Stop'][y],
-                                                               guessRange=guessRange_CT,
-                                                               function=self.gaussian_double)
+
+                        if include_disorder:
+                            best_vals, r_squared = guess_fit(eqe=eqe,
+                                                             startE=df_CT['Start'][y],
+                                                             stopE=df_CT['Stop'][y],
+                                                             guessRange=guessRange_CT,
+                                                             guessRange_sig=guessRange_Sig,
+                                                             function=self.gaussian_disorder_double,
+                                                             include_disorder=True)
+                        else:
+                            best_vals, r_squared = guess_fit(eqe=eqe,
+                                                             startE=df_CT['Start'][y],
+                                                             stopE=df_CT['Stop'][y],
+                                                             guessRange=guessRange_CT,
+                                                             function=self.gaussian_double)
+
                     start_Opt_list.append(df_Opt['Start'][x])
                     stop_Opt_list.append(df_Opt['Stop'][x])
                     start_CT_list.append(df_CT['Start'][y])
@@ -2362,7 +2473,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                                             eqe=eqe,
                                                             T=self.T_double,
                                                             bias=self.bias,
-                                                            tolerance=self.tolerance)
+                                                            tolerance=self.tolerance,
+                                                            range = increase_factor,
+                                                            include_disorder = include_disorder)
 
                     combined_R2_list.append(parameter_list[0])
                     combined_Fit_list.append(parameter_list[1])
@@ -2371,7 +2484,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     Energy_list.append(parameter_list[4])
                     EQE_list.append(parameter_list[5])
 
+            else:
+                self.logger.info('Please select valid fit settings.')
+
             # The same code but using map functions
+            ### NOTE: Disorder not yet included
 
             # # If Optical peak to be subtracted before CT fit
             #
@@ -2440,7 +2557,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #     Energy_list = sep_list_list(list(map(lambda list_: sep_list(list_, 12), parameter_list)))
             #     EQE_list = sep_list_list(list(map(lambda list_: sep_list(list_, 13), parameter_list)))
 
-            if len(best_vals_Opt) == len(best_vals_CT): # Check that the lists are the same length
+            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt)!=0: # Check that the lists are the same length and not empty
 
                 df_results['Start_Opt'] = start_Opt_list
                 df_results['Stop_Opt'] = stop_Opt_list
@@ -2467,7 +2584,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 for x in np.arange(1,6,1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
-                    df_results = self.find_best_fit(df_both = df_results, eqe=eqe, T = self.T_double, n_fit=x)
+                    df_results = self.find_best_fit(df_both = df_results, eqe=eqe, T = self.T_double, n_fit=x, include_disorder=include_disorder)
 
                 print('-' * 80)
                 print("")
@@ -2478,7 +2595,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to determine the best combined fit
 
-    def find_best_fit(self, df_both, eqe, T, n_fit = 0):
+    def find_best_fit(self, df_both, eqe, T, n_fit = 0, include_disorder = False):
+        """
+        :param df_both: dataFrame with final fit results [dataFrame]
+        :param eqe: original EQE data [dataFrame]
+        :param T: Temperature [float]
+        :param n_fit: fit number [int]
+        :param include_disorder: boolean of whether to include disorder [bool]
+        :return: df_copy: copy of df_both [dataFrame]
+        """
 
         if len(df_both) != 0:
 
@@ -2518,6 +2643,9 @@ class MainWindow(QtWidgets.QMainWindow):
             print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'))
             print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'))
             print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'))
+
+            if include_disorder:
+                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'))
 
             # print('Temperature [T] (K) : ', T)
             # print('-' * 80)
@@ -2560,6 +2688,20 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         return (f / (x * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(
             -(E + l - x) ** 2 / (4 * l * self.k * self.T_double))
+
+    # Gaussian fitting function including disorder for double fit
+
+    def gaussian_disorder_double(self, E, f, l, Ect, sig):
+        """
+        :param E: List of energy values [list of floats]
+        :param f: Oscillator strength [float]
+        :param l: Reorganization Energy [float]
+        :param Ect: Charge Transfer State Energy [float]
+        :param sig: Gaussian disorder [float]
+        :return: list of EQE values [list of floats]
+        """
+        return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
+            -(Ect - (sig**2 / (2*self.k * self.T_double)) + l + (sig**2 / (2*self.k * self.T_double)) - e) ** 2 / (4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
 
 
     # -----------------------------------------------------------------------------------------------------------

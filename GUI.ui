@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="movable">
      <bool>true</bool>
@@ -3400,7 +3400,7 @@
       <property name="geometry">
        <rect>
         <x>980</x>
-        <y>510</y>
+        <y>500</y>
         <width>181</width>
         <height>51</height>
        </rect>
@@ -5026,9 +5026,9 @@
      <widget class="QCheckBox" name="save_gaussianFit">
       <property name="geometry">
        <rect>
-        <x>810</x>
-        <y>520</y>
-        <width>121</width>
+        <x>800</x>
+        <y>510</y>
+        <width>120</width>
         <height>31</height>
        </rect>
       </property>
@@ -5048,7 +5048,7 @@
       <property name="geometry">
        <rect>
         <x>790</x>
-        <y>500</y>
+        <y>490</y>
         <width>141</width>
         <height>20</height>
        </rect>
@@ -5061,7 +5061,7 @@
       <property name="geometry">
        <rect>
         <x>790</x>
-        <y>550</y>
+        <y>540</y>
         <width>141</width>
         <height>20</height>
        </rect>
@@ -5074,7 +5074,7 @@
       <property name="geometry">
        <rect>
         <x>920</x>
-        <y>510</y>
+        <y>500</y>
         <width>20</width>
         <height>51</height>
        </rect>
@@ -5087,7 +5087,7 @@
       <property name="geometry">
        <rect>
         <x>780</x>
-        <y>510</y>
+        <y>500</y>
         <width>20</width>
         <height>51</height>
        </rect>
@@ -5115,7 +5115,7 @@
         <x>30</x>
         <y>620</y>
         <width>1121</width>
-        <height>223</height>
+        <height>261</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_44">
@@ -5281,287 +5281,6 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="6">
-        <layout class="QGridLayout" name="gridLayout_45">
-         <item row="0" column="2">
-          <widget class="QDoubleSpinBox" name="startStart_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QDoubleSpinBox" name="stopStart_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>2.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="Line" name="line_665">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="Line" name="line_666">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QDoubleSpinBox" name="startStop_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>2.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_115">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Stop :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="Line" name="line_667">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <widget class="QDoubleSpinBox" name="stopStop_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>3.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="Line" name="line_668">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_114">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Start :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="Line" name="line_669">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_140">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Sigma Guess :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="3">
-          <widget class="Line" name="line_206">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_116">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>CT Guess :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="Line" name="line_205">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="2">
-          <widget class="QDoubleSpinBox" name="guessStart_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.200000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QDoubleSpinBox" name="guessStartSig_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>2.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.010000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="4">
-          <widget class="QDoubleSpinBox" name="guessStopSig_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>2.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="4">
-          <widget class="QDoubleSpinBox" name="guessStop_CT">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.600000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>3.600000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.500000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="Line" name="line_670">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="Line" name="line_239">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="Line" name="line_240">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="4">
-          <widget class="Line" name="line_241">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="2" column="8">
         <layout class="QVBoxLayout" name="verticalLayout_41">
          <item>
@@ -5676,7 +5395,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Include Disorder</string>
+            <string>Include CT Disorder</string>
            </property>
           </widget>
          </item>
@@ -5698,7 +5417,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Subtract Data</string>
+            <string>Subtract All Fits</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -5707,6 +5426,34 @@
          </item>
          <item>
           <widget class="Line" name="line_691">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="bestSubtract_DoubleFit_2">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Subtract Best Fit</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_61">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -5782,21 +5529,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>3.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="Line" name="line_80">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="3">
-          <widget class="Line" name="line_82">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <double>1.780000000000000</double>
            </property>
           </widget>
          </item>
@@ -5815,7 +5548,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.000000000000000</double>
+            <double>1.720000000000000</double>
            </property>
           </widget>
          </item>
@@ -5846,7 +5579,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>2.000000000000000</double>
+            <double>1.760000000000000</double>
            </property>
           </widget>
          </item>
@@ -5888,22 +5621,10 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="4">
-          <widget class="QDoubleSpinBox" name="guessStopSig_Opt">
-           <property name="suffix">
-            <string/>
-           </property>
-           <property name="decimals">
-            <number>2</number>
-           </property>
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>2.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.100000000000000</double>
+         <item row="2" column="0">
+          <widget class="Line" name="line_210">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -5929,7 +5650,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>2.000000000000000</double>
+            <double>1.750000000000000</double>
            </property>
           </widget>
          </item>
@@ -5959,6 +5680,46 @@
            </property>
           </widget>
          </item>
+         <item row="2" column="2">
+          <widget class="Line" name="line_237">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="Line" name="line_238">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="4">
+          <widget class="QDoubleSpinBox" name="guessStopSig_Opt">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="Line" name="line_82">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="2">
           <widget class="QDoubleSpinBox" name="guessStartSig_Opt">
            <property name="suffix">
@@ -5978,6 +5739,13 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="1">
+          <widget class="Line" name="line_80">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_139">
            <property name="font">
@@ -5990,24 +5758,284 @@
            </property>
           </widget>
          </item>
+        </layout>
+       </item>
+       <item row="2" column="6">
+        <layout class="QGridLayout" name="gridLayout_45">
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="startStart_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.600000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.250000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QDoubleSpinBox" name="stopStart_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.600000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.300000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="Line" name="line_665">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="Line" name="line_666">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QDoubleSpinBox" name="startStop_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.600000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.270000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_115">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Stop :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="Line" name="line_667">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QDoubleSpinBox" name="stopStop_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.600000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.320000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="Line" name="line_668">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_114">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Start :</string>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="0">
-          <widget class="Line" name="line_210">
+          <widget class="Line" name="line_239">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
+         <item row="3" column="1">
+          <widget class="Line" name="line_669">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_116">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CT Guess :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QDoubleSpinBox" name="guessStart_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.600000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.200000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="4">
+          <widget class="QDoubleSpinBox" name="guessStop_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.600000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>3.600000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.500000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="Line" name="line_670">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="2">
-          <widget class="Line" name="line_237">
+          <widget class="Line" name="line_240">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item row="2" column="4">
-          <widget class="Line" name="line_238">
+          <widget class="Line" name="line_241">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="4">
+          <widget class="QDoubleSpinBox" name="guessStopSig_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="Line" name="line_206">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QDoubleSpinBox" name="guessStartSig_CT">
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>2.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="Line" name="line_205">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_140">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Sigma Guess :</string>
            </property>
           </widget>
          </item>
@@ -6019,7 +6047,7 @@
       <property name="geometry">
        <rect>
         <x>940</x>
-        <y>880</y>
+        <y>910</y>
         <width>221</width>
         <height>51</height>
        </rect>
@@ -6055,7 +6083,7 @@
         <x>1150</x>
         <y>610</y>
         <width>20</width>
-        <height>241</height>
+        <height>281</height>
        </rect>
       </property>
       <property name="orientation">
@@ -6068,7 +6096,7 @@
         <x>10</x>
         <y>610</y>
         <width>20</width>
-        <height>241</height>
+        <height>281</height>
        </rect>
       </property>
       <property name="orientation">
@@ -6079,7 +6107,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>840</y>
+        <y>880</y>
         <width>1141</width>
         <height>20</height>
        </rect>
