@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="movable">
      <bool>true</bool>
@@ -5388,6 +5388,31 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="bias_DoubleFit">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Restrict Fit</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_61">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="disorder_DoubleFit">
            <property name="font">
             <font>
@@ -5425,13 +5450,6 @@
           </widget>
          </item>
          <item>
-          <widget class="Line" name="line_691">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QCheckBox" name="bestSubtract_DoubleFit_2">
            <property name="enabled">
             <bool>true</bool>
@@ -5446,31 +5464,6 @@
            </property>
            <property name="text">
             <string>Subtract Best Fit</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="Line" name="line_61">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="bias_DoubleFit">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>50</weight>
-             <italic>false</italic>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Restrict Fit</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -5529,7 +5522,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.780000000000000</double>
+            <double>3.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5548,7 +5541,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.720000000000000</double>
+            <double>1.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5579,7 +5572,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.760000000000000</double>
+            <double>2.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5650,7 +5643,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.750000000000000</double>
+            <double>2.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5709,7 +5702,7 @@
             <double>2.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.100000000000000</double>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5735,7 +5728,7 @@
             <double>2.000000000000000</double>
            </property>
            <property name="value">
-            <double>0.010000000000000</double>
+            <double>0.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5754,7 +5747,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Sigma Guess :</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sigma Guess : &lt;span style=&quot; font-size:9pt; font-style:italic;&quot;&gt;(not used)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -5777,7 +5770,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.250000000000000</double>
+            <double>1.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5796,7 +5789,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.300000000000000</double>
+            <double>2.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5829,7 +5822,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.270000000000000</double>
+            <double>2.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5867,7 +5860,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.320000000000000</double>
+            <double>3.000000000000000</double>
            </property>
           </widget>
          </item>

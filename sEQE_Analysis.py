@@ -952,6 +952,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 p0 = None
 
+                ### FIX: This code could be replaced by using "guess_fit" function
                 if include_Disorder:
                     best_guess_df = pd.DataFrame()
                     p0_list = []
@@ -989,9 +990,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         y_gaussian = []
                         try:
                             best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit, eqe_fit, p0=p0)
-                            for value in x_gaussian:
-                                y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
                             if r_squared > 0:
+                                for value in x_gaussian:
+                                    y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
                                 fit_ok = True
                                 best_p0 = p0
                                 break # This breaks the for loop
@@ -1001,6 +1002,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             p0 = [0.001, 0.1, round(ECT, 3)]
 
                 if fit_ok:
+
                     self.logger.info('Fit Results: ')
                     print("")
                     print('Initial Guess (eV) : ', best_p0)
@@ -1248,6 +1250,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         p0 = None
 
+                        ### FIX: This code could be replaced by using "guess_fit" function
                         if include_Disorder:
                             best_guess_df = pd.DataFrame()
                             p0_list = []
@@ -2193,9 +2196,6 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 guessRange_Sig = np.round(np.arange(startGuess_Sig, startGuess_Sig + 0.1, 0.01), 3).tolist()
 
-        print(guessRange_Sig)
-        print(len(guessRange_Sig))
-
         eqe = self.data_double
         self.T_double = self.ui.double_Temperature.value()
 
@@ -2381,8 +2381,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 df_Opt['Advanced R2'] = advanced_R2_list
 
                 best_fit_index = df_Opt['Fit'][df_Opt['Advanced R2']==max(df_Opt['Advanced R2'])].index[0]
-                print(best_fit_index)
-
+                # print(best_fit_index)
 
                 new_eqe = subtract_Opt(eqe, df_Opt['Fit'][best_fit_index], T=self.T_double)
 
