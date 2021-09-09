@@ -32,7 +32,7 @@ from source.gaussian import calculate_gaussian_absorption
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
-from source.utils import interpolate, sep_list, get_logger, R_squared
+from source.utils import interpolate, sep_list, get_logger, best_vals, covar = curve_fit(gaussian_double, list(data['Energy'][-50:].values), list(data['EQE'][-50:].values), p0=[0.001, 0.15, 1.30, 0.01, 0.150, 1.5], bounds=(0, [0.01, 0.3, 1.55, 0.1, 0.4, 1.7]))
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
@@ -957,6 +957,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     best_guess_df = pd.DataFrame()
                     p0_list = []
                     R2_list = []
+
+                    # ECT_guess_list = []
+                    # sig_guess_list = []
+                    # f_list = []
+                    # l_list = []
+                    # ECT_list = []
+                    # sig_list = []
+
                     for ECT in ECT_guess:
                         for sig in Sig_guess:
                             y_gaussian = []
@@ -965,6 +973,14 @@ class MainWindow(QtWidgets.QMainWindow):
                                 if r_squared > 0:
                                     p0_list.append(p0)
                                     R2_list.append(r_squared)
+
+                                    # ECT_guess_list.append(ECT)
+                                    # sig_guess_list.append(sig)
+                                    # f_list.append(best_vals[0])
+                                    # l_list.append(best_vals[1])
+                                    # ECT_list.append(best_vals[2])
+                                    # sig_list.append(best_vals[3])
+
                                 else:
                                     raise Exception('Wrong fit determined.')
                                 p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
@@ -975,6 +991,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     best_guess_df['p0'] = p0_list
                     best_guess_df['R2'] = R2_list
+
+                    # best_guess_df['ECT Guess'] = ECT_guess_list
+                    # best_guess_df['Sigma Guess'] = sig_guess_list
+                    # best_guess_df['f'] = f_list
+                    # best_guess_df['l'] = l_list
+                    # best_guess_df['ECT'] = ECT_list
+                    # best_guess_df['Sigma'] = sig_list
+                    # best_guess_df.to_csv('~/Desktop/Best_Guesses.csv')
 
                     best_R2 = max(best_guess_df['R2'])
                     best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0] # Find best initial guess
@@ -2144,7 +2168,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.axAdd_1.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--',
                                   color=color_CTFit, label=label_CTFit)
                 self.axAdd_1.plot(add_Energy, add_Fits, linewidth=2, linestyle='dotted', color='grey',
-                                  label='Optical + CT Fit')
+                                  label='$\mathrm{S_1}$ + CT Fit')
                 self.axAdd_1.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE,
                                   label=label_EQE)
                 self.axAdd_1.legend()
@@ -2154,7 +2178,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.axAdd_2.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--',
                                   color=color_CTFit, label=label_CTFit)
                 self.axAdd_2.plot(add_Energy, add_Fits, linewidth=2, linestyle='dotted', color='grey',
-                                  label='Optical + CT Fit')
+                                  label='$\mathrm{S_1}$ + CT Fit')
                 self.axAdd_2.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE,
                                   label=label_EQE)
                 self.axAdd_2.legend()
