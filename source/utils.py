@@ -38,6 +38,7 @@ def R_squared(y_data, yfit_data, bias = False, tolerance = None):
         yfit_data = np.array(yfit_data)
 
         residuals = y_data - yfit_data
+
         ss_res = np.sum(residuals ** 2)
         ss_tot = np.sum((y_data - np.mean(y_data)) ** 2)
         r_squared = 1 - (ss_res / ss_tot)
@@ -53,11 +54,13 @@ def R_squared(y_data, yfit_data, bias = False, tolerance = None):
         ss_tot_log = np.sum((y_data_log - np.mean(y_data_log)) ** 2)
         r_squared_log = 1 - (ss_res_log / ss_tot_log)
 
-        if bias == True and tolerance is not None:
-            mean_percent = abs(np.mean(residuals[residuals<0]/y_data[residuals<0]))
-            if mean_percent > tolerance:
-                r_squared = 0.0001
-                r_squared_log = 0.0001 # These values are artificially set very low to discard fit
+        if bias and tolerance is not None:
+            if len(residuals[residuals<0])!=0: # Check that there are fit values that fall above the data
+                mean_percent = abs(np.nanmean(residuals[residuals<0]/y_data[residuals<0]))
+                # mean_percent = abs(np.nanmean(residuals/y_data)) # To account for both positive and negative deviations
+                if mean_percent > tolerance:
+                    r_squared = 0.0001
+                    r_squared_log = 0.0001 # These values are artificially set very low to discard fit
 
         return (r_squared + r_squared_log)/2
     else:
