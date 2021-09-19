@@ -2116,6 +2116,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to add peak fits
 
+
     def add_Fits(self, data_OptFit, data_CTFit, data_EQE):
 
         add_Energy = []
@@ -2191,6 +2192,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.axAdd_2.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE,
                                   label=label_EQE)
                 self.axAdd_2.legend()
+
+                df_add = pd.DataFrame()
+                df_add['Energy'] = np.array(add_Energy)
+                df_add['EQE'] = np.array(add_Fits)
+                df_add.to_csv('Fit_sum.csv') # TODO: make more versatile
 
             else:
                 self.logger.error('Please import a valid EQE file.')
