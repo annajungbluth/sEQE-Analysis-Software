@@ -1,4 +1,5 @@
 import random
+import matplotlib.pyplot as plt
 
 from colour import Color
 from numpy import random
