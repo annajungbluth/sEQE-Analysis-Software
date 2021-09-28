@@ -7,7 +7,6 @@ from source.utils import get_logger
 
 logger = get_logger()
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if input is a color
@@ -23,7 +22,6 @@ def is_Colour(colour):
         return True
     except:
         return False
-
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -55,7 +53,6 @@ def pick_EQE_Color(colour_Box, file_no):
     else:
         return random_colour
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to pick EQE plot label
@@ -74,7 +71,6 @@ def pick_EQE_Label(label_Box, filename_Box):
         return label
     else:  # We don't need to check that there is a filename, as the "pick_label" function is only called after checking "EQE_is_valid"
         return filename
-
 
 # -----------------------------------------------------------------------------------------------------------
 

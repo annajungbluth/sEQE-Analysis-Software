@@ -37,14 +37,14 @@ from source.utils import interpolate, sep_list, get_logger
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.utils_fit import guess_fit, guess_fit_sim, fit_function, calculate_guess_fit, calculate_combined_fit, calculate_combined_fit_sim, fit_model
+from source.utils_fit import guess_fit, guess_fit_sim, fit_function, calculate_guess_fit, calculate_combined_fit, \
+    calculate_combined_fit_sim, fit_model
 from source.utils import R_squared
 
 warnings.filterwarnings("ignore")
 warnings.simplefilter('ignore', np.RankWarning)
 warnings.simplefilter('ignore', np.ComplexWarning)
 warnings.filterwarnings('ignore', "Intel MKL ERROR")
-
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -321,7 +321,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # -----------------------------------------------------------------------------------------------------------
 
-    def writeText(self, text_Box, textBox_no):
+    def writeText(self,
+                  text_Box,
+                  textBox_no
+                  ):
+        """
+        Function to load data and update text box in GUI
+        :param text_Box: GUI text box to write filename into [ui object]
+        :param textBox_no: Internal name of text box to specify which data variable to define [int or str]
+        :return: None
+        """
 
         os.chdir(self.data_dir)
         file_ = filedialog.askopenfilename()
@@ -470,7 +479,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to select data and reference files
 
-    def pre_EQE(self, ref_df, data_df, start, stop, range_no):
+    def pre_EQE(self,
+                ref_df,
+                data_df,
+                start,
+                stop,
+                range_no
+                ):
+        """
+        Wrapper function to load variables and data for EQE calculation
+        :param ref_df: Reference data [dataFrame]
+        :param data_df: Measured signal [dataFrame]
+        :param start: GUI field with start wavelength [ui object]
+        :param stop: GUI field with stop wavelength [ui object]
+        :param range_no: Number to specify which data range to compile [int]
+        :return: None
+        """
 
         startNM = start.value()
         stopNM = stop.value()
@@ -482,7 +506,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to calculate EQE
 
-    def calculate_EQE(self, ref_df, data_df, startNM, stopNM, range_no):
+    def calculate_EQE(self,
+                      ref_df,
+                      data_df,
+                      startNM,
+                      stopNM,
+                      range_no
+                      ):
+        """
+        Function to calculate EQE from signal and reference data
+        :param ref_df: Reference data [dataFrame]
+        :param data_df: Measured signal [dataFrame]
+        :param startNM: Start wavelength [float]
+        :param stopNM: Stop wavelength [float]
+        :param range_no: Number to specify which data range to compile [int]
+        :return: None
+        """
 
         power_dict = {}
         Wavelength = []
@@ -585,8 +624,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     x]  # Add wavelength and corresponding power to dictionary
 
             for y in range(len(data_df['Wavelength'])):  # Iterate through columns of data file
-                if startNM <= data_df['Wavelength'][
-                    y] <= stopNM:  # Calculate EQE only if start <= wavelength <= stop, otherwise ignore
+                if startNM <= data_df['Wavelength'][y] <= stopNM:  # Calculate EQE if start <= wave <= stop, else ignore
 
                     if data_df['Wavelength'][y] in power_dict.keys():  # Check if data wavelength is in reference file
                         Wavelength.append(data_df['Wavelength'][y])
@@ -595,8 +633,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         Energy.append(Energy_val)
                         EQE_val = (data_df['Mean Current'][y] * Energy_val) / (
                             power_dict[data_df['Wavelength'][y]])  # Easier way to calculate EQE
-                        # EQE_val = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * power_dict[data_df['Wavelength'][y]] * self.q))
-                        # EQE_val = (100 * data_df['Mean Current'][y] * Energy_val) / (power_dict[data_df['Wavelength'][y]]) # *100 to turn into percent
+                        # EQE_val = ((data_df['Mean Current'][y] * self.h * self.c) / (
+                        #   data_df['Wavelength'][y] * math.pow(10,-9) * power_dict[data_df['Wavelength'][y]] * self.q))
+                        # EQE_val = (100 * data_df['Mean Current'][y] * Energy_val) / (
+                        #   power_dict[data_df['Wavelength'][y]]) # *100 to turn into percent
                         EQE.append(EQE_val)
                         log_EQE.append(math.log10(EQE_val))
 
@@ -607,7 +647,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         Power_int = interpolate(data_df['Wavelength'][y], ref_df['Wavelength'],
                                                 ref_df['Power'])  # Interpolate power
                         EQE_int = (data_df['Mean Current'][y] * Energy_val) / (Power_int)
-                        # EQE_int = ((data_df['Mean Current'][y] * self.h * self.c) / (data_df['Wavelength'][y] * math.pow(10,-9) * Power_int * self.q))
+                        # EQE_int = ((data_df['Mean Current'][y] * self.h * self.c) / (
+                        #         data_df['Wavelength'][y] * math.pow(10,-9) * Power_int * self.q))
                         EQE.append(EQE_int)
                         log_EQE.append(math.log10(EQE_int))
 
@@ -637,6 +678,10 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to export EQE
 
     def export_EQE(self):
+        """
+        Functionm to export EQE to csv file
+        :return: None
+        """
 
         self.export = True
 
@@ -716,7 +761,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 ok_6 = False
 
-        if ok_1 and ok_2 and ok_3 and ok_4 and ok_5 and ok_6:  # Check if all operations are ok or if fields are left empty
+        if ok_1 and ok_2 and ok_3 and ok_4 and ok_5 and ok_6:  # Check if all operations are ok or if fields are empty
 
             for x in range(len(wave_inc.keys())):  # Iterate through wave_inc list
                 minimum = min(wave_inc, key=wave_inc.get)  # Find key corresponding to minimum value
@@ -756,7 +801,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to select EQE for plotting
 
-    def pre_plot_EQE(self, number):
+    def pre_plot_EQE(self,
+                     number
+                     ):
+        """
+        Wrapper function to select EQE for plotting
+        :param number: Number of the EQE file to plot [int]
+        :return: None
+        """
 
         ok_EQE_1 = True
         ok_EQE_2 = True
@@ -816,7 +868,8 @@ class MainWindow(QtWidgets.QMainWindow):
             ok_EQE_10 = self.plot_EQE(self.EQE_10, self.ui.startEQE_10, self.ui.stopEQE_10, self.ui.textBox_p2_28,
                                       self.ui.textBox_p2_29, self.ui.textBox_p2_30, 10, number)
 
-        if ok_EQE_1 and ok_EQE_2 and ok_EQE_3 and ok_EQE_4 and ok_EQE_5 and ok_EQE_6 and ok_EQE_7 and ok_EQE_8 and ok_EQE_9 and ok_EQE_10:
+        if ok_EQE_1 and ok_EQE_2 and ok_EQE_3 and ok_EQE_4 and ok_EQE_5 and ok_EQE_6 and ok_EQE_7 and ok_EQE_8 and \
+           ok_EQE_9 and ok_EQE_10:
             self.axEQE_1.legend()
             self.axEQE_2.legend()
             plt.show()
@@ -828,7 +881,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to plot EQE
 
-    def plot_EQE(self, eqe_df, startNM, stopNM, filename_Box, label_Box, color_Box, file_no, number):
+    def plot_EQE(self,
+                 eqe_df,
+                 startNM,
+                 stopNM,
+                 filename_Box,
+                 label_Box,
+                 color_Box,
+                 file_no,
+                 number
+                 ):
+        """
+        Function to plot EQE data
+        :param eqe_df: EQE data [dataFrame]
+        :param startNM: Start wavelength [float]
+        :param stopNM: Stop wavelength [float]
+        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
+        :param label_Box: GUI text box with plot label [ui object]
+        :param color_Box: GUI text box with plot color [ui object]
+        :param file_no: Number of EQE file to plot [int]
+        :param number: Number to specify whether to plot wavelength (0) or energy (1) [boolean int]
+        :return: None
+        """
 
         startNM = startNM.value()  # Pick start wavelength
         stopNM = stopNM.value()  # Pick stop wavelength
@@ -875,16 +949,52 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to select EQE to fit
 
-    def pre_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box,
-                    color_Box, file_no):
+    def pre_fit_EQE(self,
+                    eqe_df,
+                    startE,
+                    stopE,
+                    startFit,
+                    stopFit,
+                    startPlotFit,
+                    stopPlotFit,
+                    filename_Box,
+                    label_Box,
+                    color_Box,
+                    file_no
+                    ):
+        """
+        Wrapper function to fit EQE
+        :param eqe_df: EQE data [dataFrame]
+        :param startE: Start energy to plot EQE [float]
+        :param stopE: Stop energy to plot EQE [float]
+        :param startFit: Start energy to fit [float]
+        :param stopFit: Stop energy to fit [float]
+        :param startPlotFit: Start energy to plot fit [float]
+        :param stopPlotFit: Stop energy to plot fit [float]
+        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
+        :param label_Box: GUI text box with plot label [ui object]
+        :param color_Box: GUI text box with plot color [ui object]
+        :param file_no: Number of EQE file to plot [int]
+        :return: None
+        """
 
         # Change this if you want to plot on the same graph 
         if self.fit_plot:
             self.axFit_1, self.axFit_2 = set_up_EQE_plot()  # Sets up plot of energy vs EQE / log(EQE)
             self.fit_plot = False
 
-        ok_plot_Fit = self.plot_fit_EQE(eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit,
-                                        filename_Box, label_Box, color_Box, file_no)
+        ok_plot_Fit = self.plot_fit_EQE(eqe_df,
+                                        startE,
+                                        stopE,
+                                        startFit,
+                                        stopFit,
+                                        startPlotFit,
+                                        stopPlotFit,
+                                        filename_Box,
+                                        label_Box,
+                                        color_Box,
+                                        file_no
+                                        )
 
         if ok_plot_Fit:
             self.axFit_1.legend()
@@ -895,8 +1005,34 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to fit and plot EQE
 
-    def plot_fit_EQE(self, eqe_df, startE, stopE, startFit, stopFit, startPlotFit, stopPlotFit, filename_Box, label_Box,
-                     color_Box, file_no):
+    def plot_fit_EQE(self,
+                     eqe_df,
+                     startE,
+                     stopE,
+                     startFit,
+                     stopFit,
+                     startPlotFit,
+                     stopPlotFit,
+                     filename_Box,
+                     label_Box,
+                     color_Box,
+                     file_no
+                     ):
+        """
+        Function to fit and plot EQE
+        :param eqe_df: EQE data [dataFrame]
+        :param startE: Start energy to plot EQE [float]
+        :param stopE: Stop energy to plot EQE [float]
+        :param startFit: Start energy to fit [float]
+        :param stopFit: Stop energy to fit [float]
+        :param startPlotFit: Start energy to plot fit [float]
+        :param stopPlotFit: Stop energy to plot fit [float]
+        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
+        :param label_Box: GUI text box with plot label [ui object]
+        :param color_Box: GUI text box with plot color [ui object]
+        :param file_no: Number of EQE file to plot [int]
+        :return: None
+        """
 
         include_Disorder = False
         fit_opticalPeak = False
@@ -911,9 +1047,9 @@ class MainWindow(QtWidgets.QMainWindow):
         startPlotFit = startPlotFit.value()
         stopPlotFit = stopPlotFit.value()
 
-        if Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no):  # Check that files are non-empty and within energy range
+        if Fit_is_valid(eqe_df, startE, stopE, startFit, stopFit, file_no):  # Check if files are not empty and in range
             wave, energy, eqe, log_eqe = compile_EQE(eqe_df, startE, stopE, 1)  # Compile EQE file
-            wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, startFit, stopFit, 1)  # Compile fit range of EQE file
+            wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, startFit, stopFit, 1)  # Compile fit range
 
             label_ = pick_EQE_Label(label_Box, filename_Box)
             color_ = pick_EQE_Color(color_Box, file_no)
@@ -930,7 +1066,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     guessStop_sig = self.ui.guessStopSig_1.value()
                     if self.ui.disorder_1.isChecked():
                         include_Disorder = True
-                    if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check if CT state or optical gap are fitted.
+                    if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check peak to fit
                         fit_opticalPeak = True
                     elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
                         self.logger.error('Please select a valid peak to fit.')
@@ -960,7 +1096,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 p0 = None
 
-                # TODO: This code could be replaced by using "guess_fit" function
+                # TODO: This code could be replaced by using the "guess_fit" function
                 if include_Disorder:
                     best_guess_df = pd.DataFrame()
                     p0_list = []
@@ -977,7 +1113,12 @@ class MainWindow(QtWidgets.QMainWindow):
                         for sig in Sig_guess:
                             y_gaussian = []
                             try:
-                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2, energy_fit, eqe_fit, p0=p0, include_disorder=True)
+                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2,
+                                                                               energy_fit,
+                                                                               eqe_fit,
+                                                                               p0=p0,
+                                                                               include_disorder=True
+                                                                               )
                                 if r_squared > 0:
                                     p0_list.append(p0)
                                     R2_list.append(r_squared)
@@ -1012,9 +1153,19 @@ class MainWindow(QtWidgets.QMainWindow):
                     best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0] # Find best initial guess
 
                     # Determine fit values of fit with best intial guess
-                    best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2, energy_fit, eqe_fit, p0=best_p0, include_disorder=True)
+                    best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2,
+                                                                   energy_fit,
+                                                                   eqe_fit,
+                                                                   p0=best_p0,
+                                                                   include_disorder=True
+                                                                   )
                     for value in x_gaussian:
-                        y_gaussian.append(self.gaussian_disorder_new(value, best_vals[0], best_vals[1], best_vals[2], best_vals[3]))
+                        y_gaussian.append(self.gaussian_disorder_new(value,
+                                                                     best_vals[0],
+                                                                     best_vals[1],
+                                                                     best_vals[2],
+                                                                     best_vals[3]
+                                                                     ))
                     fit_ok = True # Accept fit
 
                 else: # if disorder is not to be included
@@ -1041,16 +1192,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     print('-' * 80)
                     print('Temperature [T] (K) : ', self.T_CT)
-                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0, 0]), '.6f'))
-                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1, 1]), '.6f'))
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'),
+                          '+/-', format(math.sqrt(covar[0, 0]), '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'),
+                          '+/-', format(math.sqrt(covar[1, 1]), '.6f'))
 
                     if fit_opticalPeak:
-                        print('Optical Peak Energy [E_Opt] (eV) : ', format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
+                        print('Optical Peak Energy [E_Opt] (eV) : ', format(best_vals[2], '.6f'),
+                              '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
                     else:
-                        print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
+                        print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'),
+                              '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
 
                     if include_Disorder:
-                        print('Disorder (eV) : ', format(best_vals[3], '.6f'), '+/-', format(math.sqrt(covar[3, 3]), '.6f'))
+                        print('Disorder (eV) : ', format(best_vals[3], '.6f'),
+                              '+/-', format(math.sqrt(covar[3, 3]), '.6f'))
 
                     print('R_Squared : ', format(r_squared, '.6f'))
                     print('-' * 80)
@@ -1067,13 +1223,35 @@ class MainWindow(QtWidgets.QMainWindow):
                     else:
                         fit_linestyle = '--'
 
-                    self.axFit_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
+                    self.axFit_1.plot(energy,
+                                      eqe,
+                                      linewidth=3,
+                                      label=label_,
+                                      color=color_
+                                      )
                     plt.draw()
-                    self.axFit_1.plot(x_gaussian, y_gaussian, linewidth=2, label=fit_label, color='#000000', linestyle=fit_linestyle)
+                    self.axFit_1.plot(x_gaussian,
+                                      y_gaussian,
+                                      linewidth=2,
+                                      label=fit_label,
+                                      color='#000000',
+                                      linestyle=fit_linestyle
+                                      )
 
-                    self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                    self.axFit_2.semilogy(energy,
+                                          eqe,
+                                          linewidth=3,
+                                          label=label_,
+                                          color=color_
+                                          )
                     plt.draw()
-                    self.axFit_2.plot(x_gaussian, y_gaussian, linewidth=2, label=fit_label, color='#000000', linestyle=fit_linestyle)
+                    self.axFit_2.plot(x_gaussian,
+                                      y_gaussian,
+                                      linewidth=2,
+                                      label=fit_label,
+                                      color='#000000',
+                                      linestyle=fit_linestyle
+                                      )
 
                     # Save fit data
                     if self.ui.save_gaussianFit.isChecked():
@@ -1162,24 +1340,54 @@ class MainWindow(QtWidgets.QMainWindow):
                             print("")
 
                             # Plot EQE data and CT fit
-                            self.axFit_1.plot(energy, eqe, linewidth=3, label=label_, color=color_)
+                            self.axFit_1.plot(energy,
+                                              eqe,
+                                              linewidth=3,
+                                              label=label_,
+                                              color=color_
+                                              )
                             plt.draw()
                             if include_Disorder:
-                                self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder',
-                                                  color='#000000', linestyle='--')
+                                self.axFit_1.plot(x_MLJ_theory,
+                                                  y_MLJ_theory,
+                                                  linewidth=2,
+                                                  label='MLJ Fit + Disorder',
+                                                  color='#000000',
+                                                  linestyle='--'
+                                                  )
                             else:
-                                self.axFit_1.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit',
-                                                  color='#000000', linestyle='--')
+                                self.axFit_1.plot(x_MLJ_theory,
+                                                  y_MLJ_theory,
+                                                  linewidth=2,
+                                                  label='MLJ Fit',
+                                                  color='#000000',
+                                                  linestyle='--'
+                                                  )
                             plt.draw()
 
-                            self.axFit_2.semilogy(energy, eqe, linewidth=3, label=label_, color=color_)
+                            self.axFit_2.semilogy(energy,
+                                                  eqe,
+                                                  linewidth=3,
+                                                  label=label_,
+                                                  color=color_
+                                                  )
                             plt.draw()
                             if include_Disorder:
-                                self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit + Disorder',
-                                                  color='#000000', linestyle='--')
+                                self.axFit_2.plot(x_MLJ_theory,
+                                                  y_MLJ_theory,
+                                                  linewidth=2,
+                                                  label='MLJ Fit + Disorder',
+                                                  color='#000000',
+                                                  linestyle='--'
+                                                  )
                             else:
-                                self.axFit_2.plot(x_MLJ_theory, y_MLJ_theory, linewidth=2, label='MLJ Fit',
-                                                  color='#000000', linestyle='--')
+                                self.axFit_2.plot(x_MLJ_theory,
+                                                  y_MLJ_theory,
+                                                  linewidth=2,
+                                                  label='MLJ Fit',
+                                                  color='#000000',
+                                                  linestyle='--'
+                                                  )
                             plt.draw()
 
                             return True
@@ -1200,7 +1408,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to generate heat map of fitting values
 
-    def heatMap(self, eqe_df, startStartE, startStopE, stopStartE, stopStopE, filename_Box, label_Box, color_Box, file_no):
+    def heatMap(self,
+                eqe_df,
+                startStartE,
+                startStopE,
+                stopStartE,
+                stopStopE,
+                filename_Box,
+                label_Box,
+                color_Box,
+                file_no
+                ):
+        """
+        Function to generate heatmap for standard Marcus theory fitting
+        :param eqe_df: EQE data [dataFrame]
+        :param startStartE: Start of the start fit energy range [float]
+        :param startStopE: Start of the stop fit energy range [float]
+        :param stopStartE: Stop of the start fit energy range [float]
+        :param stopStopE: Stop of the stop fit energy range [float]
+        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
+        :param label_Box: GUI text box with plot label [ui object]
+        :param color_Box: GUI text box with plot color [ui object]
+        :param file_no: Number of EQE file to perform heatmap fits for [int]
+        :return: None
+        """
 
         include_Disorder = False
         fit_opticalPeak = False
@@ -1239,7 +1470,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 y += 0.005
 
             for start in tqdm(startEnergies):  # Iterate through start energies
-                for stop in tqdm(stopEnergies):  # Iterature through stop energies
+                for stop in tqdm(stopEnergies):  # Iterate through stop energies
 
                     wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, start, stop, 1)
 
@@ -1254,7 +1485,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             guessStop_sig = self.ui.guessStopSig_1.value()
                             if self.ui.disorder_1.isChecked():
                                 include_Disorder = True
-                            if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check if CT state or optical gap are fitted.
+                            if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked(): # Check peak to fit
                                 fit_opticalPeak = True
                             elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
                                 self.logger.error('Please select a valid peak to fit.')
@@ -1277,7 +1508,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.logger.error('Please select a valid peak to fit.')
 
                         # Attempt peak fit:
-                        ECT_guess = np.arange(guessStart, guessStop + 0.2, 0.2) # I increased the incremenets to speed up the calculation
+                        ECT_guess = np.arange(guessStart, guessStop + 0.2, 0.2) # Increased step to accelerate process
                         Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.01, 0.01)  # Extract sigma guess range
 
                         p0 = None
@@ -1308,7 +1539,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 best_guess_df['R2'] = R2_list
 
                                 best_R2 = max(best_guess_df['R2'])
-                                best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
+                                best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best guess
 
                                 # Determine fit values of fit with best intial guess
                                 best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2, energy_fit,
@@ -1543,6 +1774,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian(self, E, f, l, Ect):
         """
+        Standard gaussian function
         :param E: List of energy values [list of floats]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
@@ -1553,10 +1785,11 @@ class MainWindow(QtWidgets.QMainWindow):
             -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_CT))
 
     # Gaussian function including disorder
-    # TODO: Fix functions
 
-    def gaussian_disorder(self, E, f, l, Ect): # Old fit function to be removed
+    # TODO: Fix functions
+    def gaussian_disorder(self, E, f, l, Ect): # TODO: Old fit function to be removed
         """
+        Standard gaussian function including disorder
         :param E: List of energy values [list of floats]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
@@ -1568,6 +1801,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_disorder_new(self, E, f, l, Ect, sig):
         """
+        New gaussian function including disorder
         :param E: List of energy values [list of floats]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
@@ -1576,10 +1810,12 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: EQE value [float]
         """
         return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
-            -((Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - E) ** 2 / (4 * l * self.k * self.T_CT + 2 * sig ** 2)))
+            -((Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - E) ** 2 / (
+                    4 * l * self.k * self.T_CT + 2 * sig ** 2)))
 
     def gaussian_disorder_new_2(self, E, f, l, Ect, sig):
         """
+        New gaussian function including disorder
         :param E: List of energy values [list of floats]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
@@ -1588,7 +1824,8 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: list of EQE values [list of floats]
         """
         return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
-            -(Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - e) ** 2 / (4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
+            -(Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - e) ** 2 / (
+                    4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -1596,6 +1833,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def MLJ_gaussian(self, E, f, l_o, Ect):  # Double check if this equation is correct
         """
+        MLJ function
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1615,6 +1853,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def MLJ_gaussian_disorder(self, E, f, l_o, Ect):  # Double check if this equation is correct
         """
+        MLJ function including disorder
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1638,7 +1877,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to scale and reduce EL and EQE
 
-    def pre_plot_EL_EQE(self, data_df, startE, stopE, data_no, fit=False):
+    def pre_plot_EL_EQE(self,
+                        data_df,
+                        startE,
+                        stopE,
+                        data_no,
+                        fit=False
+                        ):
+        """
+        Wrapper function to plot and fit EQE and EL data
+        :param data_df: EQE or EL data [dataFrame]
+        :param startE: Start energy [float]
+        :param stopE: Stop energy [float]
+        :param data_no: Number of data file to plot and fit [int]
+        :param fit: Boolean value to specify whether to fit [bool]
+        :return: None
+        """
 
         self.T_EL = self.ui.EL_Temperature.value()
 
@@ -1666,8 +1920,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if Data_is_valid(data_df, startE, stopE) and StartStop_is_valid(startE, stopE):
 
                     EL_wave, EL_energy, EL_signal = compile_EL(data_df, startE, stopE, 1)
-                    red_EL = [EL_signal[x] / (EL_energy[x]) for x in range(len(EL_signal))]  # Divide by energy to reduce (cornfirmed in Benduhn thesis)
-                    red_EL_scaled = [red_EL[x] / scaleFactor for x in range(len(red_EL))]
+                    red_EL = [EL_signal[x] / (EL_energy[x])
+                              for x in range(len(EL_signal))]  # Divide by energy to reduce (checked in Benduhn thesis)
+                    red_EL_scaled = [red_EL[x] / scaleFactor
+                                     for x in range(len(red_EL))]
 
                     if data_no == 0:  # EL Data
 
@@ -1690,11 +1946,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         scaleFactor_calc = self.ui.scalePlot_calc.value()
 
-                        EL_abs_scaled = [EL_signal[x] / (scaleFactor * bb_dict[EL_energy[x]]) for x in range(len(EL_energy))]
-                        EL_abs_scaled_test = [EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]]) for x in range(len(EL_energy))] # to test which scale factor is correct
+                        EL_abs_scaled = [EL_signal[x] / (scaleFactor * bb_dict[EL_energy[x]])
+                                         for x in range(len(EL_energy))]
+                        EL_abs_scaled_test = [EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]])
+                                              for x in range(len(EL_energy))] # test which scale factor is correct
 
-                        red_EL_abs_scaled = [EL_energy[x] * EL_signal[x] / (scaleFactor * bb_dict[EL_energy[x]]) for x in range(len(EL_energy))]
-                        red_EL_abs_scaled_test = [EL_energy[x] * EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]]) for x in range(len(EL_energy))] # to test which scale factor is correct
+                        red_EL_abs_scaled = [EL_energy[x] * EL_signal[x] / (scaleFactor * bb_dict[EL_energy[x]])
+                                             for x in range(len(EL_energy))]
+                        red_EL_abs_scaled_test = [EL_energy[x] * EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]])
+                                                  for x in range(len(EL_energy))] # test which scale factor is correct
 
                         if not fit:
                             # label_ = pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
@@ -1705,16 +1965,18 @@ class MainWindow(QtWidgets.QMainWindow):
                             # Experiments
                             # plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled, label_, color_)
 
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, EL_abs_scaled, label_='EQE,cal with EL SF',
-                            #      color_='blue')
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, EL_abs_scaled_test, label_='EQE,cal with EQE,calc SF',
-                            #      color_='green')
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled, label_='Red. EQE,cal with EL SF',
-                            #      color_='orange')
-                            plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled_test, label_=label_, color_=color_)
+                            # plot(self.axEL_1, self.axEL_2, EL_energy, EL_abs_scaled,
+                            #      label_='EQE,cal with EL SF', color_='blue')
+                            # plot(self.axEL_1, self.axEL_2, EL_energy, EL_abs_scaled_test,
+                            #      label_='EQE,cal with EQE,calc SF', color_='green')
+                            # plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled,
+                            #      label_='Red. EQE,cal with EL SF', color_='orange')
+                            plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled_test,
+                                 label_=label_, color_=color_)
 
                         elif fit:
-                            self.fit_EL_EQE(EL_energy, red_EL_abs_scaled_test, self.ui.startFit_EL2, self.ui.stopFit_EL2, 1)
+                            self.fit_EL_EQE(EL_energy, red_EL_abs_scaled_test, self.ui.startFit_EL2,
+                                            self.ui.stopFit_EL2, 1)
 
             else:
                 self.logger.error('Please select a valid EL file.')
@@ -1740,7 +2002,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to fit reduced EL and EQE
 
-    def fit_EL_EQE(self, energy, y, startE, stopE, data_no):
+    def fit_EL_EQE(self,
+                   energy,
+                   y,
+                   startE,
+                   stopE,
+                   data_no
+                   ):
+        """
+        Function to fit EL and EQE data
+        :param energy: List of energy values to fit [list]
+        :param y: List of data values to fit [list]
+        :param startE: Start energy to fit [float]
+        :param stopE: Stop energy to fit [float]
+        :param data_no: Number of data file to fit [int]
+        :return: None
+        """
 
         include_Disorder = False
 
@@ -1811,15 +2088,35 @@ class MainWindow(QtWidgets.QMainWindow):
                     print("")
 
                     if include_Disorder:
-                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder',
-                                         color='#000000', linestyle='--')
-                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit + Disorder',
-                                         color='#000000', linestyle='--')
+                        self.axEL_1.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='Gaussian Fit + Disorder',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
+                        self.axEL_2.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='Gaussian Fit + Disorder',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
                     else:
-                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000',
-                                         linestyle='--')
-                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='Gaussian Fit', color='#000000',
-                                         linestyle='--')
+                        self.axEL_1.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='Gaussian Fit',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
+                        self.axEL_2.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='Gaussian Fit',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
                     plt.legend()
                     plt.draw()
 
@@ -1872,15 +2169,35 @@ class MainWindow(QtWidgets.QMainWindow):
                     print("")
 
                     if include_Disorder:
-                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder',
-                                         color='#000000', linestyle='--')
-                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit + Disorder',
-                                         color='#000000', linestyle='--')
+                        self.axEL_1.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='MLJ Fit + Disorder',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
+                        self.axEL_2.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='MLJ Fit + Disorder',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
                     else:
-                        self.axEL_1.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',
-                                         linestyle='--')
-                        self.axEL_2.plot(x_gaussian, y_gaussian, linewidth=2, label='MLJ Fit', color='#000000',
-                                         linestyle='--')
+                        self.axEL_1.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='MLJ Fit',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
+                        self.axEL_2.plot(x_gaussian,
+                                         y_gaussian,
+                                         linewidth=2,
+                                         label='MLJ Fit',
+                                         color='#000000',
+                                         linestyle='--'
+                                         )
                     plt.legend()
                     plt.draw()
 
@@ -1893,6 +2210,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_EL(self, E, f, l, Ect):
         """
+        Standard gaussian to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1907,6 +2225,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_EL_disorder(self, E, f, l, Ect):
         """
+        Standard gaussian including disorder to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1923,12 +2242,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def MLJ_gaussian_EL(self, E, f, l_o, Ect):  # Double check if this equation is correct
         """
+        MLJ function to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EL value
         """
+
         EL = 0
         for n in range(0, 6):
             EL_n = (f / (math.sqrt(4 * math.pi * l_o * self.T_EL * self.k))) \
@@ -1942,6 +2263,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def MLJ_gaussian_EL_disorder(self, E, f, l_o, Ect):  # Double check if this equation is correct
         """
+        MLJ function including disorder to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1964,6 +2286,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_EQE(self, E, f, l, Ect):
         """
+        Standard gaussian function to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1978,6 +2301,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_EQE_disorder(self, E, f, l, Ect):
         """
+        Standard gaussian function including disorder to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -1994,12 +2318,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def MLJ_gaussian_EQE(self, E, f, l_o, Ect):  # Double check if this equation is correct
         """
+        MLJ function to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EQE value
         """
+
         EQE = 0
         for n in range(0, 6):
             EQE_n = (f / (math.sqrt(4 * math.pi * l_o * self.T_EL * self.k))) \
@@ -2013,6 +2339,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def MLJ_gaussian_EQE_disorder(self, E, f, l_o, Ect):  # Double check if this equation is correct
         """
+        MLJ function including disorder to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
         :param l_o: Reorganization Energy
@@ -2037,7 +2364,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to subtract peak fit from EQE
 
-    def subtract_Fit(self, data_Fit, data_EQE, label_Fit, label_EQE, color_Fit, color_EQE):
+    def subtract_Fit(self,
+                     data_Fit,
+                     data_EQE,
+                     label_Fit,
+                     label_EQE,
+                     color_Fit,
+                     color_EQE
+                     ):
+        """
+        Function to subtract fit from EQE data
+        :param data_Fit: Fit data to subtract [dataFrame]
+        :param data_EQE: EQE data to subtract fit from [dataFrame]
+        :param label_Fit: GUI text box with fit plot label [ui object]
+        :param label_EQE: GUI text box with EQE plot label [ui object]
+        :param color_Fit: GUI text box with fit plot color [ui object]
+        :param color_EQE: GUI text box with EQE plot color [ui object]
+        :return:
+        """
 
         E_fit = 0
         sub_EQE = []
@@ -2096,28 +2440,68 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.axSub_1, self.axSub_2 = set_up_EQE_plot()
 
-            self.axSub_1.plot(data_Fit['Energy'], data_Fit['Signal'], linewidth=2, linestyle='--', color=color_fit,
-                              label=label_fit)
-            self.axSub_1.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_eqe,
-                              label=label_eqe)
-            self.axSub_1.plot(data_EQE['Energy'], sub_EQE, linewidth=2, linestyle='-', color='#1f77b4',
-                              label='Subtracted EQE')
+            self.axSub_1.plot(data_Fit['Energy'],
+                              data_Fit['Signal'],
+                              linewidth=2,
+                              linestyle='--',
+                              color=color_fit,
+                              label=label_fit
+                              )
+            self.axSub_1.plot(data_EQE['Energy'],
+                              data_EQE['EQE'],
+                              linewidth=2,
+                              linestyle='-',
+                              color=color_eqe,
+                              label=label_eqe
+                              )
+            self.axSub_1.plot(data_EQE['Energy'],
+                              sub_EQE,
+                              linewidth=2,
+                              linestyle='-',
+                              color='#1f77b4',
+                              label='Subtracted EQE'
+                              )
             self.axSub_1.legend()
 
-            self.axSub_2.plot(data_Fit['Energy'], data_Fit['Signal'], linewidth=2, linestyle='--', color=color_fit,
-                              label=label_fit)
-            self.axSub_2.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_eqe,
-                              label=label_eqe)
-            self.axSub_2.plot(data_EQE['Energy'], sub_EQE, linewidth=2, linestyle='-', color='#1f77b4',
-                              label='Subtracted EQE')
+            self.axSub_2.plot(data_Fit['Energy'],
+                              data_Fit['Signal'],
+                              linewidth=2,
+                              linestyle='--',
+                              color=color_fit,
+                              label=label_fit
+                              )
+            self.axSub_2.plot(data_EQE['Energy'],
+                              data_EQE['EQE'],
+                              linewidth=2,
+                              linestyle='-',
+                              color=color_eqe,
+                              label=label_eqe
+                              )
+            self.axSub_2.plot(data_EQE['Energy'],
+                              sub_EQE,
+                              linewidth=2,
+                              linestyle='-',
+                              color='#1f77b4',
+                              label='Subtracted EQE'
+                              )
             self.axSub_2.legend()
 
     # -----------------------------------------------------------------------------------------------------------
 
     # Function to add peak fits
 
-
-    def add_Fits(self, data_OptFit, data_CTFit, data_EQE):
+    def add_Fits(self,
+                 data_OptFit,
+                 data_CTFit,
+                 data_EQE
+                 ):
+        """
+        Function to add fit peaks
+        :param data_OptFit: Optical peak fit data [dataFrame]
+        :param data_CTFit: CT peak fit data [dataFrame]
+        :param data_EQE: EQE data [dataFrame]
+        :return: None
+        """
 
         add_Energy = []
         add_Fits = []
@@ -2164,33 +2548,81 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 for x in range(len(data_EQE['Energy'])):
                     if data_EQE['Energy'][x] < max(data_OptFit['Energy']):
-                        OptFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x], f_OptFit, l_OptFit, E_OptFit,
-                                                                     T_OptFit)
-                        CTFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x], f_CTFit, l_CTFit, E_CTFit,
-                                                                    T_CTFit)
+                        OptFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x],
+                                                                     f_OptFit,
+                                                                     l_OptFit,
+                                                                     E_OptFit,
+                                                                     T_OptFit
+                                                                     )
+                        CTFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x],
+                                                                    f_CTFit,
+                                                                    l_CTFit,
+                                                                    E_CTFit,
+                                                                    T_CTFit
+                                                                    )
                         add_Energy.append(data_EQE['Energy'][x])
                         add_Fits.append(OptFit_value + CTFit_value)
 
                 self.axAdd_1, self.axAdd_2 = set_up_EQE_plot()
 
-                self.axAdd_1.plot(data_OptFit['Energy'], data_OptFit['Signal'], linewidth=2, linestyle='--',
-                                  color=color_OptFit, label=label_OptFit)
-                self.axAdd_1.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--',
-                                  color=color_CTFit, label=label_CTFit)
-                self.axAdd_1.plot(add_Energy, add_Fits, linewidth=2, linestyle='dotted', color='grey',
-                                  label='$\mathrm{S_1}$ + CT Fit')
-                self.axAdd_1.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE,
-                                  label=label_EQE)
+                self.axAdd_1.plot(data_OptFit['Energy'],
+                                  data_OptFit['Signal'],
+                                  linewidth=2,
+                                  linestyle='--',
+                                  color=color_OptFit,
+                                  label=label_OptFit
+                                  )
+                self.axAdd_1.plot(data_CTFit['Energy'],
+                                  data_CTFit['Signal'],
+                                  linewidth=2,
+                                  linestyle='--',
+                                  color=color_CTFit,
+                                  label=label_CTFit
+                                  )
+                self.axAdd_1.plot(add_Energy,
+                                  add_Fits,
+                                  linewidth=2,
+                                  linestyle='dotted',
+                                  color='grey',
+                                  label='$\mathrm{S_1}$ + CT Fit'
+                                  )
+                self.axAdd_1.plot(data_EQE['Energy'],
+                                  data_EQE['EQE'],
+                                  linewidth=2,
+                                  linestyle='-',
+                                  color=color_EQE,
+                                  label=label_EQE
+                                  )
                 self.axAdd_1.legend()
 
-                self.axAdd_2.plot(data_OptFit['Energy'], data_OptFit['Signal'], linewidth=2, linestyle='--',
-                                  color=color_OptFit, label=label_OptFit)
-                self.axAdd_2.plot(data_CTFit['Energy'], data_CTFit['Signal'], linewidth=2, linestyle='--',
-                                  color=color_CTFit, label=label_CTFit)
-                self.axAdd_2.plot(add_Energy, add_Fits, linewidth=2, linestyle='dotted', color='grey',
-                                  label='$\mathrm{S_1}$ + CT Fit')
-                self.axAdd_2.plot(data_EQE['Energy'], data_EQE['EQE'], linewidth=2, linestyle='-', color=color_EQE,
-                                  label=label_EQE)
+                self.axAdd_2.plot(data_OptFit['Energy'],
+                                  data_OptFit['Signal'],
+                                  linewidth=2,
+                                  linestyle='--',
+                                  color=color_OptFit,
+                                  label=label_OptFit
+                                  )
+                self.axAdd_2.plot(data_CTFit['Energy'],
+                                  data_CTFit['Signal'],
+                                  linewidth=2,
+                                  linestyle='--',
+                                  color=color_CTFit,
+                                  label=label_CTFit
+                                  )
+                self.axAdd_2.plot(add_Energy,
+                                  add_Fits,
+                                  linewidth=2,
+                                  linestyle='dotted',
+                                  color='grey',
+                                  label='$\mathrm{S_1}$ + CT Fit'
+                                  )
+                self.axAdd_2.plot(data_EQE['Energy'],
+                                  data_EQE['EQE'],
+                                  linewidth=2,
+                                  linestyle='-',
+                                  color=color_EQE,
+                                  label=label_EQE
+                                  )
                 self.axAdd_2.legend()
 
                 df_add = pd.DataFrame()
@@ -2212,6 +2644,10 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to compile fits for separate double peak fitting
 
     def pre_double_fit(self):
+        """
+        Wrapper function to perform separate double fit of S1 and CT peaks
+        :return: None
+        """
 
         increase_factor = 1.05 # Adding 5% to the selected data
         include_disorder = False
@@ -2311,7 +2747,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.logger.info('Calculating Optical Peak Fits ...')
 
-            cal_vals_Opt = list(map(lambda x: calculate_guess_fit(x, df_Opt, eqe, guessRange_Opt, self.gaussian_double), tqdm(range(len(df_Opt)))))
+            cal_vals_Opt = list(map(lambda x: calculate_guess_fit(x, df_Opt, eqe, guessRange_Opt, self.gaussian_double),
+                                    tqdm(range(len(df_Opt)))))
 
             best_vals_Opt = list(map(lambda list_: sep_list(list_, 0), cal_vals_Opt))
             R2_Opt = list(map(lambda list_: sep_list(list_, 1), cal_vals_Opt))
@@ -2412,8 +2849,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 # To avoid picking a fit that has a high R2 but moves above the data
                 advanced_R2_list = []
                 for x in range(len(df_Opt)):
-                    wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, df_Opt['Start'][x], df_Opt['Stop'][x] * increase_factor, 1)
-                    y_fit = [self.gaussian_double(e, df_Opt['Fit'][x][0], df_Opt['Fit'][x][1], df_Opt['Fit'][x][2]) for e in energy_fit]
+                    wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe,
+                                                                             df_Opt['Start'][x],
+                                                                             df_Opt['Stop'][x] * increase_factor,
+                                                                             1
+                                                                             )
+                    y_fit = [self.gaussian_double(e,
+                                                  df_Opt['Fit'][x][0],
+                                                  df_Opt['Fit'][x][1],
+                                                  df_Opt['Fit'][x][2]
+                                                  ) for e in energy_fit]
                     advanced_R2_list.append(R_squared(eqe_fit, y_fit))
 
                 df_Opt['Advanced R2'] = advanced_R2_list
@@ -2592,7 +3037,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #     Energy_list = sep_list_list(list(map(lambda list_: sep_list(list_, 12), parameter_list)))
             #     EQE_list = sep_list_list(list(map(lambda list_: sep_list(list_, 13), parameter_list)))
 
-            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt)!=0: # Check that the lists are the same length and not empty
+            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt)!=0: # Confirm lists are acceptable
 
                 df_results['Start_Opt'] = start_Opt_list
                 df_results['Stop_Opt'] = stop_Opt_list
@@ -2619,7 +3064,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 for x in np.arange(1,6,1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
-                    df_results = self.find_best_fit(df_both = df_results, eqe=eqe, T = self.T_double, n_fit=x, include_disorder=include_disorder)
+                    df_results = self.find_best_fit(df_both = df_results,
+                                                    eqe=eqe,
+                                                    T = self.T_double,
+                                                    n_fit=x,
+                                                    include_disorder=include_disorder
+                                                    )
 
                 print('-' * 80)
                 print("")
@@ -2632,6 +3082,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def find_best_fit(self, df_both, eqe, T, n_fit = 0, include_disorder = False):
         """
+        Function to find best EQE fits
         :param df_both: dataFrame with final fit results [dataFrame]
         :param eqe: original EQE data [dataFrame]
         :param T: Temperature [float]
@@ -2687,18 +3138,60 @@ class MainWindow(QtWidgets.QMainWindow):
 
             axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
 
-            axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
-            axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='dotted', label='Optical Peak Fit')
-            axDouble_1.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
-            axDouble_1.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+            axDouble_1.plot(eqe['Energy'],
+                            eqe['EQE'],
+                            linewidth=2,
+                            linestyle='-',
+                            label=self.ui.textBox_dF1.toPlainText(),
+                            color='black'
+                            )
+            axDouble_1.plot(energy_plot,
+                            Opt_fit_plot,
+                            linewidth=2,
+                            linestyle='dotted',
+                            label='Optical Peak Fit'
+                            )
+            axDouble_1.plot(df_both['Energy'][max_index],
+                            df_both['CT_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='--',
+                            label='CT State Fit'
+                            )
+            axDouble_1.plot(df_both['Energy'][max_index],
+                            df_both['Total_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='dashdot',
+                            label='Total Fit'
+                            )
             axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
             axDouble_1.set_title(('Range No. {}').format(n_fit))
             axDouble_1.legend()
 
-            axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
-            axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Peak Fit')
-            axDouble_2.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
-            axDouble_2.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+            axDouble_2.plot(eqe['Energy'],
+                            eqe['EQE'],
+                            linewidth=2,
+                            linestyle='-',
+                            label=self.ui.textBox_dF1.toPlainText(),
+                            color='black'
+                            )
+            axDouble_2.plot(energy_plot,
+                            Opt_fit_plot,
+                            linewidth=2,
+                            linestyle='--',
+                            label='Optical Peak Fit'
+                            )
+            axDouble_2.plot(df_both['Energy'][max_index],
+                            df_both['CT_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='--',
+                            label='CT State Fit'
+                            )
+            axDouble_2.plot(df_both['Energy'][max_index],
+                            df_both['Total_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='dashdot',
+                            label='Total Fit'
+                            )
             axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
             axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
             # axDouble_2.set_title(('Range No. {}').format(n_fit))
@@ -2715,12 +3208,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_double(self, x, f, l, E):
         """
+        Standard gaussian functions to separately fit double peaks
         :param x: List of energy values [list]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
         :param E: Peak Energy [float]
         :return: EQE value [list]
         """
+
         return (f / (x * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(
             -(E + l - x) ** 2 / (4 * l * self.k * self.T_double))
 
@@ -2728,6 +3223,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_disorder_double(self, E, f, l, Ect, sig):
         """
+        Standard gaussian functions including disorder to separately fit double peaks
         :param E: List of energy values [list of floats]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
@@ -2735,6 +3231,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :param sig: Gaussian disorder [float]
         :return: list of EQE values [list of floats]
         """
+
         return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
             -(Ect - (sig**2 / (2*self.k * self.T_double)) + l + (sig**2 / (2*self.k * self.T_double)) - e) ** 2 / (4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
 
@@ -2745,6 +3242,10 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to compile fits for simultaneous double peak fitting
 
     def pre_sim_fit(self):
+        """
+        Wrapper function to perform simultaneous double peak fitting
+        :return: None
+        """
 
         # Import relevant parameters
         # Bounds
@@ -3046,6 +3547,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def find_best_sim_fit(self, df_both, eqe, T, n_fit = 0, include_disorder = False):
         """
+        Function to find best fit for simultaneous double peak fitting
         :param df_both: dataFrame with final fit results [dataFrame]
         :param eqe: original EQE data [dataFrame]
         :param T: Temperature [float]
@@ -3068,14 +3570,18 @@ class MainWindow(QtWidgets.QMainWindow):
             # Determine best fit
             max_index = df_both['Total_R2'].idxmax()
 
-            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
-                                                                         df_both['Stop'][max_index] * 1.2, 1)
+            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe,
+                                                                         min(eqe['Energy']),
+                                                                         df_both['Stop'][max_index] * 1.2,
+                                                                         1
+                                                                         )
 
             Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
                                                                    df_both['Fit_Opt'][max_index][0],
                                                                    df_both['Fit_Opt'][max_index][1],
                                                                    df_both['Fit_Opt'][max_index][2],
-                                                                   T)
+                                                                   T
+                                                                   )
                                      for e in energy_plot])
 
             #print('-' * 80)
@@ -3108,18 +3614,59 @@ class MainWindow(QtWidgets.QMainWindow):
 
             axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
 
-            axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
-            axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='dotted', label='Optical Peak Fit')
-            axDouble_1.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
-            axDouble_1.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+            axDouble_1.plot(eqe['Energy'],
+                            eqe['EQE'],
+                            linewidth=2,
+                            linestyle='-',
+                            label=self.ui.textBox_dF1.toPlainText(),
+                            color='black'
+                            )
+            axDouble_1.plot(energy_plot,
+                            Opt_fit_plot,
+                            linewidth=2,
+                            linestyle='dotted',
+                            label='Optical Peak Fit'
+                            )
+            axDouble_1.plot(df_both['Energy'][max_index],
+                            df_both['CT_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='--',
+                            label='CT State Fit'
+                            )
+            axDouble_1.plot(df_both['Energy'][max_index],
+                            df_both['Total_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='dashdot',
+                            label='Total Fit'
+                            )
             axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
             axDouble_1.set_title(('Range No. {}').format(n_fit))
             axDouble_1.legend()
 
-            axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
-            axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Peak Fit')
-            axDouble_2.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
-            axDouble_2.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+            axDouble_2.plot(eqe['Energy'],
+                            eqe['EQE'],
+                            linewidth=2,
+                            linestyle='-',
+                            label=self.ui.textBox_dF1.toPlainText(),
+                            color='black'
+                            )
+            axDouble_2.plot(energy_plot,
+                            Opt_fit_plot,
+                            linewidth=2,
+                            linestyle='--',
+                            label='Optical Peak Fit'
+                            )
+            axDouble_2.plot(df_both['Energy'][max_index],
+                            df_both['CT_Fit'][max_index],
+                            linewidth=2, linestyle='--',
+                            label='CT State Fit'
+                            )
+            axDouble_2.plot(df_both['Energy'][max_index],
+                            df_both['Total_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='dashdot',
+                            label='Total Fit'
+                            )
             axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
             axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
             # axDouble_2.set_title(('Range No. {}').format(n_fit))
@@ -3127,8 +3674,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             df_copy = df_both.copy()
             df_copy['Total_R2'][max_index] = 0
-
-
 
             #### TEST WITH DIFFERENT R2
             # Determine best fit
@@ -3174,18 +3719,60 @@ class MainWindow(QtWidgets.QMainWindow):
 
             axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
 
-            axDouble_1.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
-            axDouble_1.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='dotted', label='Optical Peak Fit')
-            axDouble_1.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
-            axDouble_1.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+            axDouble_1.plot(eqe['Energy'],
+                            eqe['EQE'],
+                            linewidth=2,
+                            linestyle='-',
+                            label=self.ui.textBox_dF1.toPlainText(),
+                            color='black'
+                            )
+            axDouble_1.plot(energy_plot,
+                            Opt_fit_plot,
+                            linewidth=2,
+                            linestyle='dotted',
+                            label='Optical Peak Fit'
+                            )
+            axDouble_1.plot(df_both['Energy'][max_index],
+                            df_both['CT_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='--',
+                            label='CT State Fit'
+                            )
+            axDouble_1.plot(df_both['Energy'][max_index],
+                            df_both['Total_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='dashdot',
+                            label='Total Fit'
+                            )
             axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
             axDouble_1.set_title(('Range No. {}').format(n_fit))
             axDouble_1.legend()
 
-            axDouble_2.plot(eqe['Energy'], eqe['EQE'], linewidth=2, linestyle='-', label=self.ui.textBox_dF1.toPlainText(), color='black')
-            axDouble_2.plot(energy_plot, Opt_fit_plot, linewidth=2, linestyle='--', label='Optical Peak Fit')
-            axDouble_2.plot(df_both['Energy'][max_index], df_both['CT_Fit'][max_index], linewidth=2, linestyle='--', label='CT State Fit')
-            axDouble_2.plot(df_both['Energy'][max_index], df_both['Total_Fit'][max_index], linewidth=2, linestyle='dashdot', label='Total Fit')
+            axDouble_2.plot(eqe['Energy'],
+                            eqe['EQE'],
+                            linewidth=2,
+                            linestyle='-',
+                            label=self.ui.textBox_dF1.toPlainText(),
+                            color='black'
+                            )
+            axDouble_2.plot(energy_plot,
+                            Opt_fit_plot,
+                            linewidth=2,
+                            linestyle='--',
+                            label='Optical Peak Fit'
+                            )
+            axDouble_2.plot(df_both['Energy'][max_index],
+                            df_both['CT_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='--',
+                            label='CT State Fit'
+                            )
+            axDouble_2.plot(df_both['Energy'][max_index],
+                            df_both['Total_Fit'][max_index],
+                            linewidth=2,
+                            linestyle='dashdot',
+                            label='Total Fit'
+                            )
             axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
             axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
             # axDouble_2.set_title(('Range No. {}').format(n_fit))
@@ -3199,26 +3786,29 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     # # -----------------------------------------------------------------------------------------------------------
-    # ############### TEST #######################
+    # ############### TEST ###############
+    # TODO: Rename this function, we already have a function called gaussian_double
+    # def gaussian_double(self, E, fCT, lCT, ECT, fopt, lopt, Eopt):
     #
-    # def gaussian_double(self, E, fCT, lCT, ECT, fopt, lopt, Eopt): # TODO: Rename this function, we already have a function that is called gaussian_double
-    #
-    #     val_CT = (fCT / (math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(-(ECT + lCT - E) ** 2 / (4 * lCT * self.k * self.T_sim))
-    #     val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(-(Eopt + lopt - E) ** 2 / (4 * lopt * self.k * self.T_sim))
+    #     val_CT = (fCT / (math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(
+    #         -(ECT + lCT - E) ** 2 / (4 * lCT * self.k * self.T_sim))
+    #     val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
+    #         -(Eopt + lopt - E) ** 2 / (4 * lopt * self.k * self.T_sim))
     #
     #     return val_CT + val_opt
     #
     # def gaussian_single(self, E, f, l, Efit):
     #
-    #     return (f / (math.sqrt(4 * math.pi * l * self.T_sim * self.k))) * exp(-(Efit + l - E) ** 2 / (4 * l * self.k * self.T_sim))
+    #     return (f / (math.sqrt(4 * math.pi * l * self.T_sim * self.k))) * exp(
+    #         -(Efit + l - E) ** 2 / (4 * l * self.k * self.T_sim))
 
-
-    ############### TEST #######################
+    ############### TEST ###############
 
     # Gaussian fitting function for simultaneous double peak fit
 
     def gaussian_double_sim(self, x, fCT, lCT, ECT, fopt, lopt, Eopt):
         """
+        Standard gaussian function to perform simultaneous double peak fitting
         :param x: List of energy values [list]
         :param fCT: CT Oscillator strength [float]
         :param lCT: CT Reorganization Energy [float]
@@ -3228,8 +3818,11 @@ class MainWindow(QtWidgets.QMainWindow):
         :param Eopt: S1 Peak Energy [float]
         :return: EQE value [list]
         """
-        val_CT = (fCT / (math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(-(ECT + lCT - x) ** 2 / (4 * lCT * self.k * self.T_sim))
-        val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(-(Eopt + lopt - x) ** 2 / (4 * lopt * self.k * self.T_sim))
+
+        val_CT = (fCT / (math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(
+            -(ECT + lCT - x) ** 2 / (4 * lCT * self.k * self.T_sim))
+        val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
+            -(Eopt + lopt - x) ** 2 / (4 * lopt * self.k * self.T_sim))
 
         return val_CT + val_opt
 
@@ -3237,6 +3830,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def gaussian_disorder_double_sim(self, x, fCT, lCT, ECT, fopt, lopt, Eopt, sig):
         """
+        Standard gaussian function including disorder to perform simultaneous double peak fitting
         :param x: List of energy values [list]
         :param fCT: CT Oscillator strength [float]
         :param lCT: CT Reorganization Energy [float]
@@ -3246,9 +3840,11 @@ class MainWindow(QtWidgets.QMainWindow):
         :param Eopt: S1 Peak Energy [float]
         :return: EQE value [list]
         """
+
         val_CT = (fCT / (math.sqrt(2 * math.pi * (2 * lCT * self.T_sim * self.k + sig**2)))) * exp(
             -(ECT + lCT - x) ** 2 / (4 * lCT * self.k * self.T_sim + 2 * sig**2))
-        val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(-(Eopt + lopt - x) ** 2 / (4 * lopt * self.k * self.T_sim))
+        val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
+            -(Eopt + lopt - x) ** 2 / (4 * lopt * self.k * self.T_sim))
 
         return val_CT + val_opt
 
@@ -3261,15 +3857,23 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to clear "Calculate EQE" plot
 
     def clear_plot(self):
+        """
+        Function to clear plot
+        :return: None
+        """
 
         plt.close()  # Close the current plot
-        self.ax1, self.ax2 = set_up_plot()  # Set up a new plot, this is preferred over plt.clf() in case the plot window was closed
+        self.ax1, self.ax2 = set_up_plot()  # Setting up new plot is preferred over plt.clf() in case window was closed
 
     # -----------------------------------------------------------------------------------------------------------
 
     # Function to clear EQE plot
 
     def clear_EQE_plot(self):
+        """
+        Function to clear EQE fit plot
+        :return: None
+        """
 
         plt.close()
         plt.close()
@@ -3280,11 +3884,14 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to clear EL plot
 
     def clear_EL_plot(self):
+        """
+        Function to clear EL plot
+        :return: None
+        """
 
         plt.close()
         plt.close()
         self.axEL_1, self.axEL_2 = set_up_EL_plot()
-
 
 # -----------------------------------------------------------------------------------------------------------
 

@@ -10,7 +10,6 @@ from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_di
 from source.utils import R_squared
 from source.utils import sep_list
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Wrapper function to perform curve fit
@@ -588,3 +587,5 @@ def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
     r_squared = R_squared(eqe_fit, y_fit)
 
     return best_vals, covar, y_fit, r_squared
+
+# -----------------------------------------------------------------------------------------------------------

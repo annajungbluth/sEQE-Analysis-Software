@@ -49,7 +49,6 @@ def Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
         logger.error('Please import valid reference and data files for Range %s.' % str(range_no))
         return False
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if EQE files are non-empty and within wavelength range
@@ -86,7 +85,6 @@ def EQE_is_valid(eqe_df, startNM, stopNM, EQE_no):
         logger.error('Please import a valid file for EQE File %s.' % str(EQE_no))
         return False
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if data files are non-empty and within energy range
@@ -120,7 +118,6 @@ def Data_is_valid(df, startE, stopE):
         logger.error('Please import a valid file.')
         return False
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if normalization wavelength is within wavelength range
@@ -144,7 +141,6 @@ def Normalization_is_valid(eqe_df, normNM, EQE_no):
         else:
             logger.error('Please select a valid normalization wavelength for EQE file %s.' % str(EQE_no))
             return False
-
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -184,7 +180,6 @@ def Fit_is_valid(eqe_df, startE, stopE, startFitE, stopFitE, EQE_no):
     else:  # If EQE file is empty / hasn't been selected
         logger.error('Please import a valid file for EQE File %s.' % str(EQE_no))
         return False
-
 
 # -----------------------------------------------------------------------------------------------------------
 
