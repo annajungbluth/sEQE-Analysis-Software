@@ -12,6 +12,7 @@ import sys
 import tkinter as tk
 import warnings
 from tkinter import filedialog
+from lmfit import Model
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,7 +30,7 @@ import sEQE_Analysis_template
 from source.add_subtract import subtract_Opt
 from source.compilation import compile_EQE, compile_EL, compile_Data
 from source.electroluminescence import bb_spectrum
-from source.gaussian import calculate_gaussian_absorption
+from source.gaussian import calculate_gaussian_absorption, calculate_combined_fit
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
@@ -37,8 +38,7 @@ from source.utils import interpolate, sep_list, get_logger
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.utils_fit import guess_fit, guess_fit_sim, fit_function, calculate_guess_fit, calculate_combined_fit, \
-    calculate_combined_fit_sim, fit_model
+from source.utils_fit import guess_fit, guess_fit_sim, fit_function, calculate_guess_fit, fit_model
 from source.utils import R_squared
 
 warnings.filterwarnings("ignore")
@@ -187,7 +187,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.browseDoubleFitButton.clicked.connect(lambda: self.writeText(self.ui.textBox_dF1, 'double1'))
 
         # Handle Double Fit Button
-        self.ui.doubleFitButton.clicked.connect(lambda: self.pre_double_fit())
+        self.ui.doubleFitButton.clicked.connect(lambda: self.double_fit())
 
         # Simultaneous Peak Fitting
 
@@ -2643,9 +2643,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to compile fits for separate double peak fitting
 
-    def pre_double_fit(self):
+    def double_fit(self):
         """
-        Wrapper function to perform separate double fit of S1 and CT peaks
+        Function to perform separate double fit of S1 and CT peaks
         :return: None
         """
 
@@ -2820,24 +2820,24 @@ class MainWindow(QtWidgets.QMainWindow):
                         R2_CT.append(r_squared)
 
                         # Calculate combined fit here
-                        parameter_list = calculate_combined_fit(stopE = df_Opt['Stop'][x],
-                                                                best_vals_Opt = df_Opt['Fit'][x],
-                                                                best_vals_CT = best_vals,
-                                                                R2_Opt = df_Opt['R2'][x],
-                                                                R2_CT = r_squared,
-                                                                eqe = eqe,
-                                                                T = self.T_double,
-                                                                bias = self.bias,
-                                                                tolerance = self.tolerance,
-                                                                range = increase_factor,
+                        parameter_dict = calculate_combined_fit(stopE=df_Opt['Stop'][x],
+                                                                best_vals_Opt=df_Opt['Fit'][x],
+                                                                best_vals_CT=best_vals,
+                                                                R2_Opt=df_Opt['R2'][x],
+                                                                R2_CT=r_squared,
+                                                                eqe=eqe,
+                                                                T=self.T_double,
+                                                                bias=self.bias,
+                                                                tolerance=self.tolerance,
+                                                                range=increase_factor,
                                                                 include_disorder=include_disorder)
 
-                        combined_R2_list.append(parameter_list[0])
-                        combined_Fit_list.append(parameter_list[1])
-                        Opt_Fit_list.append(parameter_list[2])
-                        CT_Fit_list.append(parameter_list[3])
-                        Energy_list.append(parameter_list[4])
-                        EQE_list.append(parameter_list[5])
+                        combined_R2_list.append(parameter_dict['R2_Combined'])
+                        combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                        Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                        CT_Fit_list.append(parameter_dict['CT_Fit'])
+                        Energy_list.append(parameter_dict['Energy'])
+                        EQE_list.append(parameter_dict['EQE'])
 
             # If only best Optical peak is to be subtracted before CT fit
             elif self.ui.bestSubtract_DoubleFit_2.isChecked() and not self.ui.subtract_DoubleFit.isChecked():
@@ -2895,24 +2895,24 @@ class MainWindow(QtWidgets.QMainWindow):
                     R2_CT.append(r_squared)
 
                     # Calculate combined fit here
-                    parameter_list = calculate_combined_fit(stopE = df_Opt['Stop'][best_fit_index],
-                                                            best_vals_Opt = df_Opt['Fit'][best_fit_index],
-                                                            best_vals_CT = best_vals,
-                                                            R2_Opt = df_Opt['R2'][best_fit_index],
-                                                            R2_CT = r_squared,
-                                                            eqe = eqe,
-                                                            T = self.T_double,
-                                                            bias = self.bias,
-                                                            tolerance = self.tolerance,
+                    parameter_dict = calculate_combined_fit(stopE=df_Opt['Stop'][x],
+                                                            best_vals_Opt=df_Opt['Fit'][x],
+                                                            best_vals_CT=best_vals,
+                                                            R2_Opt=df_Opt['R2'][x],
+                                                            R2_CT=r_squared,
+                                                            eqe=eqe,
+                                                            T=self.T_double,
+                                                            bias=self.bias,
+                                                            tolerance=self.tolerance,
                                                             range = increase_factor,
                                                             include_disorder = include_disorder)
 
-                    combined_R2_list.append(parameter_list[0])
-                    combined_Fit_list.append(parameter_list[1])
-                    Opt_Fit_list.append(parameter_list[2])
-                    CT_Fit_list.append(parameter_list[3])
-                    Energy_list.append(parameter_list[4])
-                    EQE_list.append(parameter_list[5])
+                    combined_R2_list.append(parameter_dict['R2_Combined'])
+                    combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                    Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                    CT_Fit_list.append(parameter_dict['CT_Fit'])
+                    Energy_list.append(parameter_dict['Energy'])
+                    EQE_list.append(parameter_dict['EQE'])
 
             # If Optical peak not to be subtracted before CT fit
             elif not self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit_2.isChecked():
@@ -2945,7 +2945,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     R2_CT.append(r_squared)
 
                     # Calculate combined fit here
-                    parameter_list = calculate_combined_fit(stopE=df_Opt['Stop'][x],
+                    parameter_dict = calculate_combined_fit(stopE=df_Opt['Stop'][x],
                                                             best_vals_Opt=df_Opt['Fit'][x],
                                                             best_vals_CT=best_vals,
                                                             R2_Opt=df_Opt['R2'][x],
@@ -2957,12 +2957,12 @@ class MainWindow(QtWidgets.QMainWindow):
                                                             range = increase_factor,
                                                             include_disorder = include_disorder)
 
-                    combined_R2_list.append(parameter_list[0])
-                    combined_Fit_list.append(parameter_list[1])
-                    Opt_Fit_list.append(parameter_list[2])
-                    CT_Fit_list.append(parameter_list[3])
-                    Energy_list.append(parameter_list[4])
-                    EQE_list.append(parameter_list[5])
+                    combined_R2_list.append(parameter_dict['R2_Combined'])
+                    combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                    Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                    CT_Fit_list.append(parameter_dict['CT_Fit'])
+                    Energy_list.append(parameter_dict['Energy'])
+                    EQE_list.append(parameter_dict['EQE'])
 
             else:
                 self.logger.info('Please select valid fit settings.')
@@ -3242,6 +3242,98 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to compile fits for simultaneous double peak fitting
 
     def pre_sim_fit(self):
+        print('Got to the right function!')
+
+        number = int(self.ui.test_number.value())
+        eqe = self.data_sim
+        self.T_sim = self.ui.Temperature_Sim.value()
+
+        x = linspace(min(eqe['Energy']), 1.9, 50)
+
+        p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5]
+
+        gmodel = Model(self.gaussian_double_sim)
+
+        gmodel.set_param_hint('ECT', min=0, max=1.5)
+        gmodel.set_param_hint('lCT', min=0, max=0.4)
+        gmodel.set_param_hint('fCT', min=0., max=0.01)
+        gmodel.set_param_hint('Eopt', min=0, max=1.75)
+        gmodel.set_param_hint('lopt', min=0, max=0.5)
+        gmodel.set_param_hint('fopt', min=0, max=0.4)
+
+        result = gmodel.fit(list(eqe['EQE'][-number:].values),
+                            x=list(eqe['Energy'][-number:].values),
+                            fCT=p0[0],
+                            lCT=p0[1],
+                            ECT=p0[2],
+                            fopt=p0[3],
+                            lopt=p0[4],
+                            Eopt=p0[5])
+
+
+
+        print(result.fit_report())
+
+        fCT = float(result.params['fCT'].value)
+        lCT = float(result.params['lCT'].value)
+        ECT = float(result.params['ECT'].value)
+        fopt = float(result.params['fopt'].value)
+        lopt = float(result.params['lopt'].value)
+        Eopt = float(result.params['Eopt'].value)
+
+        y_new = gmodel.eval(x=x, fCT=fCT, lCT=lCT, ECT=ECT, fopt=fopt, lopt=lopt, Eopt=Eopt)
+
+        y_CT = [calculate_gaussian_absorption(i,
+                                              f=fCT,
+                                              l=lCT,
+                                              E=ECT,
+                                              T = self.T_sim
+                                              ) for i in x]
+        y_opt = [calculate_gaussian_absorption(i,
+                                              f=fopt,
+                                              l=lopt,
+                                              E=Eopt,
+                                              T = self.T_sim
+                                              ) for i in x]
+
+        # best_vals, covar = curve_fit(self.gaussian_double_sim,
+        #                              list(eqe['Energy'][-number:].values),
+        #                              list(eqe['EQE'][-number:].values),
+        #                              p0=[0.001, 0.15, 1.30, 0.01, 0.150, 1.5],
+        #                              bounds=([0.0001, 0.01, 1.3, 0.01, 0.01, 1.45],
+        #                                      [0.01, 0.4, 1.55, 0.2, 0.5, 1.75]))
+        #
+        # print(best_vals)
+
+        # y_new = [self.gaussian_double_sim(i,
+        #                          fCT=best_vals[0],
+        #                          lCT=best_vals[1],
+        #                          ECT=best_vals[2],
+        #                          fopt=best_vals[3],
+        #                          lopt=best_vals[4],
+        #                          Eopt=best_vals[5]) for i in x]
+        #
+        # y_CT = [calculate_gaussian_absorption(i,
+        #                                       f=best_vals[0],
+        #                                       l=best_vals[1],
+        #                                       E=best_vals[2],
+        #                                       T = self.T_sim
+        #                                       ) for i in x]
+        # y_opt = [calculate_gaussian_absorption(i,
+        #                                       f=best_vals[3],
+        #                                       l=best_vals[4],
+        #                                       E=best_vals[5],
+        #                                       T = self.T_sim
+        #                                       ) for i in x]
+
+        plt.figure()
+        plt.plot(eqe['Energy'], eqe['EQE'])
+        plt.plot(x, y_new)
+        plt.plot(x, y_CT)
+        plt.plot(x, y_opt)
+        plt.show()
+
+    def pre_sim_fit_test(self):
         """
         Wrapper function to perform simultaneous double peak fitting
         :return: None
@@ -3478,6 +3570,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     if sum(best_vals)!=0: # Check that the fit was successful
                         # Calculate combined fit here
+                        # TODO: Change this to calculate combined fit function
                         parameter_list = calculate_combined_fit_sim(stopE=df['Stop'][x],
                                                                 best_vals_Opt=best_Opt,
                                                                 best_vals_CT=best_CT,

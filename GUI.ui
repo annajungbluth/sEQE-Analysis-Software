@@ -7446,6 +7446,34 @@
        </item>
       </layout>
      </widget>
+     <widget class="QDoubleSpinBox" name="test_number">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>750</y>
+        <width>61</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string/>
+      </property>
+      <property name="decimals">
+       <number>0</number>
+      </property>
+      <property name="minimum">
+       <double>0.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>1000.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>5.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>50.000000000000000</double>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">

@@ -6,16 +6,25 @@ from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
 
 from source.compilation import compile_EQE
-from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption
+from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption, calculate_combined_fit
 from source.utils import R_squared
 from source.utils import sep_list
 
 # -----------------------------------------------------------------------------------------------------------
 
-# Wrapper function to perform curve fit
+# Function to perform curve fit
 
-def fit_function(function, energy_fit, eqe_fit, p0=None, bounds=None, include_disorder = False, double=False):
+def fit_function(function,
+                 energy_fit,
+                 eqe_fit,
+                 p0=None,
+                 bounds=None,
+                 include_disorder = False,
+                 double=False
+                 ):
     """
+    Function to perform fitting using curve_fit
+    Tis function is capable of performing single and double peak fits.
     :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
     :param energy_fit: energy values to fit against [list or array]
     :param eqe_fit: EQE values to fit against [list or array]
@@ -78,8 +87,17 @@ def fit_function(function, energy_fit, eqe_fit, p0=None, bounds=None, include_di
 
 # Function to perform fit with guess range
 
-def guess_fit(eqe, startE, stopE, guessRange, function, guessRange_sig=None, include_disorder=False):
+def guess_fit(eqe,
+              startE,
+              stopE,
+              guessRange,
+              function,
+              guessRange_sig=None,
+              include_disorder=False
+              ):
     """
+    Function to loop through guesses and determine best fit using lmfit-based fit_model function
+    This function is used for standard / disorder single peak fitting.
     :param eqe: EQE data [list]
     :param startE: fit start energy value [float]
     :param stopE: fit stop energy value [float]
@@ -93,6 +111,7 @@ def guess_fit(eqe, startE, stopE, guessRange, function, guessRange_sig=None, inc
 
     if len(eqe) != 0:
 
+        # Compile EQE to fit
         wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, startE, stopE, 1)
 
         # Attempt peak fit:
@@ -147,8 +166,19 @@ def guess_fit(eqe, startE, stopE, guessRange, function, guessRange_sig=None, inc
 
 # Function to perform simultaneous double peak fit with guess range
 
-def guess_fit_sim(eqe, startE, stopE, function, guessRange_CT, guessRange_Opt, guessRange_sig=None, include_disorder=False, **kwargs):
+def guess_fit_sim(eqe,
+                  startE,
+                  stopE,
+                  function,
+                  guessRange_CT,
+                  guessRange_Opt,
+                  guessRange_sig=None,
+                  include_disorder=False,
+                  **kwargs
+                  ):
     """
+    Function to loop through guesses and determine best fit using curve_fit-based fit_function function
+    This function is used for standard / disorder double peak fitting.
     :param eqe: EQE data [list]
     :param startE: fit start energy value [float]
     :param stopE: fit stop energy value [float]
@@ -283,8 +313,17 @@ def guess_fit_sim(eqe, startE, stopE, function, guessRange_CT, guessRange_Opt, g
 
 # Mappable function to calculate guess fit
 
-def calculate_guess_fit(x, df, eqe, guessRange, function):
+def calculate_guess_fit(x,
+                        df,
+                        eqe,
+                        guessRange,
+                        function,
+                        guessRange_sig = None,
+                        include_disorder = False
+                        ):
     """
+    Mappable wrapper function to loop through initial guesses
+    This function is used for standard / disorder single peak fits.
     :param x: row of the dataFrame [int]
     :param df: results dataFrame
     :param eqe: EQE values [list]
@@ -300,143 +339,12 @@ def calculate_guess_fit(x, df, eqe, guessRange, function):
                                      startE=df['Start'][x],
                                      stopE=df['Stop'][x],
                                      guessRange=guessRange,
-                                     function=function)
+                                     function=function,
+                                     guessRange_sig=guessRange_sig,
+                                     include_disorder=include_disorder
+                                     )
 
     return [best_vals, r_squared, df['Start'][x], df['Stop'][x]]
-
-# -----------------------------------------------------------------------------------------------------------
-
-# Function to calculate parameters for double peak fit
-
-def calculate_combined_fit(stopE, best_vals_Opt, best_vals_CT, R2_Opt, R2_CT, eqe, T, bias = False, tolerance = 0, range = 1.05, include_disorder=False):
-    """
-    :param stopE: stop energy of fit [float]
-    :param best_vals_Opt: Opt fit values [list]
-    :param best_vals_CT: CT fit values [list]
-    :param R2_Opt: Opt fit R2 [float]
-    :param R2_CT: CT fit R2 [float]
-    :param eqe: EQE values [list]
-    :param T: Temperature [float]
-    :param bias: bias fit below data [boolean]
-    :param tolerance: tolerance accepted of fit above data [float]
-    :param range: defines upper bound of R2 calculation [float]
-    :param include_disorder: boolean value to see whether to include disorder [bool]
-    :return: list of :
-             combined_R_Squared: R2 of sum of CT and Opt fit [float]
-             combined_Fit: sum of CT and Opt fit [list]
-             Opt_fit: Opt fit values [list]
-             CT_fit: CT fit values [list]
-             energy_data: Energy values [list]
-             eqe_data: original EQE data [list]
-    """
-
-    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE * range, 1) # (+ 0.15) Increase the stop energy if you want to expand the fit!
-
-    if R2_Opt != 0 and R2_CT != 0:
-
-        Opt_fit = np.array([calculate_gaussian_absorption(e,
-                                                          best_vals_Opt[0],
-                                                          best_vals_Opt[1],
-                                                          best_vals_Opt[2],
-                                                          T)
-                            for e in energy_data])
-        if include_disorder:
-            CT_fit = np.array([calculate_gaussian_disorder_absorption(e,
-                                                             best_vals_CT[0],
-                                                             best_vals_CT[1],
-                                                             best_vals_CT[2],
-                                                             best_vals_CT[3],
-                                                             T)
-                               for e in energy_data])
-
-        else:
-            CT_fit = np.array([calculate_gaussian_absorption(e,
-                                                             best_vals_CT[0],
-                                                             best_vals_CT[1],
-                                                             best_vals_CT[2],
-                                                             T)
-                               for e in energy_data])
-
-        if len(Opt_fit) == len(CT_fit):
-                combined_Fit = Opt_fit + CT_fit
-                combined_R_Squared = R_squared(eqe_data, combined_Fit.tolist(), bias=bias, tolerance=tolerance)
-
-    else: # if any of the fits were unsuccessful
-        Opt_fit = 0
-        CT_fit = 0
-        combined_Fit = 0
-        combined_R_Squared = 0
-
-    return [combined_R_Squared, combined_Fit, Opt_fit, CT_fit, energy_data, eqe_data]
-
-# -----------------------------------------------------------------------------------------------------------
-
-# Function to calculate parameters for simultaneous double peak fit
-
-def calculate_combined_fit_sim(stopE, best_vals_Opt, best_vals_CT, eqe, T, bias = False, tolerance = 0, range = 1.05, include_disorder=False):
-    """
-    :param stopE: stop energy of fit [float]
-    :param best_vals_Opt: Opt fit values [list]
-    :param best_vals_CT: CT fit values [list]
-    :param R2_Opt: Opt fit R2 [float]
-    :param R2_CT: CT fit R2 [float]
-    :param eqe: EQE values [list]
-    :param T: Temperature [float]
-    :param bias: bias fit below data [boolean]
-    :param tolerance: tolerance accepted of fit above data [float]
-    :param range: defines upper bound of R2 calculation [float]
-    :param include_disorder: boolean value to see whether to include disorder [bool]
-    :return: list of :
-             combined_R_Squared: R2 of sum of CT and Opt fit [float]
-             combined_Fit: sum of CT and Opt fit [list]
-             Opt_fit: Opt fit values [list]
-             CT_fit: CT fit values [list]
-             energy_data: Energy values [list]
-             eqe_data: original EQE data [list]
-    """
-
-    # wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe, min(eqe['Energy']), stopE * range, 1) # (+ 0.15) Increase the stop energy if you want to expand the fit!
-
-    int_func = interp1d(eqe['Energy'], eqe['EQE'])
-
-    energy_data = np.arange(1.31, 2.00, 0.001)
-    eqe_data = int_func(energy_data)
-
-
-
-    Opt_fit = np.array([calculate_gaussian_absorption(e,
-                                                      best_vals_Opt[0],
-                                                      best_vals_Opt[1],
-                                                      best_vals_Opt[2],
-                                                      T)
-                        for e in energy_data])
-    if include_disorder:
-        CT_fit = np.array([calculate_gaussian_disorder_absorption(e,
-                                                         best_vals_CT[0],
-                                                         best_vals_CT[1],
-                                                         best_vals_CT[2],
-                                                         best_vals_CT[3],
-                                                         T)
-                           for e in energy_data])
-
-    else:
-        CT_fit = np.array([calculate_gaussian_absorption(e,
-                                                         best_vals_CT[0],
-                                                         best_vals_CT[1],
-                                                         best_vals_CT[2],
-                                                         T)
-                           for e in energy_data])
-
-    R2_Opt = R_squared(eqe_data, Opt_fit, bias=bias, tolerance=tolerance)
-    R2_CT = R_squared(eqe_data, CT_fit, bias=bias, tolerance=tolerance)
-
-    if len(Opt_fit) == len(CT_fit):
-            combined_Fit = Opt_fit + CT_fit
-            R2_sum = R_squared(eqe_data, combined_Fit.tolist(), bias=bias, tolerance=tolerance)
-
-    R2_comp = (R2_CT + R2_Opt + R2_sum)/3
-
-    return [R2_sum, combined_Fit, Opt_fit, CT_fit, energy_data, eqe_data, R2_Opt, R2_CT, R2_comp]
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -532,7 +440,7 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
 
 # -----------------------------------------------------------------------------------------------------------
 
-# Wrapper function to perform curve fit using lmfit.Model ### This could be changed to use scipy.curve_fit instead
+# Wrapper function to perform curve fit using lmfit.Model
 
 def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
     """
