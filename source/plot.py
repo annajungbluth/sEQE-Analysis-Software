@@ -1,10 +1,17 @@
 import matplotlib.pyplot as plt
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to plot any data
 
-def plot(ax1, ax2, x, y, label_, color_):
+def plot(ax1,
+         ax2,
+         x,
+         y,
+         label_,
+         color_
+         ):
     """
     :param ax1: plt axis object
     :param ax2: plt axis object
@@ -22,6 +29,7 @@ def plot(ax1, ax2, x, y, label_, color_):
 
     plt.draw()
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to set up "Calculate EQE" plot
@@ -33,7 +41,7 @@ def set_up_plot(flag='Wavelength'):
              ax_2: plt axis objects to plot EQE on log scale
     """
 
-    if flag =='Wavelength':
+    if flag == 'Wavelength':
 
         # style.use('ggplot')
         fig1 = plt.figure()
@@ -95,7 +103,9 @@ def set_up_plot(flag='Wavelength'):
 
 # Function to set up EQE plot
 
-def set_up_EQE_plot(number=None, norm_num=None):
+def set_up_EQE_plot(number=None,
+                    norm_num=None
+                    ):
     """
     :param: number: number indicating whether wavelength or energy are plotted [int]
             number = 0 => plot wavelength

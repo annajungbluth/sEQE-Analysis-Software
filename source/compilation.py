@@ -4,11 +4,16 @@ from source.utils import get_logger
 
 logger = get_logger()
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to compile EQE data
 
-def compile_EQE(eqe_df, start, stop, number):
+def compile_EQE(eqe_df,
+                start,
+                stop,
+                number
+                ):
     """
     :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
     :param start: start wavelength of energy [float or int]
@@ -44,13 +49,12 @@ def compile_EQE(eqe_df, start, stop, number):
                 start * q)  # The stop wavelength corresponds to the low energy start value
 
     for y in range(len(eqe_df['Wavelength'])):  # Iterate through columns of EQE file
-        if startNM <= eqe_df['Wavelength'][
-            y] <= stopNM:  # Compile EQE only if start <= wavelength <= stop, otherwise ignore
+        if startNM <= eqe_df['Wavelength'][y] <= stopNM:  # Compile EQE if start <= wavelength <= stop, otherwise ignore
             Wavelength.append(eqe_df['Wavelength'][y])
             Energy.append(eqe_df['Energy'][y])
             EQE.append(eqe_df['EQE'][y])  # * eqe_df['Energy'][y] - Eventually this might need to be added for fitting
-            log_EQE.append(eqe_df['Log_EQE'][
-                               y])  # (math.log10(eqe_df['EQE'][y] * eqe_df['Energy'][y]) - Eventually this might need to be added for fitting
+            log_EQE.append(eqe_df['Log_EQE'][y])
+            # (math.log10(eqe_df['EQE'][y] * eqe_df['Energy'][y]) - Eventually this might need to be added for fitting
 
     if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE):  # Check that the lengths are the same
         return Wavelength, Energy, EQE, log_EQE
@@ -63,7 +67,11 @@ def compile_EQE(eqe_df, start, stop, number):
 
 # Function to compile EL data
 
-def compile_EL(el_df, start, stop, number):
+def compile_EL(el_df,
+               start,
+               stop,
+               number
+               ):
     """
     :param el_df: dataFrame of EL values
     :param start: start wavelength or energy [float or int]
@@ -97,8 +105,7 @@ def compile_EL(el_df, start, stop, number):
                 start * q)  # The stop wavelength corresponds to the low energy start value
 
     for y in range(len(el_df['Wavelength'])):  # Iterate through columns of EL file
-        if startNM <= el_df['Wavelength'][
-            y] <= stopNM:  # Compile EL only if start <= wavelength <= stop, otherwise ignore
+        if startNM <= el_df['Wavelength'][y] <= stopNM:  # Compile EL if start <= wavelength <= stop, otherwise ignore
             Wavelength.append(el_df['Wavelength'][y])
             Energy.append(el_df['Energy'][y])
             EL.append(el_df['Signal'][y])
@@ -114,7 +121,11 @@ def compile_EL(el_df, start, stop, number):
 
 # Function to compile any data
 
-def compile_Data(energy, y, startE, stopE):
+def compile_Data(energy,
+                 y,
+                 startE,
+                 stopE
+                 ):
     """
     :param energy: list of energy values [list]
     :param y: list of y values [list]

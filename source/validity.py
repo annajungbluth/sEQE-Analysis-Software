@@ -2,11 +2,17 @@ from source.utils import get_logger
 
 logger = get_logger()
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if reference & data files are non-empty and within wavelength range
 
-def Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
+def Ref_Data_is_valid(ref_df,
+                      data_df,
+                      startNM,
+                      stopNM,
+                      range_no
+                      ):
     """
     :param ref_df: dataFrame of reference diode
     :param data_df: dataFrame of measurement data
@@ -49,11 +55,16 @@ def Ref_Data_is_valid(ref_df, data_df, startNM, stopNM, range_no):
         logger.error('Please import valid reference and data files for Range %s.' % str(range_no))
         return False
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if EQE files are non-empty and within wavelength range
 
-def EQE_is_valid(eqe_df, startNM, stopNM, EQE_no):
+def EQE_is_valid(eqe_df,
+                 startNM,
+                 stopNM,
+                 EQE_no
+                 ):
     """
     :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
     :param startNM: start wavelength [float or int]
@@ -85,11 +96,15 @@ def EQE_is_valid(eqe_df, startNM, stopNM, EQE_no):
         logger.error('Please import a valid file for EQE File %s.' % str(EQE_no))
         return False
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if data files are non-empty and within energy range
 
-def Data_is_valid(df, startE, stopE):
+def Data_is_valid(df,
+                  startE,
+                  stopE
+                  ):
     """
     :param df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
     :param startE: start energy [float]
@@ -118,11 +133,15 @@ def Data_is_valid(df, startE, stopE):
         logger.error('Please import a valid file.')
         return False
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if normalization wavelength is within wavelength range
 
-def Normalization_is_valid(eqe_df, normNM, EQE_no):
+def Normalization_is_valid(eqe_df,
+                           normNM,
+                           EQE_no
+                           ):
     """
     :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
     :param normNM: normalization wavelength [float or int]
@@ -142,11 +161,18 @@ def Normalization_is_valid(eqe_df, normNM, EQE_no):
             logger.error('Please select a valid normalization wavelength for EQE file %s.' % str(EQE_no))
             return False
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to check if EQE files are non-empty and within fit energy range
 
-def Fit_is_valid(eqe_df, startE, stopE, startFitE, stopFitE, EQE_no):
+def Fit_is_valid(eqe_df,
+                 startE,
+                 stopE,
+                 startFitE,
+                 stopFitE,
+                 EQE_no
+                 ):
     """
     :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
     :param startE: EQE start energy [float]
@@ -180,6 +206,7 @@ def Fit_is_valid(eqe_df, startE, stopE, startFitE, stopFitE, EQE_no):
     else:  # If EQE file is empty / hasn't been selected
         logger.error('Please import a valid file for EQE File %s.' % str(EQE_no))
         return False
+
 
 # -----------------------------------------------------------------------------------------------------------
 

@@ -3,11 +3,15 @@ import sys
 import numpy as np
 from scipy.interpolate import interp1d
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to interpolate values
 
-def interpolate(num, x, y):
+def interpolate(num,
+                x,
+                y
+                ):
     """
     :param num: value to interpolate at [float]
     :param x: x data [list or array]
@@ -22,7 +26,11 @@ def interpolate(num, x, y):
 
 # Function to calculate R Squared of fit
 
-def R_squared(y_data, yfit_data, bias = False, tolerance = None):
+def R_squared(y_data,
+              yfit_data,
+              bias=False,
+              tolerance=None
+              ):
     """
     :param y_data: original y data [list or array]
     :param yfit_data: y data of fit [list or array]
@@ -55,16 +63,17 @@ def R_squared(y_data, yfit_data, bias = False, tolerance = None):
         r_squared_log = 1 - (ss_res_log / ss_tot_log)
 
         if bias and tolerance is not None:
-            if len(residuals[residuals<0])!=0: # Check that there are fit values that fall above the data
-                mean_percent = abs(np.nanmean(residuals[residuals<0]/y_data[residuals<0]))
-                # mean_percent = abs(np.nanmean(residuals/y_data)) # To account for both positive and negative deviations
+            if len(residuals[residuals < 0]) != 0:  # Check that there are fit values that fall above the data
+                mean_percent = abs(np.nanmean(residuals[residuals < 0] / y_data[residuals < 0]))
+                # mean_percent = abs(np.nanmean(residuals/y_data)) # To account for positive and negative deviations
                 if mean_percent > tolerance:
                     r_squared = 0.0001
-                    r_squared_log = 0.0001 # These values are artificially set very low to discard fit
+                    r_squared_log = 0.0001  # These values are artificially set very low to discard fit
 
-        return (r_squared + r_squared_log)/2
+        return (r_squared + r_squared_log) / 2
     else:
         logger.error('Error Code 1: Length mismatch.')
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -77,6 +86,7 @@ def sep_list(list_, n):
     :return: nth element of list
     """
     return list_[n]
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -94,6 +104,7 @@ def sep_list_list(list_list):
             one_list.append(x)
 
     return one_list
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -121,4 +132,7 @@ def get_logger():
 
     return logger
 
+
 logger = get_logger()
+
+# -----------------------------------------------------------------------------------------------------------

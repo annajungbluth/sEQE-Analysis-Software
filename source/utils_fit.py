@@ -6,9 +6,11 @@ from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
 
 from source.compilation import compile_EQE
-from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption, calculate_combined_fit
+from source.gaussian import calculate_combined_fit
 from source.utils import R_squared
 from source.utils import sep_list
+from source.add_subtract import subtract_Opt
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -19,12 +21,12 @@ def fit_function(function,
                  eqe_fit,
                  p0=None,
                  bounds=None,
-                 include_disorder = False,
+                 include_disorder=False,
                  double=False
                  ):
     """
     Function to perform fitting using curve_fit
-    Tis function is capable of performing single and double peak fits.
+    This function is capable of performing single and double peak fits.
     :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
     :param energy_fit: energy values to fit against [list or array]
     :param eqe_fit: EQE values to fit against [list or array]
@@ -38,9 +40,18 @@ def fit_function(function,
              r_squared: R^2 of the fit [float]
     """
     if bounds is not None:
-        best_vals, covar = curve_fit(function, energy_fit, eqe_fit, p0=p0, bounds=bounds)
+        best_vals, covar = curve_fit(function,
+                                     energy_fit,
+                                     eqe_fit,
+                                     p0=p0,
+                                     bounds=bounds
+                                     )
     else:
-        best_vals, covar = curve_fit(function, energy_fit, eqe_fit, p0=p0)
+        best_vals, covar = curve_fit(function,
+                                     energy_fit,
+                                     eqe_fit,
+                                     p0=p0
+                                     )
     if double:
         if include_disorder:
             y_fit = [function(
@@ -83,6 +94,7 @@ def fit_function(function,
 
     return best_vals, covar, y_fit, r_squared
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to perform fit with guess range
@@ -124,7 +136,12 @@ def guess_fit(eqe,
             for E_guess in guessRange:
                 for sig_guess in guessRange_sig:
                     try:
-                        best_vals, covar, y_fit, r_squared = fit_model(function, energy_fit, eqe_fit, p0=p0, include_disorder=True)
+                        best_vals, covar, y_fit, r_squared = fit_model(function,
+                                                                       energy_fit,
+                                                                       eqe_fit,
+                                                                       p0=p0,
+                                                                       include_disorder=True
+                                                                       )
                         if r_squared > 0:
                             p0_list.append(p0)
                             R2_list.append(r_squared)
@@ -144,12 +161,21 @@ def guess_fit(eqe,
             best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
 
             # Determine fit values of fit with best intial guess
-            best_vals, covar, y_fit, r_squared = fit_model(function, energy_fit, eqe_fit, p0=best_p0, include_disorder=True)
+            best_vals, covar, y_fit, r_squared = fit_model(function,
+                                                           energy_fit,
+                                                           eqe_fit,
+                                                           p0=best_p0,
+                                                           include_disorder=True
+                                                           )
 
         else:
             for E_guess in guessRange:
                 try:
-                    best_vals, covar, y_fit, r_squared = fit_function(function, energy_fit, eqe_fit, p0=p0)
+                    best_vals, covar, y_fit, r_squared = fit_function(function,
+                                                                      energy_fit,
+                                                                      eqe_fit,
+                                                                      p0=p0
+                                                                      )
                     if r_squared > 0:
                         return best_vals, r_squared
                     else:
@@ -162,8 +188,9 @@ def guess_fit(eqe,
 
         return best_vals, r_squared
 
-# -----------------------------------------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------------------------------------
+# TODO: Fix this function and combine with previous one?
 # Function to perform simultaneous double peak fit with guess range
 
 def guess_fit_sim(eqe,
@@ -202,16 +229,24 @@ def guess_fit_sim(eqe,
         # Attempt peak fit:
         p0 = None
         if include_disorder:
-        #     bounds = ([0.00001, 0.01, 1.2, 0.00001, 0.01, 1.4, 0.01],  # fCT, lCT, ECT, fopt, lopt, Eopt, sig
-        #               [0.04, 0.4, 1.5, 0.1, 0.05, 1.75, 0.5])
-        # else:
-        #     bounds = ([0.00001, 0.01, 1.2, 0.00001, 0.01, 1.4],  # fCT, lCT, ECT, fopt, lopt, Eopt
-        #               [0.04, 0.4, 1.5, 0.1, 0.05, 1.75])
-            bounds = ([kwargs['start_fCT'], kwargs['start_lCT'], kwargs['start_ECT'], kwargs['start_fopt'], kwargs['start_lopt'], kwargs['start_Eopt'], kwargs['start_sig']],
-                      [kwargs['stop_fCT'], kwargs['stop_lCT'], kwargs['stop_ECT'], kwargs['stop_fopt'], kwargs['stop_lopt'], kwargs['stop_Eopt'], kwargs['stop_sig']])
+            #     bounds = ([0.00001, 0.01, 1.2, 0.00001, 0.01, 1.4, 0.01],  # fCT, lCT, ECT, fopt, lopt, Eopt, sig
+            #               [0.04, 0.4, 1.5, 0.1, 0.05, 1.75, 0.5])
+            # else:
+            #     bounds = ([0.00001, 0.01, 1.2, 0.00001, 0.01, 1.4],  # fCT, lCT, ECT, fopt, lopt, Eopt
+            #               [0.04, 0.4, 1.5, 0.1, 0.05, 1.75])
+            bounds = (
+                [kwargs['start_fCT'], kwargs['start_lCT'], kwargs['start_ECT'], kwargs['start_fopt'],
+                 kwargs['start_lopt'],
+                 kwargs['start_Eopt'], kwargs['start_sig']],
+                [kwargs['stop_fCT'], kwargs['stop_lCT'], kwargs['stop_ECT'], kwargs['stop_fopt'], kwargs['stop_lopt'],
+                 kwargs['stop_Eopt'], kwargs['stop_sig']])
         else:
-            bounds = ([kwargs['start_fCT'], kwargs['start_lCT'], kwargs['start_ECT'], kwargs['start_fopt'], kwargs['start_lopt'], kwargs['start_Eopt']],
-                      [kwargs['stop_fCT'], kwargs['stop_lCT'], kwargs['stop_ECT'], kwargs['stop_fopt'], kwargs['stop_lopt'], kwargs['stop_Eopt']])
+            bounds = (
+                [kwargs['start_fCT'], kwargs['start_lCT'], kwargs['start_ECT'], kwargs['start_fopt'],
+                 kwargs['start_lopt'],
+                 kwargs['start_Eopt']],
+                [kwargs['stop_fCT'], kwargs['stop_lCT'], kwargs['stop_ECT'], kwargs['stop_fopt'], kwargs['stop_lopt'],
+                 kwargs['stop_Eopt']])
 
         p0_list = []
         R2_list = []
@@ -257,7 +292,8 @@ def guess_fit_sim(eqe,
             best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
 
             # Determine fit values of fit with best intial guess
-            best_vals, covar, y_fit, r_squared = fit_function(function, energy_fit, eqe_fit, p0=best_p0, bounds=bounds, include_disorder=True, double=True)
+            best_vals, covar, y_fit, r_squared = fit_function(function, energy_fit, eqe_fit, p0=best_p0, bounds=bounds,
+                                                              include_disorder=True, double=True)
 
         else:
             for CT_guess in guessRange_CT:
@@ -275,7 +311,6 @@ def guess_fit_sim(eqe,
                         if r_squared > 0:
                             return best_vals, r_squared
 
-
                             p0_list.append(p0)
                             R2_list.append(r_squared)
                             best_vals_list.append(best_vals)
@@ -288,7 +323,6 @@ def guess_fit_sim(eqe,
                             best_vals = [0, 0, 0, 0, 0, 0, 0]
                             r_squared = 0
                             return best_vals, r_squared
-
 
                             p0_list.append(p0)
                             R2_list.append(r_squared)
@@ -305,9 +339,16 @@ def guess_fit_sim(eqe,
             best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
 
             # Determine fit values of fit with best intial guess
-            best_vals, covar, y_fit, r_squared = fit_function(function, energy_fit, eqe_fit, p0=best_p0, bounds=bounds, include_disorder=False, double=True)
+            best_vals, covar, y_fit, r_squared = fit_function(function,
+                                                              energy_fit,
+                                                              eqe_fit,
+                                                              p0=best_p0,
+                                                              bounds=bounds,
+                                                              include_disorder=False,
+                                                              double=True)
 
         return best_vals, r_squared
+
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -318,8 +359,8 @@ def calculate_guess_fit(x,
                         eqe,
                         guessRange,
                         function,
-                        guessRange_sig = None,
-                        include_disorder = False
+                        guessRange_sig=None,
+                        include_disorder=False
                         ):
     """
     Mappable wrapper function to loop through initial guesses
@@ -346,12 +387,24 @@ def calculate_guess_fit(x,
 
     return [best_vals, r_squared, df['Start'][x], df['Stop'][x]]
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Mappable function to determine individual / combined fits
 
-def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, tolerance=0, sub_fit = 1):
+def map_fit(x,
+            df_Opt,
+            df_CT,
+            eqe,
+            guessRange_CT,
+            function,
+            T,
+            bias=False,
+            tolerance=0,
+            sub_fit=1
+            ):
     """
+    Mappable function to determine individual / combined fits
     :param x: row of the dataFrame [int]
     :param df_Opt: dataFrame of Opt fit parameters [dataFrame]
     :param df_CT: dataFrame of CT fit parameters [dataFrame]
@@ -378,12 +431,18 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
              EQE_list: Original EQE data [list]
     """
 
-    if sub_fit == 1:
+    if sub_fit == 1:  # to subtract optical fit
 
         if df_Opt['R2'][x] > 0:  # Check that the fit was successful
             new_eqe = subtract_Opt(eqe=eqe, best_vals=df_Opt['Fit'][x], T=T)
 
-            cal_vals_CT = list(map(lambda x: calculate_guess_fit(x, df_CT, new_eqe, guessRange_CT, function), range(len(df_CT))))
+            cal_vals_CT = list(
+                map(lambda x: calculate_guess_fit(x,
+                                                  df_CT,
+                                                  new_eqe,
+                                                  guessRange_CT,
+                                                  function
+                                                  ), range(len(df_CT))))
 
             best_vals_CT = list(map(lambda list_: sep_list(list_, 0), cal_vals_CT))
             R2_CT = list(map(lambda list_: sep_list(list_, 1), cal_vals_CT))
@@ -395,9 +454,15 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
             R2_CT = [0]
             R2_CT = R2_CT * len(df_CT)
 
-    elif sub_fit == 0 :
+    elif sub_fit == 0:  # to not subtract optical fit
 
-        cal_vals_CT = list(map(lambda x: calculate_guess_fit(x, df_CT, eqe, guessRange_CT, function), range(len(df_CT))))
+        cal_vals_CT = list(
+            map(lambda x: calculate_guess_fit(x,
+                                              df_CT,
+                                              eqe,
+                                              guessRange_CT,
+                                              function
+                                              ), range(len(df_CT))))
 
         best_vals_CT = list(map(lambda list_: sep_list(list_, 0), cal_vals_CT))
         R2_CT = list(map(lambda list_: sep_list(list_, 1), cal_vals_CT))
@@ -418,15 +483,15 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
     stop_CT_list = list(df_CT['Stop'])
 
     # Calculate combined fit here
-    parameter_list = list(map(lambda y: calculate_combined_fit(stopE = df_Opt['Stop'][x],
-                                                               best_vals_Opt = df_Opt['Fit'][x],
-                                                               best_vals_CT = best_vals_CT[y],
-                                                               R2_Opt = df_Opt['R2'][x],
-                                                               R2_CT = R2_CT[y],
-                                                               eqe = eqe,
-                                                               T = T,
-                                                               bias = bias,
-                                                               tolerance = tolerance),
+    parameter_list = list(map(lambda y: calculate_combined_fit(stopE=df_Opt['Stop'][x],
+                                                               best_vals_Opt=df_Opt['Fit'][x],
+                                                               best_vals_CT=best_vals_CT[y],
+                                                               R2_Opt=df_Opt['R2'][x],
+                                                               R2_CT=R2_CT[y],
+                                                               eqe=eqe,
+                                                               T=T,
+                                                               bias=bias,
+                                                               tolerance=tolerance),
                               range(len(df_CT))))
 
     combined_R2_list = list(map(lambda list_: sep_list(list_, 0), parameter_list))
@@ -436,14 +501,23 @@ def map_fit(x, df_Opt, df_CT, eqe, guessRange_CT, function, T, bias=False, toler
     Energy_list = list(map(lambda list_: sep_list(list_, 4), parameter_list))
     EQE_list = list(map(lambda list_: sep_list(list_, 5), parameter_list))
 
-    return best_vals_Opt, R2_Opt, best_vals_CT, R2_CT, start_Opt_list, stop_Opt_list, start_CT_list, stop_CT_list, combined_R2_list, combined_Fit_list, Opt_Fit_list, CT_Fit_list, Energy_list, EQE_list
+    return best_vals_Opt, R2_Opt, best_vals_CT, R2_CT, start_Opt_list, stop_Opt_list, start_CT_list, stop_CT_list, \
+           combined_R2_list, combined_Fit_list, Opt_Fit_list, CT_Fit_list, Energy_list, EQE_list
+
 
 # -----------------------------------------------------------------------------------------------------------
 
-# Wrapper function to perform curve fit using lmfit.Model
+# Function to perform curve fit using lmfit.Model
 
-def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
+def fit_model(function,
+              energy_fit,
+              eqe_fit,
+              p0=None,
+              include_disorder=False
+              ):
     """
+    Function to perform curve fit using lmfit
+    This function is used for standard / disorder single peak fits.
     :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
     :param energy_fit: energy values to fit against [list or array]
     :param eqe_fit: EQE values to fit against [list or array]
@@ -463,7 +537,13 @@ def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
     if include_disorder:
         gmodel.set_param_hint('sig', min=0.002, max=0.2)
 
-        result = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], sig=p0[3], E=energy_fit)
+        result = gmodel.fit(eqe_fit,
+                            f=p0[0],
+                            l=p0[1],
+                            Ect=p0[2],
+                            sig=p0[3],
+                            E=energy_fit
+                            )
 
         f = float(result.params['f'].value)
         l = float(result.params['l'].value)
@@ -474,11 +554,21 @@ def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
 
         covar = result.covar
         if covar is None:
-            covar = np.zeros((4,4))
+            covar = np.zeros((4, 4))
 
-        y_fit = gmodel.eval(E=energy_fit, f=f, l=l, Ect=Ect, sig=sig)
+        y_fit = gmodel.eval(E=energy_fit,
+                            f=f,
+                            l=l,
+                            Ect=Ect,
+                            sig=sig
+                            )
     else:
-        result = gmodel.fit(eqe_fit, f=p0[0], l=p0[1], Ect=p0[2], E=energy_fit)
+        result = gmodel.fit(eqe_fit,
+                            f=p0[0],
+                            l=p0[1],
+                            Ect=p0[2],
+                            E=energy_fit
+                            )
 
         f = float(result.params['f'].value)
         l = float(result.params['l'].value)
@@ -488,9 +578,13 @@ def fit_model(function, energy_fit, eqe_fit, p0=None, include_disorder=False):
 
         covar = result.covar
         if covar is None:
-            covar = np.zeros((4,4))
+            covar = np.zeros((4, 4))
 
-        y_fit = gmodel.eval(E=energy_fit, f=f, l=l, Ect=Ect)
+        y_fit = gmodel.eval(E=energy_fit,
+                            f=f,
+                            l=l,
+                            Ect=Ect
+                            )
 
     r_squared = R_squared(eqe_fit, y_fit)
 

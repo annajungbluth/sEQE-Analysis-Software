@@ -1,10 +1,13 @@
 import math
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to calculate the black body spectrum
 
-def bb_spectrum(E_list, T_EL):
+def bb_spectrum(E_list,
+                T_EL
+                ):
     """
     :param E_list: list of energy values in eV [list]
     :param T_EL: Temperature of EL measurement [float]
@@ -22,10 +25,9 @@ def bb_spectrum(E_list, T_EL):
         #             h_2 ** 3 * c ** 2)  # -1) - without -1 as an approximation
 
         # this equation is confirmed in Thomas Kirchartz book chapter on EL
-        phi_bb = (2 * math.pi * (energy) ** 2) / (h_2 ** 3 * c ** 2) * (1/(math.exp(energy / (k * T_EL)) - 1))
+        phi_bb = (2 * math.pi * energy ** 2) / (h_2 ** 3 * c ** 2) * (1 / (math.exp(energy / (k * T_EL)) - 1))
 
         phi_bb_dict[energy] = phi_bb
-
 
     return phi_bb_dict  # [s/kg m^4]
 

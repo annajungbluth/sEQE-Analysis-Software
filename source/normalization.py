@@ -6,7 +6,11 @@ logger = get_logger()
 
 # Function to normalize EQE data
 
-def normalize_EQE(eqe_df, startNM, stopNM, normNM):
+def normalize_EQE(eqe_df,
+                  startNM,
+                  stopNM,
+                  normNM
+                  ):
     """
     :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
     :param startNM: start wavelength [float or int]
@@ -28,7 +32,7 @@ def normalize_EQE(eqe_df, startNM, stopNM, normNM):
     norm_log_EQE = interpolate(normNM, eqe_df['Wavelength'], eqe_df['Log_EQE'])
 
     for y in range(len(eqe_df['Wavelength'])):  # Iterate through columns of EQE file
-        if startNM <= eqe_df['Wavelength'][y] <= stopNM:  # Compile EQE only if start <= wavelength <= stop, otherwise ignore
+        if startNM <= eqe_df['Wavelength'][y] <= stopNM:  # Compile EQE if start <= wavelength <= stop, otherwise ignore
             Wavelength.append(eqe_df['Wavelength'][y])
             Energy.append(eqe_df['Energy'][y])
             EQE.append(eqe_df['EQE'][y] / norm_EQE)
