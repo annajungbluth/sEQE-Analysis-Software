@@ -30,7 +30,7 @@ import sEQE_Analysis_template
 from source.add_subtract import subtract_Opt
 from source.compilation import compile_EQE, compile_EL, compile_Data
 from source.electroluminescence import bb_spectrum
-from source.gaussian import calculate_gaussian_absorption, calculate_combined_fit
+from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption, calculate_combined_fit
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
@@ -38,13 +38,14 @@ from source.utils import interpolate, sep_list, get_logger
 from source.utils_plot import is_Colour, pick_EQE_Color, pick_EQE_Label, pick_Label
 from source.validity import Ref_Data_is_valid, EQE_is_valid, Data_is_valid, Normalization_is_valid, Fit_is_valid, \
     StartStop_is_valid
-from source.utils_fit import guess_fit, guess_fit_sim, fit_function, calculate_guess_fit, fit_model
+from source.utils_fit import guess_fit, fit_function, calculate_guess_fit, fit_model, fit_model_double, find_best_fit
 from source.utils import R_squared
 
 warnings.filterwarnings("ignore")
 warnings.simplefilter('ignore', np.RankWarning)
 warnings.simplefilter('ignore', np.ComplexWarning)
 warnings.filterwarnings('ignore', "Intel MKL ERROR")
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -200,7 +201,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.browseSimFitButton.clicked.connect(lambda: self.writeText(self.ui.textBox_simFit, 'sim'))
 
         # Handle Sim Fit Button
-        self.ui.simFitButton.clicked.connect(lambda: self.pre_sim_fit())
+        self.ui.simDoubleFitButton_single.clicked.connect(lambda: self.sim_double_fit_single())
+        self.ui.simDoubleFitButton.clicked.connect(lambda: self.sim_double_fit())
 
         ## Page 5 - Fit EQE (MLJ Theory)
 
@@ -869,7 +871,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                       self.ui.textBox_p2_29, self.ui.textBox_p2_30, 10, number)
 
         if ok_EQE_1 and ok_EQE_2 and ok_EQE_3 and ok_EQE_4 and ok_EQE_5 and ok_EQE_6 and ok_EQE_7 and ok_EQE_8 and \
-           ok_EQE_9 and ok_EQE_10:
+                ok_EQE_9 and ok_EQE_10:
             self.axEQE_1.legend()
             self.axEQE_2.legend()
             plt.show()
@@ -1057,7 +1059,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Fit EQE (Marcus Theory)
             if (str(file_no)).isnumeric():
 
-                if file_no == 1: # Data in first row
+                if file_no == 1:  # Data in first row
 
                     self.T_CT = self.ui.Temperature_1.value()
                     guessStart = self.ui.guessStart_1.value()
@@ -1073,7 +1075,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
                         self.logger.error('Please select a valid peak to fit.')
 
-                elif file_no == 2: # Data in second row
+                elif file_no == 2:  # Data in second row
                     self.T_CT = self.ui.Temperature_2.value()
                     guessStart = self.ui.guessStart_2.value()
                     guessStop = self.ui.guessStop_2.value()
@@ -1091,8 +1093,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Attempt peak fit:
                 x_gaussian = linspace(startPlotFit, stopPlotFit, 50)
 
-                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05) # Extract peak guess range
-                Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.01, 0.01) # Extract sigma guess range
+                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)  # Extract peak guess range
+                Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.01, 0.01)  # Extract sigma guess range
 
                 p0 = None
 
@@ -1150,7 +1152,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     # best_guess_df.to_csv('~/Desktop/Best_Guesses.csv')
 
                     best_R2 = max(best_guess_df['R2'])
-                    best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0] # Find best initial guess
+                    best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
 
                     # Determine fit values of fit with best intial guess
                     best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2,
@@ -1166,9 +1168,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                      best_vals[2],
                                                                      best_vals[3]
                                                                      ))
-                    fit_ok = True # Accept fit
+                    fit_ok = True  # Accept fit
 
-                else: # if disorder is not to be included
+                else:  # if disorder is not to be included
                     for ECT in ECT_guess:
                         y_gaussian = []
                         try:
@@ -1178,7 +1180,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                     y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
                                 fit_ok = True
                                 best_p0 = p0
-                                break # This breaks the for loop
+                                break  # This breaks the for loop
                             else:
                                 raise Exception('Wrong fit determined.')
                         except:
@@ -1312,13 +1314,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     try:
                         if include_Disorder:
                             best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
-                                                                                   energy_fit, eqe_fit, p0=p0)
+                                                                              energy_fit, eqe_fit, p0=p0)
                             for value in x_MLJ_theory:
                                 y_MLJ_theory.append(
                                     self.MLJ_gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
                         else:
                             best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian, energy_fit,
-                                                                                   eqe_fit, p0=p0)
+                                                                              eqe_fit, p0=p0)
                             for value in x_MLJ_theory:
                                 y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
 
@@ -1477,7 +1479,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     # Fit EQE (Marcus Theory)
                     if (str(file_no)).isnumeric():
 
-                        if file_no == 1: # Range 1
+                        if file_no == 1:  # Range 1
                             self.T_CT = self.ui.Temperature_1.value()
                             guessStart = self.ui.guessStart_1.value()
                             guessStop = self.ui.guessStop_1.value()
@@ -1485,14 +1487,14 @@ class MainWindow(QtWidgets.QMainWindow):
                             guessStop_sig = self.ui.guessStopSig_1.value()
                             if self.ui.disorder_1.isChecked():
                                 include_Disorder = True
-                            if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked(): # Check peak to fit
+                            if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check peak to fit
                                 fit_opticalPeak = True
                             elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
                                 self.logger.error('Please select a valid peak to fit.')
                             elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
                                 self.logger.error('Please select a valid peak to fit.')
 
-                        elif file_no == 2: # Range 2
+                        elif file_no == 2:  # Range 2
                             self.T_CT = self.ui.Temperature_2.value()
                             guessStart = self.ui.guessStart_2.value()
                             guessStop = self.ui.guessStop_2.value()
@@ -1508,7 +1510,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.logger.error('Please select a valid peak to fit.')
 
                         # Attempt peak fit:
-                        ECT_guess = np.arange(guessStart, guessStop + 0.2, 0.2) # Increased step to accelerate process
+                        ECT_guess = np.arange(guessStart, guessStop + 0.2, 0.2)  # Increased step to accelerate process
                         Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.01, 0.01)  # Extract sigma guess range
 
                         p0 = None
@@ -1533,17 +1535,19 @@ class MainWindow(QtWidgets.QMainWindow):
                                     except:
                                         p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
 
-                            if len(p0_list)!=0: # Check that the list is not empty
+                            if len(p0_list) != 0:  # Check that the list is not empty
 
                                 best_guess_df['p0'] = p0_list
                                 best_guess_df['R2'] = R2_list
 
                                 best_R2 = max(best_guess_df['R2'])
-                                best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best guess
+                                best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[
+                                    0]  # Find best guess
 
                                 # Determine fit values of fit with best intial guess
                                 best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2, energy_fit,
-                                                                               eqe_fit, p0=best_p0, include_disorder=True)
+                                                                               eqe_fit, p0=best_p0,
+                                                                               include_disorder=True)
                                 start_df.append(start)
                                 stop_df.append(stop)
                                 f_df.append(best_vals[0])
@@ -1555,10 +1559,11 @@ class MainWindow(QtWidgets.QMainWindow):
                             # else:
                             #     self.logger.info('Optimal parameters not found.')
 
-                        else: # If disorder is not to be included
+                        else:  # If disorder is not to be included
                             for ECT in ECT_guess:
                                 try:
-                                    best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit, eqe_fit, p0=p0)
+                                    best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit,
+                                                                                      eqe_fit, p0=p0)
 
                                     if r_squared > 0:
                                         start_df.append(start)
@@ -1600,8 +1605,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                         self.MLJ_gaussian_disorder, energy_fit, eqe_fit, p0=p0)
                                 else:
                                     best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
-                                                                                           energy_fit, eqe_fit,
-                                                                                           p0=p0)
+                                                                                      energy_fit, eqe_fit,
+                                                                                      p0=p0)
                                 if r_squared > 0:
                                     start_df.append(start)
                                     stop_df.append(stop)
@@ -1615,15 +1620,16 @@ class MainWindow(QtWidgets.QMainWindow):
                                 if ECT == ECT_guess[-1]:
                                     self.logger.info('Optimal parameters not found.')
 
-            if len(R_df) != 0: # Check that there are results to plot
+            if len(R_df) != 0:  # Check that there are results to plot
 
                 if include_Disorder:
                     parameter_df = pd.DataFrame(
                         {'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df,
                          'R_Squared': R_df, 'Sig': sig_df})  # Create a dataFrame with all results
                 else:
-                    parameter_df = pd.DataFrame({'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df,
-                                                 'R_Squared': R_df})  # Create a dataFrame with all results
+                    parameter_df = pd.DataFrame(
+                        {'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df,
+                         'R_Squared': R_df})  # Create a dataFrame with all results
                 max_index = parameter_df[parameter_df['R_Squared'] == max(parameter_df['R_Squared'])].index.values[0]
 
                 self.logger.info('Fit Results: ')
@@ -1787,7 +1793,7 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian function including disorder
 
     # TODO: Fix functions
-    def gaussian_disorder(self, E, f, l, Ect): # TODO: Old fit function to be removed
+    def gaussian_disorder(self, E, f, l, Ect):  # TODO: Old fit function to be removed
         """
         Standard gaussian function including disorder
         :param E: List of energy values [list of floats]
@@ -1810,7 +1816,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: EQE value [float]
         """
         return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
-            -((Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - E) ** 2 / (
+            -((Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (sig ** 2 / (2 * self.k * self.T_CT)) - E) ** 2 / (
                     4 * l * self.k * self.T_CT + 2 * sig ** 2)))
 
     def gaussian_disorder_new_2(self, E, f, l, Ect, sig):
@@ -1824,7 +1830,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: list of EQE values [list of floats]
         """
         return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
-            -(Ect - (sig**2 / (2*self.k * self.T_CT)) + l + (sig**2 / (2*self.k * self.T_CT)) - e) ** 2 / (
+            -(Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (sig ** 2 / (2 * self.k * self.T_CT)) - e) ** 2 / (
                     4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
 
     # -----------------------------------------------------------------------------------------------------------
@@ -1949,12 +1955,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         EL_abs_scaled = [EL_signal[x] / (scaleFactor * bb_dict[EL_energy[x]])
                                          for x in range(len(EL_energy))]
                         EL_abs_scaled_test = [EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]])
-                                              for x in range(len(EL_energy))] # test which scale factor is correct
+                                              for x in range(len(EL_energy))]  # test which scale factor is correct
 
                         red_EL_abs_scaled = [EL_energy[x] * EL_signal[x] / (scaleFactor * bb_dict[EL_energy[x]])
                                              for x in range(len(EL_energy))]
-                        red_EL_abs_scaled_test = [EL_energy[x] * EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]])
-                                                  for x in range(len(EL_energy))] # test which scale factor is correct
+                        red_EL_abs_scaled_test = [
+                            EL_energy[x] * EL_signal[x] / (scaleFactor_calc * bb_dict[EL_energy[x]])
+                            for x in range(len(EL_energy))]  # test which scale factor is correct
 
                         if not fit:
                             # label_ = pick_EQE_Label(self.ui.textBox_EL2, self.ui.textBox_EL1)
@@ -1987,7 +1994,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.Red_EQE_meas = pd.DataFrame()  # For determining the intersect between abs and emission
                 EQE_wave, EQE_energy, EQE, EQE_log = compile_EQE(data_df, startE, stopE, 1)
-                red_EQE = [EQE[x] * EQE_energy[x] for x in range(len(EQE))] # Multiplication confirmed in Benduhn thesis
+                red_EQE = [EQE[x] * EQE_energy[x] for x in
+                           range(len(EQE))]  # Multiplication confirmed in Benduhn thesis
 
                 if not fit:
                     label_ = pick_EQE_Label(self.ui.textBox_EL5, self.ui.textBox_EL4)
@@ -2526,7 +2534,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(color_EQE) == 0 or not is_Colour(color_EQE):
             color_EQE = 'black'
 
-        try: # Check if fit for an optical peak was imported
+        try:  # Check if fit for an optical peak was imported
             T_OptFit = data_OptFit['Temperature'][0]
             f_OptFit = data_OptFit['Oscillator Strength (eV**2)'][0]
             l_OptFit = data_OptFit['Reorganization Energy (eV)'][0]
@@ -2534,7 +2542,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except:
             self.logger.error('No optical peak fit imported.')
 
-        try: # Check if fit for a CT state fit was importated
+        try:  # Check if fit for a CT state fit was importated
             T_CTFit = data_CTFit['Temperature'][0]
             f_CTFit = data_CTFit['Oscillator Strength (eV**2)'][0]
             l_CTFit = data_CTFit['Reorganization Energy (eV)'][0]
@@ -2628,7 +2636,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 df_add = pd.DataFrame()
                 df_add['Energy'] = np.array(add_Energy)
                 df_add['EQE'] = np.array(add_Fits)
-                df_add.to_csv('Fit_sum.csv') # TODO: make more versatile
+                df_add.to_csv('Fit_sum.csv')  # TODO: make more versatile
 
             else:
                 self.logger.error('Please import a valid EQE file.')
@@ -2649,7 +2657,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: None
         """
 
-        increase_factor = 1.05 # Adding 5% to the selected data
+        increase_factor = 1.05  # Adding 5% to the selected data
         include_disorder = False
         guessRange_Sig = None
 
@@ -2657,7 +2665,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.ui.bias_DoubleFit.isChecked():
             self.bias = True
-            self.tolerance = float(self.ui.tolerance.value())/100
+            self.tolerance = float(self.ui.tolerance.value()) / 100
             self.logger.info('Constraining fit below EQE data.')
         else:
             self.bias = False
@@ -2706,7 +2714,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if startOpt_ok and stopOpt_ok and guessOpt_ok and startCT_ok and stopCT_ok and guessCT_ok:
 
-            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01), 3).tolist() # Change step to 0.05
+            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01),
+                                      3).tolist()  # Change step to 0.05
             stopRange_Opt = np.round(np.arange(stopStart_Opt, stopStop_Opt + 0.005, 0.01), 3).tolist()
 
             startRange_CT = np.round(np.arange(startStart_CT, startStop_CT + 0.005, 0.01), 3).tolist()
@@ -2747,10 +2756,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.logger.info('Calculating Optical Peak Fits ...')
 
-            cal_vals_Opt = list(map(lambda x: calculate_guess_fit(x, df_Opt, eqe, guessRange_Opt, self.gaussian_double),
-                                    tqdm(range(len(df_Opt)))))
+            cal_vals_Opt = list(map(lambda x: calculate_guess_fit(x=x,
+                                                                  df=df_Opt,
+                                                                  eqe=eqe,
+                                                                  function=self.gaussian_double,
+                                                                  guessRange=guessRange_Opt
+                                                                  ), tqdm(range(len(df_Opt)))))
 
             best_vals_Opt = list(map(lambda list_: sep_list(list_, 0), cal_vals_Opt))
+
             R2_Opt = list(map(lambda list_: sep_list(list_, 1), cal_vals_Opt))
 
             df_Opt['Fit'] = best_vals_Opt
@@ -2796,16 +2810,18 @@ class MainWindow(QtWidgets.QMainWindow):
                                 best_vals, r_squared = guess_fit(eqe=new_eqe,
                                                                  startE=df_CT['Start'][y],
                                                                  stopE=df_CT['Stop'][y],
-                                                                 guessRange=guessRange_CT,
-                                                                 guessRange_sig = guessRange_Sig,
                                                                  function=self.gaussian_disorder_double,
-                                                                 include_disorder=True)
+                                                                 guessRange=guessRange_CT,
+                                                                 guessRange_sig=guessRange_Sig,
+                                                                 include_disorder=True
+                                                                 )
                             else:
                                 best_vals, r_squared = guess_fit(eqe=new_eqe,
                                                                  startE=df_CT['Start'][y],
                                                                  stopE=df_CT['Stop'][y],
-                                                                 guessRange=guessRange_CT,
-                                                                 function=self.gaussian_double)
+                                                                 function=self.gaussian_double,
+                                                                 guessRange=guessRange_CT
+                                                                 )
                         else:
                             best_vals = [0, 0, 0]
                             r_squared = 0
@@ -2863,7 +2879,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 df_Opt['Advanced R2'] = advanced_R2_list
 
-                best_fit_index = df_Opt['Fit'][df_Opt['Advanced R2']==max(df_Opt['Advanced R2'])].index[0]
+                best_fit_index = df_Opt['Fit'][df_Opt['Advanced R2'] == max(df_Opt['Advanced R2'])].index[0]
                 # print(best_fit_index)
 
                 new_eqe = subtract_Opt(eqe, df_Opt['Fit'][best_fit_index], T=self.T_double)
@@ -2874,16 +2890,18 @@ class MainWindow(QtWidgets.QMainWindow):
                         best_vals, r_squared = guess_fit(eqe=new_eqe,
                                                          startE=df_CT['Start'][y],
                                                          stopE=df_CT['Stop'][y],
+                                                         function=self.gaussian_disorder_double,
                                                          guessRange=guessRange_CT,
                                                          guessRange_sig=guessRange_Sig,
-                                                         function=self.gaussian_disorder_double,
-                                                         include_disorder=True)
+                                                         include_disorder=True
+                                                         )
                     else:
                         best_vals, r_squared = guess_fit(eqe=new_eqe,
                                                          startE=df_CT['Start'][y],
                                                          stopE=df_CT['Stop'][y],
-                                                         guessRange=guessRange_CT,
-                                                         function=self.gaussian_double)
+                                                         function=self.gaussian_double,
+                                                         guessRange=guessRange_CT
+                                                         )
 
                     start_Opt_list.append(df_Opt['Start'][best_fit_index])
                     stop_Opt_list.append(df_Opt['Stop'][best_fit_index])
@@ -2904,8 +2922,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                                             T=self.T_double,
                                                             bias=self.bias,
                                                             tolerance=self.tolerance,
-                                                            range = increase_factor,
-                                                            include_disorder = include_disorder)
+                                                            range=increase_factor,
+                                                            include_disorder=include_disorder)
 
                     combined_R2_list.append(parameter_dict['R2_Combined'])
                     combined_Fit_list.append(parameter_dict['Combined_Fit'])
@@ -2924,16 +2942,18 @@ class MainWindow(QtWidgets.QMainWindow):
                             best_vals, r_squared = guess_fit(eqe=eqe,
                                                              startE=df_CT['Start'][y],
                                                              stopE=df_CT['Stop'][y],
+                                                             function=self.gaussian_disorder_double,
                                                              guessRange=guessRange_CT,
                                                              guessRange_sig=guessRange_Sig,
-                                                             function=self.gaussian_disorder_double,
-                                                             include_disorder=True)
+                                                             include_disorder=True
+                                                             )
                         else:
                             best_vals, r_squared = guess_fit(eqe=eqe,
                                                              startE=df_CT['Start'][y],
                                                              stopE=df_CT['Stop'][y],
-                                                             guessRange=guessRange_CT,
-                                                             function=self.gaussian_double)
+                                                             function=self.gaussian_double,
+                                                             guessRange=guessRange_CT
+                                                             )
 
                     start_Opt_list.append(df_Opt['Start'][x])
                     stop_Opt_list.append(df_Opt['Stop'][x])
@@ -2954,8 +2974,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                                             T=self.T_double,
                                                             bias=self.bias,
                                                             tolerance=self.tolerance,
-                                                            range = increase_factor,
-                                                            include_disorder = include_disorder)
+                                                            range=increase_factor,
+                                                            include_disorder=include_disorder)
 
                     combined_R2_list.append(parameter_dict['R2_Combined'])
                     combined_Fit_list.append(parameter_dict['Combined_Fit'])
@@ -3037,7 +3057,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #     Energy_list = sep_list_list(list(map(lambda list_: sep_list(list_, 12), parameter_list)))
             #     EQE_list = sep_list_list(list(map(lambda list_: sep_list(list_, 13), parameter_list)))
 
-            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt)!=0: # Confirm lists are acceptable
+            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt) != 0:  # Confirm lists are acceptable
 
                 df_results['Start_Opt'] = start_Opt_list
                 df_results['Stop_Opt'] = stop_Opt_list
@@ -3061,15 +3081,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.logger.info('Determining Best Fit ...')
                 self.logger.info('Fit Results: ')
                 print("")
-                for x in np.arange(1,6,1):
+
+                label = pick_EQE_Label(self.ui.textBox_dF2, self.ui.textBox_dF1)
+
+                for x in np.arange(1, 6, 1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
-                    df_results = self.find_best_fit(df_both = df_results,
-                                                    eqe=eqe,
-                                                    T = self.T_double,
-                                                    n_fit=x,
-                                                    include_disorder=include_disorder
-                                                    )
+                    df_results = find_best_fit(df_both=df_results,
+                                               eqe=eqe,
+                                               T=self.T_double,
+                                               label=label,
+                                               n_fit=x,
+                                               include_disorder=include_disorder
+                                               )
 
                 print('-' * 80)
                 print("")
@@ -3078,146 +3102,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # -----------------------------------------------------------------------------------------------------------
 
-    # Function to determine the best fit for separate double peak fitting
-
-    def find_best_fit(self, df_both, eqe, T, n_fit = 0, include_disorder = False):
-        """
-        Function to find best EQE fits
-        :param df_both: dataFrame with final fit results [dataFrame]
-        :param eqe: original EQE data [dataFrame]
-        :param T: Temperature [float]
-        :param n_fit: fit number [int]
-        :param include_disorder: boolean of whether to include disorder [bool]
-        :return: df_copy: copy of df_both [dataFrame]
-        """
-
-        if len(df_both) != 0:
-
-            #self.logger.info('Determining Best Fit ...')
-
-            # Determine best fit
-            max_index = df_both[df_both['Total_R2'] == max(df_both['Total_R2'])].index.values[0]
-
-            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
-                                                                         df_both['Stop_Opt'][max_index] * 1.2, 1)
-
-            Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
-                                                                   df_both['Fit_Opt'][max_index][0],
-                                                                   df_both['Fit_Opt'][max_index][1],
-                                                                   df_both['Fit_Opt'][max_index][2],
-                                                                   T)
-                                     for e in energy_plot])
-
-            #print('-' * 80)
-            # print(('Combined Best Fit:').format(n_fit))
-            # print('-' * 25)
-
-            print('-' * 35)
-
-            print('R_Squared : ', format(df_both['Total_R2'][max_index], '.6f'))
-
-            print('-' * 35)
-
-            print('Opt Fit Range (eV): ', df_both['Start_Opt'][max_index], ' - ', df_both['Stop_Opt'][max_index])
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'))
-            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'))
-            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'))
-
-            print('-' * 35)
-
-            print('CT Fit Range (eV): ', df_both['Start_CT'][max_index], ' - ', df_both['Stop_CT'][max_index])
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'))
-            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'))
-            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'))
-
-            if include_disorder:
-                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'))
-
-            # print('Temperature [T] (K) : ', T)
-            # print('-' * 80)
-
-            axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
-
-            axDouble_1.plot(eqe['Energy'],
-                            eqe['EQE'],
-                            linewidth=2,
-                            linestyle='-',
-                            label=self.ui.textBox_dF1.toPlainText(),
-                            color='black'
-                            )
-            axDouble_1.plot(energy_plot,
-                            Opt_fit_plot,
-                            linewidth=2,
-                            linestyle='dotted',
-                            label='Optical Peak Fit'
-                            )
-            axDouble_1.plot(df_both['Energy'][max_index],
-                            df_both['CT_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='--',
-                            label='CT State Fit'
-                            )
-            axDouble_1.plot(df_both['Energy'][max_index],
-                            df_both['Total_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='dashdot',
-                            label='Total Fit'
-                            )
-            axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
-            axDouble_1.set_title(('Range No. {}').format(n_fit))
-            axDouble_1.legend()
-
-            axDouble_2.plot(eqe['Energy'],
-                            eqe['EQE'],
-                            linewidth=2,
-                            linestyle='-',
-                            label=self.ui.textBox_dF1.toPlainText(),
-                            color='black'
-                            )
-            axDouble_2.plot(energy_plot,
-                            Opt_fit_plot,
-                            linewidth=2,
-                            linestyle='--',
-                            label='Optical Peak Fit'
-                            )
-            axDouble_2.plot(df_both['Energy'][max_index],
-                            df_both['CT_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='--',
-                            label='CT State Fit'
-                            )
-            axDouble_2.plot(df_both['Energy'][max_index],
-                            df_both['Total_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='dashdot',
-                            label='Total Fit'
-                            )
-            axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
-            axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
-            # axDouble_2.set_title(('Range No. {}').format(n_fit))
-            axDouble_2.legend()
-
-            df_copy = df_both.copy()
-            df_copy['Total_R2'][max_index] = 0
-
-            return df_copy
-
-    # -----------------------------------------------------------------------------------------------------------
-
     # Gaussian fitting function for double fit
 
-    def gaussian_double(self, x, f, l, E):
+    def gaussian_double(self, E, f, l, Ect):
         """
         Standard gaussian functions to separately fit double peaks
         :param x: List of energy values [list]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
-        :param E: Peak Energy [float]
+        :param Ect: Peak Energy [float]
         :return: EQE value [list]
         """
 
-        return (f / (x * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(
-            -(E + l - x) ** 2 / (4 * l * self.k * self.T_double))
+        return (f / (E * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(
+            -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_double))
 
     # Gaussian fitting function including disorder for double fit
 
@@ -3233,155 +3131,195 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
-            -(Ect - (sig**2 / (2*self.k * self.T_double)) + l + (sig**2 / (2*self.k * self.T_double)) - e) ** 2 / (4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
+            -(Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (
+                        sig ** 2 / (2 * self.k * self.T_double)) - e) ** 2 / (
+                        4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
 
     # -----------------------------------------------------------------------------------------------------------
 
     # Simultaneous Double Peak Fit
 
-    # Function to compile fits for simultaneous double peak fitting
+    # Function to perform simultaneous double peak fitting once
 
-    def pre_sim_fit(self):
-        print('Got to the right function!')
+    def sim_double_fit_single(self):
+        """
+        Function to perform simultaneous double peak fitting once
+        :return: None
+        """
+        # Import relevant parameters
 
-        number = int(self.ui.test_number.value())
+        if self.ui.disorder_Sim.isChecked():
+            include_disorder=True
+        else:
+            include_disorder=False
+
         eqe = self.data_sim
         self.T_sim = self.ui.Temperature_Sim.value()
 
-        x = linspace(min(eqe['Energy']), 1.9, 50)
+        bound_dict = self.load_sim_dict()
 
-        p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5]
+        # Compile EQE data
+        energy_fit, eqe_fit = compile_Data(energy=eqe['Energy'],
+                                           y=eqe['EQE'],
+                                           startE=bound_dict['start_fit'],
+                                           stopE=bound_dict['stop_fit']
+                                           )
+        # Set plot range
+        x_plot = linspace(bound_dict['start_plot'], bound_dict['stop_plot'], 50)
 
-        gmodel = Model(self.gaussian_double_sim)
+        if include_disorder:
+            # NOTE: Adjust this to change initial guesses
+            p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5, 0.1]
 
-        gmodel.set_param_hint('ECT', min=0, max=1.5)
-        gmodel.set_param_hint('lCT', min=0, max=0.4)
-        gmodel.set_param_hint('fCT', min=0., max=0.01)
-        gmodel.set_param_hint('Eopt', min=0, max=1.75)
-        gmodel.set_param_hint('lopt', min=0, max=0.5)
-        gmodel.set_param_hint('fopt', min=0, max=0.4)
+            best_vals, covar, y_fit, r_squared = fit_model_double(function=self.gaussian_disorder_double_sim,
+                                                                  energy_fit=energy_fit,
+                                                                  eqe_fit=eqe_fit,
+                                                                  bound_dict=bound_dict,
+                                                                  p0=p0,
+                                                                  include_disorder=include_disorder,
+                                                                  print_report=False
+                                                                  )
+            y_CT = [calculate_gaussian_disorder_absorption(i,
+                                                           f=best_vals[0],
+                                                           l=best_vals[1],
+                                                           E=best_vals[2],
+                                                           sig=best_vals[6],
+                                                           T=self.T_sim
+                                                           ) for i in x_plot]
+            y_sum = [self.gaussian_disorder_double_sim(i,
+                                                       fCT=best_vals[0],
+                                                       lCT=best_vals[1],
+                                                       ECT=best_vals[2],
+                                                       fopt=best_vals[3],
+                                                       lopt=best_vals[4],
+                                                       Eopt=best_vals[5],
+                                                       sig=best_vals[6]
+                                                       ) for i in x_plot]
+        else:
+            # NOTE: Adjust this to change initial guesses
+            p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5]
 
-        result = gmodel.fit(list(eqe['EQE'][-number:].values),
-                            x=list(eqe['Energy'][-number:].values),
-                            fCT=p0[0],
-                            lCT=p0[1],
-                            ECT=p0[2],
-                            fopt=p0[3],
-                            lopt=p0[4],
-                            Eopt=p0[5])
+            best_vals, covar, y_fit, r_squared = fit_model_double(function=self.gaussian_double_sim,
+                                                                  energy_fit=energy_fit,
+                                                                  eqe_fit=eqe_fit,
+                                                                  bound_dict=bound_dict,
+                                                                  p0=p0,
+                                                                  include_disorder=include_disorder,
+                                                                  print_report=False
+                                                                  )
+            y_CT = [calculate_gaussian_absorption(i,
+                                                  f=best_vals[0],
+                                                  l=best_vals[1],
+                                                  E=best_vals[2],
+                                                  T=self.T_sim
+                                                  ) for i in x_plot]
+            y_sum = [self.gaussian_double_sim(i,
+                                              fCT=best_vals[0],
+                                              lCT=best_vals[1],
+                                              ECT=best_vals[2],
+                                              fopt=best_vals[3],
+                                              lopt=best_vals[4],
+                                              Eopt=best_vals[5]
+                                              ) for i in x_plot]
 
-
-
-        print(result.fit_report())
-
-        fCT = float(result.params['fCT'].value)
-        lCT = float(result.params['lCT'].value)
-        ECT = float(result.params['ECT'].value)
-        fopt = float(result.params['fopt'].value)
-        lopt = float(result.params['lopt'].value)
-        Eopt = float(result.params['Eopt'].value)
-
-        y_new = gmodel.eval(x=x, fCT=fCT, lCT=lCT, ECT=ECT, fopt=fopt, lopt=lopt, Eopt=Eopt)
-
-        y_CT = [calculate_gaussian_absorption(i,
-                                              f=fCT,
-                                              l=lCT,
-                                              E=ECT,
-                                              T = self.T_sim
-                                              ) for i in x]
         y_opt = [calculate_gaussian_absorption(i,
-                                              f=fopt,
-                                              l=lopt,
-                                              E=Eopt,
-                                              T = self.T_sim
-                                              ) for i in x]
+                                               f=best_vals[3],
+                                               l=best_vals[4],
+                                               E=best_vals[5],
+                                               T=self.T_sim
+                                               ) for i in x_plot]
 
-        # best_vals, covar = curve_fit(self.gaussian_double_sim,
-        #                              list(eqe['Energy'][-number:].values),
-        #                              list(eqe['EQE'][-number:].values),
-        #                              p0=[0.001, 0.15, 1.30, 0.01, 0.150, 1.5],
-        #                              bounds=([0.0001, 0.01, 1.3, 0.01, 0.01, 1.45],
-        #                                      [0.01, 0.4, 1.55, 0.2, 0.5, 1.75]))
-        #
-        # print(best_vals)
+        print('-' * 35)
+        print('R_Squared : ', format(r_squared, '.6f'))
+        print('-' * 35)
+        print('f_Opt (eV**2) : ', format(best_vals[3], '.6f'), '+/-', format(math.sqrt(covar[3, 3]), '.6f'))
+        print('l_Opt (eV) : ', format(best_vals[4], '.6f'), '+/-', format(math.sqrt(covar[4, 4]), '.6f'))
+        print('E_Opt (eV) : ', format(best_vals[5], '.6f'), '+/-', format(math.sqrt(covar[5, 5]), '.6f'))
+        print('-' * 35)
+        print('f_CT (eV**2) : ', format(best_vals[0], '.6f'), '+/-', format(math.sqrt(covar[0, 0]), '.6f'))
+        print('l_CT (eV) : ', format(best_vals[1], '.6f'), '+/-', format(math.sqrt(covar[1, 1]), '.6f'))
+        print('E_CT (eV) : ', format(best_vals[2], '.6f'), '+/-', format(math.sqrt(covar[2, 2]), '.6f'))
 
-        # y_new = [self.gaussian_double_sim(i,
-        #                          fCT=best_vals[0],
-        #                          lCT=best_vals[1],
-        #                          ECT=best_vals[2],
-        #                          fopt=best_vals[3],
-        #                          lopt=best_vals[4],
-        #                          Eopt=best_vals[5]) for i in x]
-        #
-        # y_CT = [calculate_gaussian_absorption(i,
-        #                                       f=best_vals[0],
-        #                                       l=best_vals[1],
-        #                                       E=best_vals[2],
-        #                                       T = self.T_sim
-        #                                       ) for i in x]
-        # y_opt = [calculate_gaussian_absorption(i,
-        #                                       f=best_vals[3],
-        #                                       l=best_vals[4],
-        #                                       E=best_vals[5],
-        #                                       T = self.T_sim
-        #                                       ) for i in x]
+        if include_disorder:
+            print('Sigma (eV) : ', format(best_vals[6], '.6f'), '+/-', format(math.sqrt(covar[6, 6]), '.6f'))
 
-        plt.figure()
-        plt.plot(eqe['Energy'], eqe['EQE'])
-        plt.plot(x, y_new)
-        plt.plot(x, y_CT)
-        plt.plot(x, y_opt)
-        plt.show()
+        # print('Temperature [T] (K) : ', T)
+        # print('-' * 80)
 
-    def pre_sim_fit_test(self):
+        label = pick_EQE_Label(self.ui.textBox_simFit_label, self.ui.textBox_simFit)
+
+        axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
+
+        axDouble_1.plot(eqe['Energy'],
+                        eqe['EQE'],
+                        linewidth=2,
+                        linestyle='-',
+                        label=label,
+                        color='black'
+                        )
+        axDouble_1.plot(x_plot,
+                        y_opt,
+                        linewidth=2,
+                        linestyle='dotted',
+                        label='Optical Peak Fit'
+                        )
+        axDouble_1.plot(x_plot,
+                        y_CT,
+                        linewidth=2,
+                        linestyle='--',
+                        label='CT State Fit'
+                        )
+        axDouble_1.plot(x_plot,
+                        y_sum,
+                        linewidth=2,
+                        linestyle='dashdot',
+                        label='Total Fit'
+                        )
+        axDouble_1.legend()
+
+        axDouble_2.plot(eqe['Energy'],
+                        eqe['EQE'],
+                        linewidth=2,
+                        linestyle='-',
+                        label=label,
+                        color='black'
+                        )
+        axDouble_2.plot(x_plot,
+                        y_opt,
+                        linewidth=2,
+                        linestyle='--',
+                        label='Optical Peak Fit'
+                        )
+        axDouble_2.plot(x_plot,
+                        y_CT,
+                        linewidth=2, linestyle='--',
+                        label='CT State Fit'
+                        )
+        axDouble_2.plot(x_plot,
+                        y_sum,
+                        linewidth=2,
+                        linestyle='dashdot',
+                        label='Total Fit'
+                        )
+        axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
+        axDouble_2.legend()
+
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    # Function to perform simultaneous double peak fitting multiple times
+
+    def sim_double_fit(self):
         """
-        Wrapper function to perform simultaneous double peak fitting
+        Function to perform simultaneous double peak fitting multiple times to find best fit
         :return: None
         """
-
         # Import relevant parameters
-        # Bounds
 
-        start_Eopt = self.ui.startBound_Eopt.value()
-        stop_Eopt = self.ui.stopBound_Eopt.value()
-        start_fopt = self.ui.startBound_fopt.value()
-        stop_fopt = self.ui.stopBound_fopt.value()
-        start_lopt = self.ui.startBound_lopt.value()
-        stop_lopt = self.ui.stopBound_lopt.value()
+        eqe = self.data_sim
+        self.T_sim = self.ui.Temperature_Sim.value()
 
-        start_ECT = self.ui.startBound_ECT.value()
-        stop_ECT = self.ui.stopBound_ECT.value()
-        start_fCT = self.ui.startBound_fCT.value()
-        stop_fCT = self.ui.stopBound_fCT.value()
-        start_lCT = self.ui.startBound_lCT.value()
-        stop_lCT = self.ui.stopBound_lCT.value()
-
-        start_sig = self.ui.startBound_sig.value()
-        stop_sig = self.ui.stopBound_sig.value()
-
-        startPlot = self.ui.startPlot_Sim.value()
-        stopPlot = self.ui.stopPlot_Sim.value()
-
-        kwargs = {
-                  'start_Eopt': start_Eopt,
-                  'stop_Eopt': stop_Eopt,
-                  'start_fopt': start_fopt,
-                  'stop_fopt': stop_fopt,
-                  'start_lopt': start_lopt,
-                  'stop_lopt': stop_lopt,
-                  'start_ECT': start_ECT,
-                  'stop_ECT': stop_ECT,
-                  'start_fCT': start_fCT,
-                  'stop_fCT': stop_fCT,
-                  'start_lCT': start_lCT,
-                  'stop_lCT': stop_lCT,
-                  'start_sig': start_sig,
-                  'stop_sig': stop_sig,
-                  'startPlot': startPlot,
-                  'stopPlot': stopPlot
-                  }
-
-        increase_factor = 1.4
+        bound_dict = self.load_sim_dict()
 
         if self.ui.disorder_Sim.isChecked():
             include_disorder = True
@@ -3390,52 +3328,46 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.ui.bias_SimFit.isChecked():
             self.bias_sim = True
-            self.tolerance_sim = float(self.ui.tolerance_Sim.value())/100
+            self.tolerance_sim = float(self.ui.tolerance_Sim.value()) / 100
             self.logger.info('Constraining fit below EQE data.')
         else:
             self.bias_sim = False
             self.logger.info('Not constraining fit.')
 
-        eqe = self.data_sim
-        self.T_sim = self.ui.Temperature_Sim.value()
-
-        startStart_Sim = float(self.ui.startStart_Sim.value())
-        startStop_Sim = float(self.ui.startStop_Sim.value())
-
-        stopStart_Sim = float(self.ui.stopStart_Sim.value())
-        stopStop_Sim = float(self.ui.stopStop_Sim.value())
-
-        startGuess_Opt = float(self.ui.guessStartOpt_Sim.value())
-        stopGuess_Opt = float(self.ui.guessStopOpt_Sim.value())
-
-        startGuess_CT = float(self.ui.guessStartCT_Sim.value())
-        stopGuess_CT = float(self.ui.guessStopCT_Sim.value())
-
-        startGuess_sig = float(self.ui.guessStartSig_Sim.value())
-        stopGuess_sig = float(self.ui.guessStopSig_Sim.value())
+        # # Create selection of initial guesses
+        # # NOTE: Change this to adjust initial guesses
+        # startGuess_Opt = 1.4
+        # stopGuess_Opt = 1.8
+        # startGuess_CT = 1.2
+        # stopGuess_CT = 1.5
+        # startGuess_sig = 0.01
+        # stopGuess_sig = 0.2
 
         # Check that all start and stop energies are valid
-
-        start_ok = StartStop_is_valid(startStart_Sim, startStop_Sim)
-        stop_ok = StartStop_is_valid(stopStart_Sim, stopStop_Sim)
-
-        guessOpt_ok = StartStop_is_valid(startGuess_Opt, stopGuess_Opt)
-        guessCT_ok = StartStop_is_valid(startGuess_CT, stopGuess_CT)
-        guessSig_ok = StartStop_is_valid(startGuess_sig, stopGuess_sig)
+        start_ok = StartStop_is_valid(bound_dict['start_start'], bound_dict['start_stop'])
+        stop_ok = StartStop_is_valid(bound_dict['stop_start'], bound_dict['stop_stop'])
 
         # Compile all start / stop energies for CT fit
+        if start_ok and stop_ok:
 
-        if start_ok and stop_ok and guessOpt_ok and guessCT_ok and guessSig_ok:
+            startRange = np.round(np.arange(bound_dict['start_start'],
+                                            bound_dict['start_stop'] + 0.005,
+                                            0.01), 3).tolist()
+            stopRange = np.round(np.arange(bound_dict['stop_start'],
+                                           bound_dict['stop_stop'] + 0.005,
+                                           0.01), 3).tolist()
 
-            startRange = np.round(np.arange(startStart_Sim, startStop_Sim + 0.005, 0.01), 3).tolist()
-            stopRange = np.round(np.arange(stopStart_Sim, stopStop_Sim + 0.005, 0.01), 3).tolist()
-
-            guessRange_Opt = np.round(np.arange(startGuess_Opt, stopGuess_Opt + 0.1, 0.05), 2).tolist()
-            guessRange_CT = np.round(np.arange(startGuess_CT, stopGuess_CT + 0.1, 0.05), 2).tolist()
-            guessRange_sig = np.round(np.arange(startGuess_sig, stopGuess_sig + 0.1, 0.05), 2).tolist()
+            # guessRange_Opt = np.round(np.arange(startGuess_Opt,
+            #                                     stopGuess_Opt + 0.05,
+            #                                     0.1), 2).tolist()  # Reduced step size from 0.05 to 0.1
+            # guessRange_CT = np.round(np.arange(startGuess_CT,
+            #                                    stopGuess_CT + 0.05,
+            #                                    0.1), 2).tolist()
+            # guessRange_sig = np.round(np.arange(startGuess_sig,
+            #                                     stopGuess_sig + 0.1,
+            #                                     0.2), 2).tolist()  # Reduced step size from 0.05 to 0.2
 
             # Compile a dataFrame with all combinations of start / stop values for the optical and CT fit
-
             self.logger.info('Compiling Fit Ranges ...')
 
             df = pd.DataFrame()
@@ -3462,7 +3394,7 @@ class MainWindow(QtWidgets.QMainWindow):
             R2_Opt_list = []
             R2_CT_list = []
             R2_sum_list = []
-            R2_comp_list = []
+            R2_average_list = []
 
             Opt_Fit_list = []
             CT_Fit_list = []
@@ -3472,137 +3404,111 @@ class MainWindow(QtWidgets.QMainWindow):
 
             df_results = pd.DataFrame()
 
-            summary = defaultdict(list) # Test
-            f_data = interp1d(eqe['Energy'], eqe['EQE']) # Test
-
             for x in tqdm(range(len(df))):
-
                 if df['Start'][x] < df['Stop'][x]:
-
-            #         # Test
-            #         x_data = np.arange(df['Start'][x], df['Stop'][x], 0.001)
-            #         y_data = f_data(x_data)
-            #         try:
-            #             best_vals, covar = curve_fit(self.gaussian_double,
-            #                                          x_data,
-            #                                          y_data,
-            #                                          p0=[0.001, 0.1, 1.4, 0.01, 0.150, 1.5],
-            #                                          bounds=([0.00001, 0.01, 1.2, 0.00001, 0.01, 1.4], [0.05, 0.5, 1.6, 0.1, 0.5, 1.8]))
-            #
-            #             x_fit = np.arange(1.31, 2, 0.001)
-            #             y_data_r = f_data(x_fit)
-            #             y_fit = [self.gaussian_double(x, fCT=best_vals[0], lCT=best_vals[1], ECT=best_vals[2],
-            #                                      fopt=best_vals[3], lopt=best_vals[4], Eopt=best_vals[5]) for x
-            #                      in x_fit]
-            #             y_opt = [self.gaussian_single(i, best_vals[3], best_vals[4], best_vals[5]) for i in x_fit]
-            #             y_ct = [self.gaussian_single(i, best_vals[0], best_vals[1], best_vals[2]) for i in x_fit]
-            #
-            #             r_squared_sum = R_squared(y_data_r, y_fit, bias=True, tolerance=0.1)
-            #             r_squared_opt = R_squared(y_data_r, y_opt, bias=True, tolerance=0.1)
-            #             r_squared_ct = R_squared(y_data_r, y_ct, bias=True, tolerance=0.1)
-            #
-            #             summary['Start'].append(df['Start'][x])
-            #             summary['Stop'].append(df['Stop'][x])
-            #             summary['Best_vals'].append(best_vals)
-            #             summary['Covar'].append(np.sqrt(np.diag(covar)))
-            #             summary['R2_sum'].append(r_squared_sum)
-            #             summary['R2_opt'].append(r_squared_opt)
-            #             summary['R2_ct'].append(r_squared_ct)
-            #             summary['R2'].append((r_squared_ct + r_squared_opt + r_squared_sum) / 3)
-            #
-            #         except Exception as e:
-            #             print(e)
-            #
-            # df_results = pd.DataFrame(summary)
-            #
-            # index_1 = df_results['R2_sum'].idxmax()
-            # index_2 = df_results['R2_opt'].idxmax()
-            # index_3 = df_results['R2_ct'].idxmax()
-            # index_4 = df_results['R2'].idxmax()
-            # print(df_results.loc[index_1])
-            # print(df_results.loc[index_2])
-            # print(df_results.loc[index_3])
-            # print(df_results.loc[index_4])
+                    wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, df['Start'][x], df['Stop'][x], 1)
 
                     if include_disorder:
-                        best_vals, r_squared = guess_fit_sim(eqe=eqe,
-                                                             startE=df['Start'][x],
-                                                             stopE=df['Stop'][x],
-                                                             function=self.gaussian_disorder_double_sim,
-                                                             guessRange_CT=guessRange_CT, # Possibly remove?
-                                                             guessRange_Opt=guessRange_Opt, # Possibly remove?
-                                                             guessRange_sig=guessRange_sig, # Possibly remove?
-                                                             bounds = None, ### TODO: Change
-                                                             include_disorder=True
-                                                             )
-                        best_CT = [
-                            best_vals[0],
-                            best_vals[1],
-                            best_vals[2],
-                            best_vals[6],
-                        ]
-                        best_Opt = [
-                            best_vals[3],
-                            best_vals[4],
-                            best_vals[5]
-                        ]
-                    else:
-                        best_vals, r_squared = guess_fit_sim(eqe=eqe,
-                                                             startE=df['Start'][x],
-                                                             stopE=df['Stop'][x],
-                                                             function=self.gaussian_double_sim,
-                                                             guessRange_CT=guessRange_CT, # Possibly remove?
-                                                             guessRange_Opt=guessRange_Opt, # Possibly remove?
-                                                             guessRange_sig=guessRange_sig, # Possibly remove?
-                                                             include_disorder=False,
-                                                             **kwargs
-                                                             )
-                        best_CT = [
-                            best_vals[0],
-                            best_vals[1],
-                            best_vals[2]
-                        ]
-                        best_Opt = [
-                            best_vals[3],
-                            best_vals[4],
-                            best_vals[5]
-                        ]
+                        # NOTE: Adjust this to change initial guesses
+                        # CAVEAT: I tried the guess_fit function to test other guesses but didn't achieve great results
+                        p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5, 0.1]
 
-                    if sum(best_vals)!=0: # Check that the fit was successful
+                        try:
+                            best_vals, covar, y_fit, r_squared = fit_model_double(function=self.gaussian_disorder_double_sim,
+                                                                                  energy_fit=energy_fit,
+                                                                                  eqe_fit=eqe_fit,
+                                                                                  bound_dict=bound_dict,
+                                                                                  p0=p0,
+                                                                                  include_disorder=include_disorder,
+                                                                                  print_report=False
+                                                                                  )
+
+                            best_CT = [
+                                best_vals[0],
+                                best_vals[1],
+                                best_vals[2],
+                                best_vals[6],
+                            ]
+                            best_Opt = [
+                                best_vals[3],
+                                best_vals[4],
+                                best_vals[5]
+                            ]
+                        except:
+                            best_vals = [0, 0, 0, 0, 0, 0, 0]
+                    else:
+                        # NOTE: Adjust this to change initial guesses
+                        # CAVEAT: I tried the guess_fit function to test other guesses but didn't achieve great results
+                        p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5]
+
+                        try:
+                            best_vals, covar, y_fit, r_squared = fit_model_double(function=self.gaussian_double_sim,
+                                                                                  energy_fit=energy_fit,
+                                                                                  eqe_fit=eqe_fit,
+                                                                                  bound_dict=bound_dict,
+                                                                                  p0=p0,
+                                                                                  include_disorder=include_disorder,
+                                                                                  print_report=False
+                                                                                  )
+
+                            # # Old Code to test guess_fit function
+                            # best_vals, r_squared = guess_fit(eqe=eqe,
+                            #                                  startE=df['Start'][x],
+                            #                                  stopE=df['Stop'][x],
+                            #                                  function=self.gaussian_double_sim,
+                            #                                  guessRange=guessRange_CT,
+                            #                                  guessRange_opt=guessRange_Opt,
+                            #                                  bound_dict=bound_dict,
+                            #                                  simultaneous_double=True,
+                            #                                  )
+
+                            best_CT = [
+                                best_vals[0],
+                                best_vals[1],
+                                best_vals[2]
+                            ]
+                            best_Opt = [
+                                best_vals[3],
+                                best_vals[4],
+                                best_vals[5]
+                            ]
+                        except:
+                            best_vals = [0, 0, 0, 0, 0, 0]
+
+                    if sum(best_vals) != 0:  # Check that the fit was successful
                         # Calculate combined fit here
-                        # TODO: Change this to calculate combined fit function
-                        parameter_list = calculate_combined_fit_sim(stopE=df['Stop'][x],
+                        parameter_dict = calculate_combined_fit(eqe=eqe,
+                                                                stopE=df['Stop'][x],
                                                                 best_vals_Opt=best_Opt,
                                                                 best_vals_CT=best_CT,
-                                                                eqe=eqe,
                                                                 T=self.T_sim,
-                                                                range=increase_factor,
                                                                 bias=self.bias_sim,
                                                                 tolerance=self.tolerance_sim,
                                                                 include_disorder=include_disorder)
-
 
                         start_list.append(df['Start'][x])
                         stop_list.append(df['Stop'][x])
                         best_vals_CT.append(best_CT)
                         best_vals_Opt.append(best_Opt)
-                        R2_sum_list.append(parameter_list[0])
-                        combined_Fit_list.append(parameter_list[1])
-                        Opt_Fit_list.append(parameter_list[2])
-                        CT_Fit_list.append(parameter_list[3])
-                        Energy_list.append(parameter_list[4])
-                        EQE_list.append(parameter_list[5])
-                        R2_Opt_list.append(parameter_list[6])
-                        R2_CT_list.append(parameter_list[7])
-                        R2_comp_list.append(parameter_list[8])
-                    else: # If sum was unsuccessful, skip and move on
+
+                        R2_sum_list.append(parameter_dict['R2_Combined'])
+                        R2_Opt_list.append(parameter_dict['R2_Opt'])
+                        R2_CT_list.append(parameter_dict['R2_CT'])
+                        R2_average_list.append(parameter_dict['R2_Average'])
+
+                        combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                        Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                        CT_Fit_list.append(parameter_dict['CT_Fit'])
+                        Energy_list.append(parameter_dict['Energy'])
+                        EQE_list.append(parameter_dict['EQE'])
+
+                    else:  # If sum was unsuccessful, skip and move on
                         pass
 
                 else:
                     pass
 
-            if len(best_vals_Opt) == len(best_vals_CT) and len(
-                    best_vals_Opt) != 0:  # Check that the lists are the same length and not empty
+            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt) != 0:
 
                 df_results['Start'] = start_list
                 df_results['Stop'] = stop_list
@@ -3618,291 +3524,104 @@ class MainWindow(QtWidgets.QMainWindow):
                 df_results['CT_Fit'] = CT_Fit_list
                 df_results['Energy'] = Energy_list
                 df_results['EQE'] = EQE_list
-                df_results['Comp_R2'] = R2_comp_list
+                df_results['Comp_R2'] = R2_average_list
 
                 # Find best fit
 
                 self.logger.info('Determining Best Fit ...')
                 self.logger.info('Fit Results: ')
                 print("")
-                for x in np.arange(1, 3, 1):
+
+                label = pick_EQE_Label(self.ui.textBox_simFit_label, self.ui.textBox_simFit)
+
+                for x in np.arange(1, 5, 1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
-                    df_results = self.find_best_sim_fit(df_both=df_results, eqe=eqe, T=self.T_sim, n_fit=x,
-                                                    include_disorder=include_disorder)
+                    df_results = find_best_fit(df_both=df_results,
+                                               eqe=eqe,
+                                               T=self.T_sim,
+                                               label=label,
+                                               n_fit=x,
+                                               include_disorder=include_disorder,
+                                               simultaneous_double=True
+                                               )
 
                 print('-' * 80)
                 print("")
 
     # -----------------------------------------------------------------------------------------------------------
 
-    # Function to determine the best fit for simultaneous double peak fitting
+    # Function to load dictionary of fit bounds
 
-    def find_best_sim_fit(self, df_both, eqe, T, n_fit = 0, include_disorder = False):
+    def load_sim_dict(self):
         """
-        Function to find best fit for simultaneous double peak fitting
-        :param df_both: dataFrame with final fit results [dataFrame]
-        :param eqe: original EQE data [dataFrame]
-        :param T: Temperature [float]
-        :param n_fit: fit number [int]
-        :param include_disorder: boolean of whether to include disorder [bool]
-        :return: df_copy: copy of df_both [dataFrame]
+        Function to load dictionary of fit bounds from GUI paramaters
+        :return: bound_dict: Dictionary of boundary values [dict]
         """
 
-        if len(df_both) != 0:
+        start_fit = self.ui.startFit_Sim.value()
+        stop_fit = self.ui.stopFit_Sim.value()
+        start_plot = self.ui.startPlot_Sim.value()
+        stop_plot = self.ui.stopPlot_Sim.value()
 
-            index_1 = df_both['Comp_R2'].idxmax()
-            index_2 = df_both['R2_Opt'].idxmax()
-            index_3 = df_both['R2_CT'].idxmax()
-            index_4 = df_both['Total_R2'].idxmax()
-            print('Comp ', df_both.loc[index_1])
-            print('Opt ', df_both.loc[index_2])
-            print('CT ', df_both.loc[index_3])
-            print('Total ', df_both.loc[index_4])
+        start_start = self.ui.startStart_Sim.value()
+        start_stop = self.ui.startStop_Sim.value()
+        stop_start = self.ui.stopStart_Sim.value()
+        stop_stop = self.ui.stopStop_Sim.value()
 
-            # Determine best fit
-            max_index = df_both['Total_R2'].idxmax()
+        start_Eopt = self.ui.startBound_Eopt.value()
+        stop_Eopt = self.ui.stopBound_Eopt.value()
+        start_fopt = self.ui.startBound_fopt.value()
+        stop_fopt = self.ui.stopBound_fopt.value()
+        start_lopt = self.ui.startBound_lopt.value()
+        stop_lopt = self.ui.stopBound_lopt.value()
 
-            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe,
-                                                                         min(eqe['Energy']),
-                                                                         df_both['Stop'][max_index] * 1.2,
-                                                                         1
-                                                                         )
+        start_ECT = self.ui.startBound_ECT.value()
+        stop_ECT = self.ui.stopBound_ECT.value()
+        start_fCT = self.ui.startBound_fCT.value()
+        stop_fCT = self.ui.stopBound_fCT.value()
+        start_lCT = self.ui.startBound_lCT.value()
+        stop_lCT = self.ui.stopBound_lCT.value()
 
-            Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
-                                                                   df_both['Fit_Opt'][max_index][0],
-                                                                   df_both['Fit_Opt'][max_index][1],
-                                                                   df_both['Fit_Opt'][max_index][2],
-                                                                   T
-                                                                   )
-                                     for e in energy_plot])
+        start_sig = self.ui.startBound_sig.value()
+        stop_sig = self.ui.stopBound_sig.value()
 
-            #print('-' * 80)
-            # print(('Combined Best Fit:').format(n_fit))
-            # print('-' * 25)
+        bound_dict = {
+            'start_Eopt': start_Eopt,
+            'stop_Eopt': stop_Eopt,
+            'start_fopt': start_fopt,
+            'stop_fopt': stop_fopt,
+            'start_lopt': start_lopt,
+            'stop_lopt': stop_lopt,
+            'start_ECT': start_ECT,
+            'stop_ECT': stop_ECT,
+            'start_fCT': start_fCT,
+            'stop_fCT': stop_fCT,
+            'start_lCT': start_lCT,
+            'stop_lCT': stop_lCT,
+            'start_sig': start_sig,
+            'stop_sig': stop_sig,
+            'start_fit': start_fit,
+            'stop_fit': stop_fit,
+            'start_plot': start_plot,
+            'stop_plot': stop_plot,
+            'start_start': start_start,
+            'start_stop': start_stop,
+            'stop_start': stop_start,
+            'stop_stop': stop_stop
+        }
 
-            print('-' * 35)
-
-            print('R_Squared : ', format(df_both['Total_R2'][max_index], '.6f'))
-
-            print('-' * 35)
-
-            print('Opt Fit Range (eV): ', df_both['Start'][max_index], ' - ', df_both['Stop'][max_index])
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'))
-            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'))
-            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'))
-
-            print('-' * 35)
-
-            print('CT Fit Range (eV): ', df_both['Start'][max_index], ' - ', df_both['Stop'][max_index])
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'))
-            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'))
-            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'))
-
-            if include_disorder:
-                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'))
-
-            # print('Temperature [T] (K) : ', T)
-            # print('-' * 80)
-
-            axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
-
-            axDouble_1.plot(eqe['Energy'],
-                            eqe['EQE'],
-                            linewidth=2,
-                            linestyle='-',
-                            label=self.ui.textBox_dF1.toPlainText(),
-                            color='black'
-                            )
-            axDouble_1.plot(energy_plot,
-                            Opt_fit_plot,
-                            linewidth=2,
-                            linestyle='dotted',
-                            label='Optical Peak Fit'
-                            )
-            axDouble_1.plot(df_both['Energy'][max_index],
-                            df_both['CT_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='--',
-                            label='CT State Fit'
-                            )
-            axDouble_1.plot(df_both['Energy'][max_index],
-                            df_both['Total_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='dashdot',
-                            label='Total Fit'
-                            )
-            axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
-            axDouble_1.set_title(('Range No. {}').format(n_fit))
-            axDouble_1.legend()
-
-            axDouble_2.plot(eqe['Energy'],
-                            eqe['EQE'],
-                            linewidth=2,
-                            linestyle='-',
-                            label=self.ui.textBox_dF1.toPlainText(),
-                            color='black'
-                            )
-            axDouble_2.plot(energy_plot,
-                            Opt_fit_plot,
-                            linewidth=2,
-                            linestyle='--',
-                            label='Optical Peak Fit'
-                            )
-            axDouble_2.plot(df_both['Energy'][max_index],
-                            df_both['CT_Fit'][max_index],
-                            linewidth=2, linestyle='--',
-                            label='CT State Fit'
-                            )
-            axDouble_2.plot(df_both['Energy'][max_index],
-                            df_both['Total_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='dashdot',
-                            label='Total Fit'
-                            )
-            axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
-            axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
-            # axDouble_2.set_title(('Range No. {}').format(n_fit))
-            axDouble_2.legend()
-
-            df_copy = df_both.copy()
-            df_copy['Total_R2'][max_index] = 0
-
-            #### TEST WITH DIFFERENT R2
-            # Determine best fit
-            max_index = df_both['Comp_R2'].idxmax()
-
-            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
-                                                                         df_both['Stop'][max_index] * 1.2, 1)
-
-            Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
-                                                                   df_both['Fit_Opt'][max_index][0],
-                                                                   df_both['Fit_Opt'][max_index][1],
-                                                                   df_both['Fit_Opt'][max_index][2],
-                                                                   T)
-                                     for e in energy_plot])
-
-            #print('-' * 80)
-            # print(('Combined Best Fit:').format(n_fit))
-            # print('-' * 25)
-
-            print('-' * 35)
-
-            print('R_Squared (Comp): ', format(df_both['Comp_R2'][max_index], '.6f'))
-
-            print('-' * 35)
-
-            print('Opt Fit Range (eV): ', df_both['Start'][max_index], ' - ', df_both['Stop'][max_index])
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'))
-            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'))
-            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'))
-
-            print('-' * 35)
-
-            print('CT Fit Range (eV): ', df_both['Start'][max_index], ' - ', df_both['Stop'][max_index])
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'))
-            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'))
-            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'))
-
-            if include_disorder:
-                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'))
-
-            # print('Temperature [T] (K) : ', T)
-            # print('-' * 80)
-
-            axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
-
-            axDouble_1.plot(eqe['Energy'],
-                            eqe['EQE'],
-                            linewidth=2,
-                            linestyle='-',
-                            label=self.ui.textBox_dF1.toPlainText(),
-                            color='black'
-                            )
-            axDouble_1.plot(energy_plot,
-                            Opt_fit_plot,
-                            linewidth=2,
-                            linestyle='dotted',
-                            label='Optical Peak Fit'
-                            )
-            axDouble_1.plot(df_both['Energy'][max_index],
-                            df_both['CT_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='--',
-                            label='CT State Fit'
-                            )
-            axDouble_1.plot(df_both['Energy'][max_index],
-                            df_both['Total_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='dashdot',
-                            label='Total Fit'
-                            )
-            axDouble_1.set_xlim(min(eqe['Energy']), 2.5)
-            axDouble_1.set_title(('Range No. {}').format(n_fit))
-            axDouble_1.legend()
-
-            axDouble_2.plot(eqe['Energy'],
-                            eqe['EQE'],
-                            linewidth=2,
-                            linestyle='-',
-                            label=self.ui.textBox_dF1.toPlainText(),
-                            color='black'
-                            )
-            axDouble_2.plot(energy_plot,
-                            Opt_fit_plot,
-                            linewidth=2,
-                            linestyle='--',
-                            label='Optical Peak Fit'
-                            )
-            axDouble_2.plot(df_both['Energy'][max_index],
-                            df_both['CT_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='--',
-                            label='CT State Fit'
-                            )
-            axDouble_2.plot(df_both['Energy'][max_index],
-                            df_both['Total_Fit'][max_index],
-                            linewidth=2,
-                            linestyle='dashdot',
-                            label='Total Fit'
-                            )
-            axDouble_2.set_xlim(min(eqe['Energy']), 2.5)
-            axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
-            # axDouble_2.set_title(('Range No. {}').format(n_fit))
-            axDouble_2.legend()
-
-            df_copy = df_both.copy()
-            df_copy['Comp_R2'][max_index] = 0
-
-
-            return df_copy
+        return bound_dict
 
 
     # # -----------------------------------------------------------------------------------------------------------
-    # ############### TEST ###############
-    # TODO: Rename this function, we already have a function called gaussian_double
-    # def gaussian_double(self, E, fCT, lCT, ECT, fopt, lopt, Eopt):
-    #
-    #     val_CT = (fCT / (math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(
-    #         -(ECT + lCT - E) ** 2 / (4 * lCT * self.k * self.T_sim))
-    #     val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
-    #         -(Eopt + lopt - E) ** 2 / (4 * lopt * self.k * self.T_sim))
-    #
-    #     return val_CT + val_opt
-    #
-    # def gaussian_single(self, E, f, l, Efit):
-    #
-    #     return (f / (math.sqrt(4 * math.pi * l * self.T_sim * self.k))) * exp(
-    #         -(Efit + l - E) ** 2 / (4 * l * self.k * self.T_sim))
-
-    ############### TEST ###############
 
     # Gaussian fitting function for simultaneous double peak fit
 
-    def gaussian_double_sim(self, x, fCT, lCT, ECT, fopt, lopt, Eopt):
+    def gaussian_double_sim(self, E, fCT, lCT, ECT, fopt, lopt, Eopt):
         """
         Standard gaussian function to perform simultaneous double peak fitting
-        :param x: List of energy values [list]
+        :param E: List of energy values [list]
         :param fCT: CT Oscillator strength [float]
         :param lCT: CT Reorganization Energy [float]
         :param ECT: CT Peak Energy [float]
@@ -3912,19 +3631,19 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: EQE value [list]
         """
 
-        val_CT = (fCT / (math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(
-            -(ECT + lCT - x) ** 2 / (4 * lCT * self.k * self.T_sim))
-        val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
-            -(Eopt + lopt - x) ** 2 / (4 * lopt * self.k * self.T_sim))
+        val_CT = (fCT / (E * math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(
+            -(ECT + lCT - E) ** 2 / (4 * lCT * self.k * self.T_sim))
+        val_opt = (fopt / (E * math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
+            -(Eopt + lopt - E) ** 2 / (4 * lopt * self.k * self.T_sim))
 
         return val_CT + val_opt
 
     # Gaussian fitting function for simultaneous double peak fit including disorder
 
-    def gaussian_disorder_double_sim(self, x, fCT, lCT, ECT, fopt, lopt, Eopt, sig):
+    def gaussian_disorder_double_sim(self, E, fCT, lCT, ECT, fopt, lopt, Eopt, sig):
         """
         Standard gaussian function including disorder to perform simultaneous double peak fitting
-        :param x: List of energy values [list]
+        :param E: List of energy values [list]
         :param fCT: CT Oscillator strength [float]
         :param lCT: CT Reorganization Energy [float]
         :param ECT: CT Peak Energy [float]
@@ -3934,10 +3653,10 @@ class MainWindow(QtWidgets.QMainWindow):
         :return: EQE value [list]
         """
 
-        val_CT = (fCT / (math.sqrt(2 * math.pi * (2 * lCT * self.T_sim * self.k + sig**2)))) * exp(
-            -(ECT + lCT - x) ** 2 / (4 * lCT * self.k * self.T_sim + 2 * sig**2))
-        val_opt = (fopt / (math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
-            -(Eopt + lopt - x) ** 2 / (4 * lopt * self.k * self.T_sim))
+        val_CT = (fCT / (E * math.sqrt(2 * math.pi * (2 * lCT * self.T_sim * self.k + sig ** 2)))) * exp(
+            -(ECT + lCT - E) ** 2 / (4 * lCT * self.k * self.T_sim + 2 * sig ** 2))
+        val_opt = (fopt / (E * math.sqrt(4 * math.pi * lopt * self.T_sim * self.k))) * exp(
+            -(Eopt + lopt - E) ** 2 / (4 * lopt * self.k * self.T_sim))
 
         return val_CT + val_opt
 
@@ -3986,6 +3705,7 @@ class MainWindow(QtWidgets.QMainWindow):
         plt.close()
         self.axEL_1, self.axEL_2 = set_up_EL_plot()
 
+
 # -----------------------------------------------------------------------------------------------------------
 
 
@@ -3994,6 +3714,7 @@ def main():
     monoUI = MainWindow()
     monoUI.show()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     try:

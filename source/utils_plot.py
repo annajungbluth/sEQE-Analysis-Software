@@ -71,6 +71,9 @@ def pick_EQE_Label(label_Box, filename_Box):
     label = label_Box.toPlainText()
     filename = filename_Box.toPlainText()
 
+    print(label)
+    print(filename)
+
     if len(label) != 0:
         return label
     else:  # Don't need to check that filename exists, "pick_label" function is called after checking "EQE_is_valid"

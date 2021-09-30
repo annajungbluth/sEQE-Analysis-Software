@@ -54,30 +54,31 @@ def calculate_gaussian_disorder_absorption(x, f, l, E, sig, T):
 
 # Function to calculate parameters for double peak fit
 
-def calculate_combined_fit(stopE,
+def calculate_combined_fit(eqe,
+                           stopE,
                            best_vals_Opt,
                            best_vals_CT,
-                           R2_Opt,
-                           R2_CT,
-                           eqe, T,
+                           T,
+                           R2_Opt=None,
+                           R2_CT=None,
+                           include_disorder=False,
                            bias=False,
                            tolerance=0,
-                           range=1.05,
-                           include_disorder=False
+                           range=1.05
                            ):
     """
     Function to compile combined fit for S1 and CT peak absorption after single peak fits
+    :param eqe: EQE values [list]
     :param stopE: stop energy of fit [float]
     :param best_vals_Opt: Opt fit values [list]
     :param best_vals_CT: CT fit values [list]
+    :param T: Temperature [float]
     :param R2_Opt: Opt fit R2 [float]
     :param R2_CT: CT fit R2 [float]
-    :param eqe: EQE values [list]
-    :param T: Temperature [float]
+    :param include_disorder: boolean value to see whether to include disorder [bool]
     :param bias: bias fit below data [boolean]
     :param tolerance: tolerance accepted of fit above data [float]
     :param range: defines upper bound of R2 calculation [float]
-    :param include_disorder: boolean value to see whether to include disorder [bool]
     :return: result_dict : dictionary with fit results [dict]
                 Dict keys:
                 R2_Combined: R2 of sum of CT and Opt fit [float]
@@ -100,13 +101,18 @@ def calculate_combined_fit(stopE,
     # energy_data = np.arange(min(eqe['Energy']), stopE * range, 1)
     # eqe_data = int_func(energy_data)
 
-    if R2_Opt != 0 and R2_CT != 0:
+    if sum(best_vals_Opt) != 0 and sum(best_vals_CT) != 0:
         Opt_fit = np.array([calculate_gaussian_absorption(e,
                                                           best_vals_Opt[0],
                                                           best_vals_Opt[1],
                                                           best_vals_Opt[2],
                                                           T)
                             for e in energy_data])
+        if R2_Opt is None:
+            R2_Opt = R_squared(y_data=eqe_data,
+                               yfit_data=Opt_fit.tolist(),
+                               bias=bias,
+                               tolerance=tolerance)
         if include_disorder:
             CT_fit = np.array([calculate_gaussian_disorder_absorption(e,
                                                                       best_vals_CT[0],
@@ -123,11 +129,16 @@ def calculate_combined_fit(stopE,
                                                              best_vals_CT[2],
                                                              T)
                                for e in energy_data])
+            if R2_CT is None:
+                R2_CT = R_squared(y_data=eqe_data,
+                                  yfit_data=CT_fit.tolist(),
+                                  bias=bias,
+                                  tolerance=tolerance)
 
         if len(Opt_fit) == len(CT_fit):
             combined_Fit = Opt_fit + CT_fit
-            combined_R_Squared = R_squared(eqe_data,
-                                           combined_Fit.tolist(),
+            combined_R_Squared = R_squared(y_data=eqe_data,
+                                           yfit_data=combined_Fit.tolist(),
                                            bias=bias,
                                            tolerance=tolerance)
 
