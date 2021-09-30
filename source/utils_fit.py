@@ -109,7 +109,7 @@ def guess_fit(eqe,
               guessRange_sig=None,
               include_disorder=False,
               simultaneous_double=False,
-              bound_dict=None
+              bounds=None
               ):
     """
     Function to loop through guesses and determine best fit using lmfit-based fit_model function
@@ -125,7 +125,8 @@ def guess_fit(eqe,
     :param guessRange_sig: sigma initial values [list]
     :param include_disorder: boolean value specifying whether to include disorder [bool]
     :param simultaneous_double: boolean value specifying whether to perform a simultaneous double fit [bool]
-    :param bound_dict: dictionary of boundary values [dict]
+    :param bounds: dictionary of boundary values for simultaneous double fitting [dict]
+                   Escalates the use of lmfit.Model for single peak fitting.
     :return: best_vals: fit result [list]
              r_squared: R2 of fit [float]
     """
@@ -140,6 +141,7 @@ def guess_fit(eqe,
 
         p0_list = []
 
+        # NOTE: Change this to modify initial guesses
         # Relevant for single and simultaneous double fitting
         f_guess = 0.001
         l_guess = 0.1
@@ -194,7 +196,7 @@ def guess_fit(eqe,
                     best_vals, covar, y_fit, r_squared = fit_model_double(function=function,
                                                                           energy_fit=energy_fit,
                                                                           eqe_fit=eqe_fit,
-                                                                          bound_dict=bound_dict,
+                                                                          bound_dict=bounds,
                                                                           p0=p0,
                                                                           include_disorder=include_disorder
                                                                           )
@@ -213,18 +215,28 @@ def guess_fit(eqe,
         else:
             for p0_guess in p0_list:
                 try:
-                    # TODO: Fix errors and replace with fit_model?
-                    best_vals, covar, y_fit, r_squared = fit_function(function=function,
-                                                                      energy_fit=energy_fit,
-                                                                      eqe_fit=eqe_fit,
-                                                                      p0=p0,
-                                                                      include_disorder=include_disorder
-                                                                      )
+                    # TODO: Replace permanently with fit_model?
+                    # TODO: fit_function works better with single peak Marcus fitting
+                    if bounds is None:
+                        best_vals, covar, y_fit, r_squared = fit_function(function=function,
+                                                                          energy_fit=energy_fit,
+                                                                          eqe_fit=eqe_fit,
+                                                                          p0=p0,
+                                                                          include_disorder=include_disorder
+                                                                          )
+                    else:
+                        best_vals, covar, y_fit, r_squared = fit_model(function=function,
+                                                                       energy_fit=energy_fit,
+                                                                       eqe_fit=eqe_fit,
+                                                                       p0=p0,
+                                                                       include_disorder=include_disorder
+                                                                       )
                     if r_squared > 0:
                         return best_vals, r_squared
                     else:
                         raise ArithmeticError
-                except:
+                except Exception as e:
+                    print(e)
                     p0 = p0_guess
                     if p0_guess == p0_list[-1]:
                         if include_disorder:
@@ -309,7 +321,7 @@ def calculate_guess_fit(x,
                         guessRange_sig=None,
                         include_disorder=False,
                         simultaneous_double=False,
-                        bound_dict=None
+                        bounds=None
                         ):
     """
     Mappable wrapper function to loop through initial guesses
@@ -321,7 +333,7 @@ def calculate_guess_fit(x,
     :param guessRange: primary peak (either CT or Opt) initial values [list]
     :param guessRange_opt: Opt peak initial values [list]
     :param guessRange_sig: sigma initial values [list]
-    :param bound_dict: dictionary of boundary values [dict]
+    :param bounds: dictionary of boundary values [dict]
     :param include_disorder: boolean value specifying whether to include disorder [bool]
     :param simultaneous_double: boolean value specifying whether to perform a simultaneous double fit [bool]
     :return: best_vals: fit result [list]
@@ -339,7 +351,7 @@ def calculate_guess_fit(x,
                                      guessRange_sig=guessRange_sig,
                                      include_disorder=include_disorder,
                                      simultaneous_double=simultaneous_double,
-                                     bound_dict=bound_dict
+                                     bounds=bounds
                                      )
 
     return [best_vals, r_squared, df['Start'][x], df['Stop'][x]]
@@ -485,15 +497,20 @@ def fit_model(function,
              y_fit: calculated EQE values of the fit [list]
              r_squared: R^2 of the fit [float]
     """
+    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
+        if include_disorder:
+            p0 = [1, 1, 1, 1]
+        else:
+            p0 = [1, 1, 1]
 
     gmodel = Model(function)
 
-    gmodel.set_param_hint('Ect', min=0.8, max=1.6)
-    gmodel.set_param_hint('l', min=0.01, max=0.3)
-    gmodel.set_param_hint('f', min=0.001, max=0.4)
+    gmodel.set_param_hint('Ect', min=0, max=1.6)
+    gmodel.set_param_hint('l', min=0, max=0.4)
+    gmodel.set_param_hint('f', min=0, max=0.4)
 
     if include_disorder:
-        gmodel.set_param_hint('sig', min=0.002, max=0.2)
+        gmodel.set_param_hint('sig', min=0, max=0.2)
 
         result = gmodel.fit(eqe_fit,
                             f=p0[0],
@@ -584,6 +601,11 @@ def fit_model_double(function,
              y_fit: calculated EQE values of the fit [list]
              r_squared: R^2 of the fit [float]
     """
+    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
+        if include_disorder:
+            p0 = [1, 1, 1, 1, 1, 1, 1]
+        else:
+            p0 = [1, 1, 1, 1, 1, 1]
 
     gmodel = Model(function)
 

@@ -30,7 +30,8 @@ import sEQE_Analysis_template
 from source.add_subtract import subtract_Opt
 from source.compilation import compile_EQE, compile_EL, compile_Data
 from source.electroluminescence import bb_spectrum
-from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption, calculate_combined_fit
+from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption, \
+    calculate_combined_fit
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
@@ -304,6 +305,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Define Variables
 
+        # NOTE: Modify path if switching from Linux to another operating system
         self.data_dir = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')
 
         self.h = 6.626 * math.pow(10, -34)  # [m^2 kg/s]
@@ -1033,7 +1035,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :param label_Box: GUI text box with plot label [ui object]
         :param color_Box: GUI text box with plot color [ui object]
         :param file_no: Number of EQE file to plot [int]
-        :return: None
+        :return: True / False
         """
 
         include_Disorder = False
@@ -1096,9 +1098,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)  # Extract peak guess range
                 Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.01, 0.01)  # Extract sigma guess range
 
+                # Initialize parameters
                 p0 = None
 
-                # TODO: This code could be replaced by using the "guess_fit" function
                 if include_Disorder:
                     best_guess_df = pd.DataFrame()
                     p0_list = []
@@ -1111,11 +1113,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     # ECT_list = []
                     # sig_list = []
 
+                    # TODO: Replace with "guess_fit" function?
                     for ECT in ECT_guess:
                         for sig in Sig_guess:
-                            y_gaussian = []
                             try:
-                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2,
+                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
                                                                                energy_fit,
                                                                                eqe_fit,
                                                                                p0=p0,
@@ -1134,11 +1136,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
                                 else:
                                     raise Exception('Wrong fit determined.')
-                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
+                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)] # NOTE: Modify guesses if fit unsuccessful
                             except:
-                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
-                            # except Exception as e:
-                            #     print(e)
+                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)] # NOTE: Modify guesses if fit unsuccessful
 
                     best_guess_df['p0'] = p0_list
                     best_guess_df['R2'] = R2_list
@@ -1155,36 +1155,39 @@ class MainWindow(QtWidgets.QMainWindow):
                     best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
 
                     # Determine fit values of fit with best intial guess
-                    best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2,
+                    best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
                                                                    energy_fit,
                                                                    eqe_fit,
                                                                    p0=best_p0,
                                                                    include_disorder=True
                                                                    )
-                    for value in x_gaussian:
-                        y_gaussian.append(self.gaussian_disorder_new(value,
-                                                                     best_vals[0],
-                                                                     best_vals[1],
-                                                                     best_vals[2],
-                                                                     best_vals[3]
-                                                                     ))
+                    y_gaussian = [self.gaussian_disorder(value,
+                                                         best_vals[0],
+                                                         best_vals[1],
+                                                         best_vals[2],
+                                                         best_vals[3]
+                                                         ) for value in x_gaussian]
                     fit_ok = True  # Accept fit
 
                 else:  # if disorder is not to be included
+                    # TODO: Replace with "guess_fit" function?
                     for ECT in ECT_guess:
                         y_gaussian = []
                         try:
                             best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit, eqe_fit, p0=p0)
                             if r_squared > 0:
-                                for value in x_gaussian:
-                                    y_gaussian.append(self.gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
+                                y_gaussian = [self.gaussian(value,
+                                                                best_vals[0],
+                                                                best_vals[1],
+                                                                best_vals[2]
+                                                                ) for value in x_gaussian]
                                 fit_ok = True
                                 best_p0 = p0
                                 break  # This breaks the for loop
                             else:
                                 raise Exception('Wrong fit determined.')
                         except:
-                            p0 = [0.001, 0.1, round(ECT, 3)]
+                            p0 = [0.001, 0.1, round(ECT, 3)] # NOTE: Modify guesses if fit unsuccessful
 
                 if fit_ok:
 
@@ -1260,8 +1263,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         fit_file = pd.DataFrame()
                         fit_file['Energy'] = x_gaussian
                         fit_file['Signal'] = y_gaussian
-
-                        # TODO: to add as header rather than columns
                         fit_file['Temperature'] = self.T_CT
                         fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
                         fit_file['Reorganization Energy (eV)'] = best_vals[1]
@@ -1281,14 +1282,12 @@ class MainWindow(QtWidgets.QMainWindow):
                             fit_file.to_csv(save_fit_filename)  # Save data to csv
                             self.logger.info('Saving fit data to: %s' % str(save_fit_file))
                             os.chdir(self.data_dir)  # Change the directory back
-
                     return True
 
                 else:
                     self.logger.info('Optimal parameters not found.')
                     return False
 
-            # TODO: MLJ Theory Fitting + new disorder implementation!
             # Fit EQE (MLJ Theory)
             elif file_no == 'x1':
 
@@ -1296,113 +1295,140 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.hbarw_i = self.ui.vib_Energy.value()
                 self.T_x = self.ui.extra_Temperature.value()
 
-                guessStart = self.ui.extraGuessStart.value()
-                guessStop = self.ui.extraGuessStop.value()
+                guessStart_CT = self.ui.extraGuessStart.value()
+                guessStop_CT = self.ui.extraGuessStop.value()
+                guessStart_sig = self.ui.extraGuessStart_sig.value()
+                guessStop_sig = self.ui.extraGuessStop_sig.value()
 
                 if self.ui.extra_static_Disorder.isChecked():
                     include_Disorder = True
-                    self.sig_x = self.ui.extra_Disorder.value()
 
                 # Attempt peak fit:
                 x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)
 
-                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+                ECT_guess = np.arange(guessStart_CT, guessStop_CT + 0.1, 0.05)
+                sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.1, 0.2)
+
+                # Initialize parameters
+                r_squared = 0
                 p0 = None
+                bounds = None  # First try without bounds and initial guesses
 
-                for ECT in ECT_guess:
-                    y_MLJ_theory = []
-                    try:
-                        if include_Disorder:
-                            best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
-                                                                              energy_fit, eqe_fit, p0=p0)
-                            for value in x_MLJ_theory:
-                                y_MLJ_theory.append(
-                                    self.MLJ_gaussian_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
-                        else:
-                            best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian, energy_fit,
-                                                                              eqe_fit, p0=p0)
-                            for value in x_MLJ_theory:
-                                y_MLJ_theory.append(self.MLJ_gaussian(value, best_vals[0], best_vals[1], best_vals[2]))
+                if include_Disorder:
+                    # TODO: Replace with "guess_fit" function?
+                    for ECT in ECT_guess:
+                        for sig in sig_guess:
+                            try:
+                                best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
+                                                                                  energy_fit,
+                                                                                  eqe_fit,
+                                                                                  p0=p0,
+                                                                                  bounds=bounds,
+                                                                                  include_disorder=include_Disorder
+                                                                                  )
+                                y_MLJ_theory = [self.MLJ_gaussian_disorder(value,
+                                                                           best_vals[0],
+                                                                           best_vals[1],
+                                                                           best_vals[2],
+                                                                           best_vals[3]
+                                                                           ) for value in x_MLJ_theory]
+                            except:
+                                p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]  # NOTE: Modify guesses if fit unsuccessful
+                                bounds = (0, [0.1, 0.4, 1.6, 0.2])  # NOTE: Modify bounds if fit unsuccessful
+                else:
+                    # TODO: Replace with "guess_fit" function?
+                    for ECT in ECT_guess:
+                        try:
+                            best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
+                                                                              energy_fit,
+                                                                              eqe_fit,
+                                                                              p0=p0
+                                                                              )
+                            y_MLJ_theory = [self.MLJ_gaussian(value,
+                                                              best_vals[0],
+                                                              best_vals[1],
+                                                              best_vals[2]
+                                                              ) for value in x_MLJ_theory]
+                        except:
+                            p0 = [0.001, 0.1, round(ECT, 3)]  # NOTE: Modify guesses if fit unsuccessful
 
-                        if r_squared > 0:
-                            self.logger.info('Fit Results: ')
-                            print("")
-                            print('Initial Guess (eV) : ', p0)
+                if r_squared > 0:
+                    self.logger.info('Fit Results: ')
+                    print("")
+                    print('Initial Guess (eV) : ', p0)
 
-                            print('-' * 80)
-                            print('Temperature [T] (K) : ', self.T_x)
-                            print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-',
-                                  format(math.sqrt(covar[0, 0]), '.6f'))
-                            print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-',
-                                  format(math.sqrt(covar[1, 1]), '.6f'))
-                            print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',
-                                  format(math.sqrt(covar[2, 2]), '.6f'))
-                            print('R_Squared : ', format(r_squared, '.6f'))
-                            print('-' * 80)
-                            print("")
+                    print('-' * 80)
+                    print('Temperature [T] (K) : ', self.T_x)
+                    print('Oscillator Strength [f] (eV**2) : ', format(best_vals[0], '.6f'), '+/-',
+                          format(math.sqrt(covar[0, 0]), '.6f'))
+                    print('Reorganization Energy [l] (eV) : ', format(best_vals[1], '.6f'), '+/-',
+                          format(math.sqrt(covar[1, 1]), '.6f'))
+                    print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',
+                          format(math.sqrt(covar[2, 2]), '.6f'))
+                    if include_Disorder:
+                        print('Disorder (eV) : ', format(best_vals[3], '.6f'),
+                              '+/-', format(math.sqrt(covar[3, 3]), '.6f'))
 
-                            # Plot EQE data and CT fit
-                            self.axFit_1.plot(energy,
-                                              eqe,
-                                              linewidth=3,
-                                              label=label_,
-                                              color=color_
-                                              )
-                            plt.draw()
-                            if include_Disorder:
-                                self.axFit_1.plot(x_MLJ_theory,
-                                                  y_MLJ_theory,
-                                                  linewidth=2,
-                                                  label='MLJ Fit + Disorder',
-                                                  color='#000000',
-                                                  linestyle='--'
-                                                  )
-                            else:
-                                self.axFit_1.plot(x_MLJ_theory,
-                                                  y_MLJ_theory,
-                                                  linewidth=2,
-                                                  label='MLJ Fit',
-                                                  color='#000000',
-                                                  linestyle='--'
-                                                  )
-                            plt.draw()
+                    print('R_Squared : ', format(r_squared, '.6f'))
+                    print('-' * 80)
+                    print("")
 
-                            self.axFit_2.semilogy(energy,
-                                                  eqe,
-                                                  linewidth=3,
-                                                  label=label_,
-                                                  color=color_
-                                                  )
-                            plt.draw()
-                            if include_Disorder:
-                                self.axFit_2.plot(x_MLJ_theory,
-                                                  y_MLJ_theory,
-                                                  linewidth=2,
-                                                  label='MLJ Fit + Disorder',
-                                                  color='#000000',
-                                                  linestyle='--'
-                                                  )
-                            else:
-                                self.axFit_2.plot(x_MLJ_theory,
-                                                  y_MLJ_theory,
-                                                  linewidth=2,
-                                                  label='MLJ Fit',
-                                                  color='#000000',
-                                                  linestyle='--'
-                                                  )
-                            plt.draw()
+                    # Plot EQE data and CT fit
+                    self.axFit_1.plot(energy,
+                                      eqe,
+                                      linewidth=3,
+                                      label=label_,
+                                      color=color_
+                                      )
+                    plt.draw()
+                    if include_Disorder:
+                        self.axFit_1.plot(x_MLJ_theory,
+                                          y_MLJ_theory,
+                                          linewidth=2,
+                                          label='MLJ Fit + Disorder',
+                                          color='#000000',
+                                          linestyle='--'
+                                          )
+                    else:
+                        self.axFit_1.plot(x_MLJ_theory,
+                                          y_MLJ_theory,
+                                          linewidth=2,
+                                          label='MLJ Fit',
+                                          color='#000000',
+                                          linestyle='--'
+                                          )
+                    plt.draw()
 
-                            return True
+                    self.axFit_2.semilogy(energy,
+                                          eqe,
+                                          linewidth=3,
+                                          label=label_,
+                                          color=color_
+                                          )
+                    plt.draw()
+                    if include_Disorder:
+                        self.axFit_2.plot(x_MLJ_theory,
+                                          y_MLJ_theory,
+                                          linewidth=2,
+                                          label='MLJ Fit + Disorder',
+                                          color='#000000',
+                                          linestyle='--'
+                                          )
+                    else:
+                        self.axFit_2.plot(x_MLJ_theory,
+                                          y_MLJ_theory,
+                                          linewidth=2,
+                                          label='MLJ Fit',
+                                          color='#000000',
+                                          linestyle='--'
+                                          )
+                    plt.draw()
 
-                        else:
-                            raise Exception('Wrong fit determined.')
+                    return True
 
-                    except:
-                        p0 = [0.001, 0.1, round(ECT, 3)]
-
-                self.logger.info('Optimal parameters not found.')
-                return False
-
+                else:
+                    self.logger.info('Optimal parameters not found.')
+                    return False
         else:
             return False
 
@@ -1515,25 +1541,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         p0 = None
 
-                        # TODO: This code could be replaced by using "guess_fit" function
                         if include_Disorder:
                             best_guess_df = pd.DataFrame()
                             p0_list = []
                             R2_list = []
+                            # TODO: Replace with "guess_fit" function?
                             for ECT in ECT_guess:
                                 for sig in Sig_guess:
                                     try:
-                                        best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2,
-                                                                                       energy_fit, eqe_fit, p0=p0,
-                                                                                       include_disorder=True)
+                                        best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
+                                                                                       energy_fit,
+                                                                                       eqe_fit,
+                                                                                       p0=p0,
+                                                                                       include_disorder=True
+                                                                                       )
                                         if r_squared > 0:
                                             p0_list.append(p0)
                                             R2_list.append(r_squared)
                                         else:
                                             raise Exception('Wrong fit determined.')
-                                        p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
+                                        p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]  # NOTE: Modify guesses if fit unsuccessful
                                     except:
-                                        p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]
+                                        p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]  # NOTE: Modify guesses if fit unsuccessful
 
                             if len(p0_list) != 0:  # Check that the list is not empty
 
@@ -1545,9 +1574,12 @@ class MainWindow(QtWidgets.QMainWindow):
                                     0]  # Find best guess
 
                                 # Determine fit values of fit with best intial guess
-                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder_new_2, energy_fit,
-                                                                               eqe_fit, p0=best_p0,
-                                                                               include_disorder=True)
+                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
+                                                                               energy_fit,
+                                                                               eqe_fit,
+                                                                               p0=best_p0,
+                                                                               include_disorder=True
+                                                                               )
                                 start_df.append(start)
                                 stop_df.append(stop)
                                 f_df.append(best_vals[0])
@@ -1560,6 +1592,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             #     self.logger.info('Optimal parameters not found.')
 
                         else:  # If disorder is not to be included
+                            # TODO: Replace with "guess_fit" function?
                             for ECT in ECT_guess:
                                 try:
                                     best_vals, covar, y_fit, r_squared = fit_function(self.gaussian, energy_fit,
@@ -1575,11 +1608,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
                                     break
                                 except:
-                                    p0 = [0.001, 0.1, round(ECT, 3)]
+                                    p0 = [0.001, 0.1, round(ECT, 3)] # NOTE: Modify guesses if fit unsuccessful
                                     if ECT == ECT_guess[-1]:
                                         self.logger.info('Optimal parameters not found.')
 
-                    # TODO: MLJ Theory Fitting + new disorder implementation!
                     # Fit EQE (MLJ Theory)
                     elif file_no == 'x1':
 
@@ -1589,36 +1621,69 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         guessStart = self.ui.extraGuessStart.value()
                         guessStop = self.ui.extraGuessStop.value()
+                        guessStart_sig = self.ui.extraGuessStart_sig.value()
+                        guessStop_sig = self.ui.extraGuessStop_sig.value()
 
                         if self.ui.extra_static_Disorder.isChecked():
                             include_Disorder = True
-                            self.sig_x = self.ui.extra_Disorder.value()
 
                         # Attempt peak fit:
                         ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
-                        p0 = None
+                        sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.1, 0.2)
 
-                        for ECT in ECT_guess:
-                            try:
-                                if include_Disorder:
-                                    best_vals, covar, y_fit, r_squared = fit_function(
-                                        self.MLJ_gaussian_disorder, energy_fit, eqe_fit, p0=p0)
-                                else:
-                                    best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
-                                                                                      energy_fit, eqe_fit,
-                                                                                      p0=p0)
-                                if r_squared > 0:
-                                    start_df.append(start)
-                                    stop_df.append(stop)
-                                    f_df.append(best_vals[0])
-                                    l_df.append(best_vals[1])
-                                    Ect_df.append(best_vals[2])
-                                    R_df.append(r_squared)
+                        p0 = None
+                        bounds = None
+                        r_squared = 0
+
+                        if include_Disorder:
+                            # TODO: Replace with "guess_fit" function?
+                            for ECT in ECT_guess:
+                                for sig in sig_guess:
+                                    try:
+                                        best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
+                                                                                          energy_fit,
+                                                                                          eqe_fit,
+                                                                                          p0=p0,
+                                                                                          bounds=bounds,
+                                                                                          include_disorder=include_Disorder
+                                                                                          )
+                                        if r_squared > 0:
+                                            start_df.append(start)
+                                            stop_df.append(stop)
+                                            f_df.append(best_vals[0])
+                                            l_df.append(best_vals[1])
+                                            Ect_df.append(best_vals[2])
+                                            R_df.append(r_squared)
+                                            sig_df.append(best_vals[3])
+                                            break
+                                    except:
+                                        p0 = [0.001, 0.1, round(ECT, 3), round(sig, 3)]  # NOTE: Modify guesses if fit unsuccessful
+                                        bounds = (0, [0.1, 0.4, 1.6, 0.2])  # NOTE: Modify bounds if fit unsuccessful
+                                        if ECT == ECT_guess[-1]:
+                                            self.logger.info('Optimal parameters not found.')
+                                if r_squared > 0: # To break the second loop
                                     break
-                            except:
-                                p0 = [0.001, 0.1, ECT]
-                                if ECT == ECT_guess[-1]:
-                                    self.logger.info('Optimal parameters not found.')
+                        else:
+                            # TODO: Replace with "guess_fit" function?
+                            for ECT in ECT_guess:
+                                try:
+                                    best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
+                                                                                      energy_fit,
+                                                                                      eqe_fit,
+                                                                                      p0=p0
+                                                                                      )
+                                    if r_squared > 0:
+                                        start_df.append(start)
+                                        stop_df.append(stop)
+                                        f_df.append(best_vals[0])
+                                        l_df.append(best_vals[1])
+                                        Ect_df.append(best_vals[2])
+                                        R_df.append(r_squared)
+                                        break
+                                except:
+                                    p0 = [0.001, 0.1, round(ECT, 3)]  # NOTE: Modify guesses if fit unsuccessful
+                                    if ECT == ECT_guess[-1]:
+                                        self.logger.info('Optimal parameters not found.')
 
             if len(R_df) != 0:  # Check that there are results to plot
 
@@ -1694,8 +1759,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 print('-' * 80)
                 print("")
 
-                f_df = parameter_df.pivot('Stop', 'Start',
-                                          'f')  # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
+                f_df = parameter_df.pivot('Stop', 'Start', 'f')  # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
                 l_df = parameter_df.pivot('Stop', 'Start', 'l')
                 Ect_df = parameter_df.pivot('Stop', 'Start', 'Ect')
                 R_df = parameter_df.pivot('Stop', 'Start', 'R_Squared')
@@ -1792,20 +1856,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Gaussian function including disorder
 
-    # TODO: Fix functions
-    def gaussian_disorder(self, E, f, l, Ect):  # TODO: Old fit function to be removed
-        """
-        Standard gaussian function including disorder
-        :param E: List of energy values [list of floats]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Charge Transfer State Energy [float]
-        :return: EQE value [float]
-        """
-        return (f / (E * math.sqrt(4 * math.pi * l * self.T_CT * self.k + 2 * self.sig ** 2))) * exp(
-            -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_CT + 2 * self.sig ** 2))
+    # # Old function that I believe is incorrect
+    # def gaussian_disorder(self, E, f, l, Ect):
+    #     """
+    #     Standard gaussian function including disorder
+    #     :param E: List of energy values [list of floats]
+    #     :param f: Oscillator strength [float]
+    #     :param l: Reorganization Energy [float]
+    #     :param Ect: Charge Transfer State Energy [float]
+    #     :return: EQE value [float]
+    #     """
+    #     return (f / (E * math.sqrt(4 * math.pi * l * self.T_CT * self.k + 2 * self.sig ** 2))) * exp(
+    #         -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_CT + 2 * self.sig ** 2))
 
-    def gaussian_disorder_new(self, E, f, l, Ect, sig):
+    def gaussian_disorder(self, E, f, l, Ect, sig):
         """
         New gaussian function including disorder
         :param E: List of energy values [list of floats]
@@ -1818,20 +1882,6 @@ class MainWindow(QtWidgets.QMainWindow):
         return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
             -((Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (sig ** 2 / (2 * self.k * self.T_CT)) - E) ** 2 / (
                     4 * l * self.k * self.T_CT + 2 * sig ** 2)))
-
-    def gaussian_disorder_new_2(self, E, f, l, Ect, sig):
-        """
-        New gaussian function including disorder
-        :param E: List of energy values [list of floats]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Charge Transfer State Energy [float]
-        :param sig: Gaussian disorder [float]
-        :return: list of EQE values [list of floats]
-        """
-        return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
-            -(Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (sig ** 2 / (2 * self.k * self.T_CT)) - e) ** 2 / (
-                    4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -1857,21 +1907,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function including disorder
 
-    def MLJ_gaussian_disorder(self, E, f, l_o, Ect):  # Double check if this equation is correct
+    def MLJ_gaussian_disorder(self, E, f, l, Ect, sig):  # Double check if this equation is correct
         """
         MLJ function including disorder
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Low frequency reorganization energy
         :param Ect: Charge Transfer State Energy
         :return: EQE value
         """
         EQE = 0
         for n in range(0, 6):
-            EQE_n = (f / (E * math.sqrt(4 * math.pi * l_o * self.T_x * self.k + 2 * self.sig_x ** 2))) \
-                    * (math.exp(-self.S_i) * self.S_i ** n / math.factorial(n)) \
-                    * exp(-(Ect + l_o - E + n * self.hbarw_i) ** 2 \
-                          / (4 * l_o * self.k * self.T_x + 2 * self.sig_x ** 2))
+            EQE_n = (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_x * self.k + sig ** 2))) \
+                     * (math.exp(-self.S_i) * self.S_i ** n / math.factorial(n)) \
+                     * exp(-(Ect + l - E + n * self.hbarw_i) ** 2 \
+                           / (4 * l * self.k * self.T_x + 2 * sig ** 2)))
             EQE += EQE_n
         return EQE
 
@@ -2052,19 +2102,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.ui.Gaussian_EL_EQE.isChecked():  # Marcus Theory Fitting
 
                     if data_no == 0:  # EL Data
+                        # TODO: Fix formatting here!
                         if include_Disorder:  # Include Disorder in Fit
                             # y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
                             # y_fit_smooth = [x for x in y_fit_smooth]
                             # log_y_fit = [math.log(x) for x in y_fit]
                             # plot(self.axEL_1, self.axEL_2, energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
-                            best_vals, covar = curve_fit(self.gaussian_EL_disorder, energy_fit, y_fit,
-                                                         p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
+                            best_vals, covar = curve_fit(self.gaussian_EL_disorder,
+                                                         energy_fit,
+                                                         y_fit,
+                                                         p0=[0.001, 0.1, self.ui.EL_CT_State.value()]
+                                                         )
                             for value in x_gaussian:
                                 y_gaussian.append(
                                     self.gaussian_EL_disorder(value, best_vals[0], best_vals[1], best_vals[2]))
                         else:  # Without Disorder
-                            best_vals, covar = curve_fit(self.gaussian_EL, energy_fit, y_fit,
-                                                         p0=[0.001, 0.1, self.ui.EL_CT_State.value()])
+                            best_vals, covar = curve_fit(self.gaussian_EL,
+                                                         energy_fit,
+                                                         y_fit,
+                                                         p0=[0.001, 0.1, self.ui.EL_CT_State.value()]
+                                                         )
                             for value in x_gaussian:
                                 y_gaussian.append(self.gaussian_EL(value, best_vals[0], best_vals[1], best_vals[2]))
 
@@ -3132,8 +3189,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
             -(Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (
-                        sig ** 2 / (2 * self.k * self.T_double)) - e) ** 2 / (
-                        4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
+                    sig ** 2 / (2 * self.k * self.T_double)) - e) ** 2 / (
+                    4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -3149,9 +3206,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Import relevant parameters
 
         if self.ui.disorder_Sim.isChecked():
-            include_disorder=True
+            include_disorder = True
         else:
-            include_disorder=False
+            include_disorder = False
 
         eqe = self.data_sim
         self.T_sim = self.ui.Temperature_Sim.value()
@@ -3229,6 +3286,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                                T=self.T_sim
                                                ) for i in x_plot]
 
+        # TODO: Check that all prints have errors
         print('-' * 35)
         print('R_Squared : ', format(r_squared, '.6f'))
         print('-' * 35)
@@ -3303,7 +3361,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         )
         axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
         axDouble_2.legend()
-
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -3414,14 +3471,15 @@ class MainWindow(QtWidgets.QMainWindow):
                         p0 = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5, 0.1]
 
                         try:
-                            best_vals, covar, y_fit, r_squared = fit_model_double(function=self.gaussian_disorder_double_sim,
-                                                                                  energy_fit=energy_fit,
-                                                                                  eqe_fit=eqe_fit,
-                                                                                  bound_dict=bound_dict,
-                                                                                  p0=p0,
-                                                                                  include_disorder=include_disorder,
-                                                                                  print_report=False
-                                                                                  )
+                            best_vals, covar, y_fit, r_squared = fit_model_double(
+                                function=self.gaussian_disorder_double_sim,
+                                energy_fit=energy_fit,
+                                eqe_fit=eqe_fit,
+                                bound_dict=bound_dict,
+                                p0=p0,
+                                include_disorder=include_disorder,
+                                print_report=False
+                                )
 
                             best_CT = [
                                 best_vals[0],
@@ -3458,7 +3516,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             #                                  function=self.gaussian_double_sim,
                             #                                  guessRange=guessRange_CT,
                             #                                  guessRange_opt=guessRange_Opt,
-                            #                                  bound_dict=bound_dict,
+                            #                                  bounds=bound_dict,
                             #                                  simultaneous_double=True,
                             #                                  )
 
@@ -3612,7 +3670,6 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         return bound_dict
-
 
     # # -----------------------------------------------------------------------------------------------------------
 
