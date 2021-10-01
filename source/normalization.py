@@ -22,7 +22,6 @@ def normalize_EQE(eqe_df,
              log_EQE: list of normalized log EQE values [list]
     """
 
-    # Define empty lists
     Wavelength = []
     Energy = []
     EQE = []

@@ -15,6 +15,21 @@ from source.plot import set_up_plot
 
 # -----------------------------------------------------------------------------------------------------------
 
+# Define parameters for initial guesses
+# NOTE: Modify initial guesses if fit is unsuccessful
+# NOTE: Some of these parameters are repeated/hard coded in sEQE_Analysis.py
+
+# These values are used for single and simultaneous double fitting
+f_guess = 0.001
+l_guess = 0.1
+
+# These values are used for simultaneous double fitting
+fopt_guess = 0.01
+lopt_guess = 0.1
+
+
+# -----------------------------------------------------------------------------------------------------------
+
 # Function to perform curve fit
 
 def fit_function(function,
@@ -141,14 +156,6 @@ def guess_fit(eqe,
 
         p0_list = []
 
-        # NOTE: Change this to modify initial guesses
-        # Relevant for single and simultaneous double fitting
-        f_guess = 0.001
-        l_guess = 0.1
-        # Only relevant for simultaneous double fitting
-        fopt_guess = 0.01
-        lopt_guess = 0.1
-
         # Compile guesses
         if simultaneous_double:  # Simultaneous double fitting
             if include_disorder:  # Simultaneous double fitting including disorder
@@ -216,7 +223,7 @@ def guess_fit(eqe,
             for p0_guess in p0_list:
                 try:
                     # TODO: Replace permanently with fit_model?
-                    # TODO: fit_function works better with single peak Marcus fitting
+                    # NOTE: fit_function works better with single peak Marcus fitting
                     if bounds is None:
                         best_vals, covar, y_fit, r_squared = fit_function(function=function,
                                                                           energy_fit=energy_fit,
@@ -460,7 +467,8 @@ def map_fit(x,
                                                                eqe=eqe,
                                                                T=T,
                                                                bias=bias,
-                                                               tolerance=tolerance),
+                                                               tolerance=tolerance
+                                                               ),
                               range(len(df_CT))))
 
     combined_R2_list = list(map(lambda list_: sep_list(list_, 0), parameter_list))

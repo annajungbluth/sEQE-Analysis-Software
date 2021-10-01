@@ -8,10 +8,7 @@ from scipy.interpolate import interp1d
 
 # Function to interpolate values
 
-def interpolate(num,
-                x,
-                y
-                ):
+def interpolate(num, x, y):
     """
     :param num: value to interpolate at [float]
     :param x: x data [list or array]
