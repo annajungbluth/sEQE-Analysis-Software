@@ -129,11 +129,11 @@ def calculate_combined_fit(eqe,
                                                              best_vals_CT[2],
                                                              T)
                                for e in energy_data])
-            if R2_CT is None:
-                R2_CT = R_squared(y_data=eqe_data,
-                                  yfit_data=CT_fit.tolist(),
-                                  bias=bias,
-                                  tolerance=tolerance)
+        if R2_CT is None:
+            R2_CT = R_squared(y_data=eqe_data,
+                              yfit_data=CT_fit.tolist(),
+                              bias=bias,
+                              tolerance=tolerance)
 
         if len(Opt_fit) == len(CT_fit):
             combined_Fit = Opt_fit + CT_fit

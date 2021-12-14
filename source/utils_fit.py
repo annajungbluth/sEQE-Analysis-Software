@@ -232,6 +232,7 @@ def guess_fit(eqe,
                                                                           include_disorder=include_disorder
                                                                           )
                     else:
+                        print('Here: ', p0)
                         best_vals, covar, y_fit, r_squared = fit_model(function=function,
                                                                        energy_fit=energy_fit,
                                                                        eqe_fit=eqe_fit,
@@ -514,8 +515,8 @@ def fit_model(function,
     gmodel = Model(function)
 
     gmodel.set_param_hint('Ect', min=0, max=1.6)
-    gmodel.set_param_hint('l', min=0, max=0.4)
-    gmodel.set_param_hint('f', min=0, max=0.4)
+    gmodel.set_param_hint('l', min=0, max=0.6) # changed from 0.4
+    gmodel.set_param_hint('f', min=0, max=0.1) # changed from 0.4
 
     if include_disorder:
         gmodel.set_param_hint('sig', min=0, max=0.2)

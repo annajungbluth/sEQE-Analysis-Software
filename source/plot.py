@@ -119,28 +119,32 @@ def set_up_EQE_plot(number=None,
              ax_2: plt axis objects to plot EQE on log scale
     """
 
+    fontsize = 15
+    # fontsize = 17
     plt.ion()
 
     fig_1, ax_1 = plt.subplots()
 
     if number == 0:  # number determines whether the x-axis is in wavelength or energy
-        plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
+        plt.xlabel('Wavelength (nm)', fontsize=fontsize, fontweight='medium')
     elif number == 1:
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.xlabel('Energy (eV)', fontsize=fontsize, fontweight='medium')
     elif number is None:
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.xlabel('Energy (eV)', fontsize=fontsize, fontweight='medium')
 
     if norm_num == 0:  # norm_num determines whether the y-axis is "EQE" or "Normalized EQE"
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=fontsize, fontweight='medium')
     elif norm_num == 1:
-        plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
+        plt.ylabel('Normalized EQE', fontsize=fontsize, fontweight='medium')
     elif norm_num is None:
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=fontsize, fontweight='medium')
 
     plt.rcParams['figure.facecolor'] = 'xkcd:white'
     plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+    plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='major', length=8, width=2)
+    plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='minor', length=4, width=2)
+    # plt.tick_params(labelsize=fontsize-2, direction='in', axis='both', which='major', length=8, width=2)
+    # plt.tick_params(labelsize=fontsize-2, direction='in', axis='both', which='minor', length=4, width=2)
     plt.minorticks_on()
     plt.show()
 
@@ -148,23 +152,25 @@ def set_up_EQE_plot(number=None,
     ax_2.set_yscale('log')  # To generate log scale axis
 
     if number == 0:
-        plt.xlabel('Wavelength (nm)', fontsize=17, fontweight='medium')
+        plt.xlabel('Wavelength (nm)', fontsize=fontsize, fontweight='medium')
     elif number == 1:
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.xlabel('Energy (eV)', fontsize=fontsize, fontweight='medium')
     elif number is None:
-        plt.xlabel('Energy (eV)', fontsize=17, fontweight='medium')
+        plt.xlabel('Energy (eV)', fontsize=fontsize, fontweight='medium')
 
     if norm_num == 0:
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=fontsize, fontweight='medium')
     elif norm_num == 1:
-        plt.ylabel('Normalized EQE', fontsize=17, fontweight='medium')
+        plt.ylabel('Normalized EQE', fontsize=fontsize, fontweight='medium')
     elif norm_num is None:
-        plt.ylabel('EQE', fontsize=17, fontweight='medium')
+        plt.ylabel('EQE', fontsize=fontsize, fontweight='medium')
 
     plt.rcParams['figure.facecolor'] = 'xkcd:white'
     plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='major', length=8, width=2)
-    plt.tick_params(labelsize=15, direction='in', axis='both', which='minor', length=4, width=2)
+    plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='major', length=8, width=2)
+    plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='minor', length=4, width=2)
+    # plt.tick_params(labelsize=fontsize-2, direction='in', axis='both', which='major', length=8, width=2)
+    # plt.tick_params(labelsize=fontsize-2, direction='in', axis='both', which='minor', length=4, width=2)
     plt.minorticks_on()
     plt.show()
 

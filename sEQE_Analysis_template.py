@@ -4231,7 +4231,7 @@ class Ui_MainWindow(object):
         self.line_295.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_295.setObjectName("line_295")
         self.gridLayoutWidget_6 = QtWidgets.QWidget(self.tab_4)
-        self.gridLayoutWidget_6.setGeometry(QtCore.QRect(30, 40, 1126, 291))
+        self.gridLayoutWidget_6.setGeometry(QtCore.QRect(30, 40, 1111, 291))
         self.gridLayoutWidget_6.setObjectName("gridLayoutWidget_6")
         self.gridLayout_26 = QtWidgets.QGridLayout(self.gridLayoutWidget_6)
         self.gridLayout_26.setContentsMargins(0, 0, 0, 0)
