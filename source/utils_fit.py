@@ -21,11 +21,11 @@ from source.plot import set_up_plot
 
 # These values are used for single and simultaneous double fitting
 f_guess = 0.001
-l_guess = 0.1
+l_guess = 0.150
 
 # These values are used for simultaneous double fitting
 fopt_guess = 0.01
-lopt_guess = 0.1
+lopt_guess = 0.150
 
 
 # -----------------------------------------------------------------------------------------------------------
@@ -232,7 +232,6 @@ def guess_fit(eqe,
                                                                           include_disorder=include_disorder
                                                                           )
                     else:
-                        print('Here: ', p0)
                         best_vals, covar, y_fit, r_squared = fit_model(function=function,
                                                                        energy_fit=energy_fit,
                                                                        eqe_fit=eqe_fit,
@@ -716,7 +715,8 @@ def find_best_fit(df_both,
                   label,
                   n_fit=0,
                   include_disorder=False,
-                  simultaneous_double=False
+                  simultaneous_double=False,
+                  ext_factor=1.2
                   ):
     """
     Function to find best EQE fits
@@ -727,6 +727,7 @@ def find_best_fit(df_both,
     :param n_fit: fit number [int]
     :param include_disorder: boolean of whether to include disorder [bool]
     :param simultaneous_double: boolean value to specify whether double peaks were fit simultaneously [bool]
+    :param ext_factor: multiplication factor to extend data for R2 calculation [float]
     :return: df_copy: copy of df_both [dataFrame]
     """
 
@@ -739,7 +740,7 @@ def find_best_fit(df_both,
 
         if simultaneous_double: # Adjusts some of the print statements
             wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
-                                                                         df_both['Stop'][max_index] * 1.2, 1)
+                                                                         df_both['Stop'][max_index] * ext_factor, 1)
             Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
                                                                    df_both['Fit_Opt'][max_index][0],
                                                                    df_both['Fit_Opt'][max_index][1],
@@ -763,7 +764,7 @@ def find_best_fit(df_both,
 
         else:
             wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
-                                                                         df_both['Stop_Opt'][max_index] * 1.2, 1)
+                                                                         df_both['Stop_Opt'][max_index] * ext_factor, 1)
             Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
                                                                    df_both['Fit_Opt'][max_index][0],
                                                                    df_both['Fit_Opt'][max_index][1],

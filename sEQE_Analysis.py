@@ -325,7 +325,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # These values are used in standard/disorder, Marcus/MLJ, EQE/EL fitting functions
         # Make sure to understand where the parameters all change if they are adjusted here!
         self.f_guess = 0.001
-        self.l_guess = 0.1
+        self.l_guess = 0.150
 
         # These values are used for disorder Marcus / MLJ fitting functions
         # self.bounds_sig = ([0, 0, 0, 0], [0.1, 0.4, 1.6, 0.2])  # f, l, E, sig
@@ -333,8 +333,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # These values are used in the standard/disorder simultaneous double peak fitting
         # CAVEAT: I tried using the guess_fit function to test other guesses but didn't achieve great results
-        self.sim_guess = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5]  # fCT, lCT, ECT, fopt, lopt, Eopt
-        self.sim_guess_sig = [0.001, 0.15, 1.30, 0.01, 0.150, 1.5, 0.1]  # fCT, lCT, ECT, fopt, lopt, Eopt, sig
+        # CAVEAT: The other fit functions start with an peak energy guess of 1.2 eV instead of 1.3 eV
+        self.sim_guess = [0.001, 0.150, 1.30, 0.01, 0.150, 1.5]  # fCT, lCT, ECT, fopt, lopt, Eopt
+        self.sim_guess_sig = [0.001, 0.150, 1.30, 0.01, 0.150, 1.5, 0.1]  # fCT, lCT, ECT, fopt, lopt, Eopt, sig
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -1120,9 +1121,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 p0 = None
 
                 if include_Disorder:
-                    best_guess_df = pd.DataFrame()
-                    p0_list = []
-                    R2_list = []
+                    # best_guess_df = pd.DataFrame()
+                    # p0_list = []
+                    # R2_list = []
 
                     # ECT_guess_list = []
                     # sig_guess_list = []
