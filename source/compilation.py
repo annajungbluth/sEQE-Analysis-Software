@@ -12,7 +12,8 @@ logger = get_logger()
 def compile_EQE(eqe_df,
                 start,
                 stop,
-                number
+                number,
+                precision=8
                 ):
     """
     :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
@@ -21,6 +22,7 @@ def compile_EQE(eqe_df,
     :param number: number indicating wavelength or energy compilation [int]
                    number = 0 => compile wavelength
                    number = 1 => compile energy
+    :param precision: decimal point precision to compile data
     :return: Wavelength: list of wavelength values [list]
              Energy: list of energy values [list]
              EQE: list of compiled EQE values [list]
@@ -50,11 +52,10 @@ def compile_EQE(eqe_df,
 
     for y in range(len(eqe_df['Wavelength'])):  # Iterate through columns of EQE file
         if startNM <= eqe_df['Wavelength'][y] <= stopNM:  # Compile EQE if start <= wavelength <= stop, otherwise ignore
-            Wavelength.append(eqe_df['Wavelength'][y])
-            Energy.append(eqe_df['Energy'][y])
-            EQE.append(eqe_df['EQE'][y])  # * eqe_df['Energy'][y] - Eventually this might need to be added for fitting
-            log_EQE.append(eqe_df['Log_EQE'][y])
-            # (math.log10(eqe_df['EQE'][y] * eqe_df['Energy'][y]) - Eventually this might need to be added for fitting
+            Wavelength.append(round(eqe_df['Wavelength'][y], precision))
+            Energy.append(round(eqe_df['Energy'][y], precision))
+            EQE.append(round(eqe_df['EQE'][y], precision))  # * eqe_df['Energy'][y] - Eventually this might need to be added for fitting
+            log_EQE.append(round(eqe_df['Log_EQE'][y], precision))
 
     if len(Wavelength) == len(EQE) and len(Energy) == len(log_EQE):  # Check that the lengths are the same
         return Wavelength, Energy, EQE, log_EQE
@@ -70,7 +71,8 @@ def compile_EQE(eqe_df,
 def compile_EL(el_df,
                start,
                stop,
-               number
+               number,
+               precision=8
                ):
     """
     :param el_df: dataFrame of EL values
@@ -79,6 +81,7 @@ def compile_EL(el_df,
     :param number: number indicating wavelength or energy compilation [int]
                    number = 0 => compile wavelength
                    number = 1 => compile energy
+    :param precision: decimal point precision to compile data
     :return: Wavelength: list of compiled wavelength values [list]
              Energy: list of compiled energy values [list]
              EL: list of compiled EL values [list]
@@ -106,9 +109,9 @@ def compile_EL(el_df,
 
     for y in range(len(el_df['Wavelength'])):  # Iterate through columns of EL file
         if startNM <= el_df['Wavelength'][y] <= stopNM:  # Compile EL if start <= wavelength <= stop, otherwise ignore
-            Wavelength.append(el_df['Wavelength'][y])
-            Energy.append(el_df['Energy'][y])
-            EL.append(el_df['Signal'][y])
+            Wavelength.append(round(el_df['Wavelength'][y], precision))
+            Energy.append(round(el_df['Energy'][y], precision))
+            EL.append(round(el_df['Signal'][y], precision))
 
     if len(Wavelength) == len(EL) and len(Energy) == len(EL):  # Check that the lengths are the same
         return Wavelength, Energy, EL
@@ -124,13 +127,15 @@ def compile_EL(el_df,
 def compile_Data(energy,
                  y,
                  startE,
-                 stopE
+                 stopE,
+                 precision=8
                  ):
     """
     :param energy: list of energy values [list]
     :param y: list of y values [list]
     :param startE: start energy [float]
     :param stopE: stop energy [float]
+    :param precision: decimal point precision to compile data
     :return: Energy_comp: list of compiled energy values [list]
              y_comp: list of compiled y values [float]
     """
@@ -141,8 +146,8 @@ def compile_Data(energy,
 
     for x in range(len(energy)):
         if startE <= energy[x] <= stopE:  # Compile data only if start <= energy <= stop, otherwise ignore
-            Energy_comp.append(energy[x])
-            y_comp.append(y[x])
+            Energy_comp.append(round(energy[x], precision))
+            y_comp.append(round(y[x], precision))
 
     if len(Energy_comp) == len(y_comp):  # Check that the lengths are the same
         return Energy_comp, y_comp

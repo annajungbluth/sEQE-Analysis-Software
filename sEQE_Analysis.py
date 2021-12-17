@@ -337,6 +337,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sim_guess = [0.001, 0.150, 1.30, 0.01, 0.150, 1.5]  # fCT, lCT, ECT, fopt, lopt, Eopt
         self.sim_guess_sig = [0.001, 0.150, 1.30, 0.01, 0.150, 1.5, 0.1]  # fCT, lCT, ECT, fopt, lopt, Eopt, sig
 
+        # Set floating point precision
+        precision = 8 # decimal places
+
     # -----------------------------------------------------------------------------------------------------------
 
     # Functions to read file and update textbox
@@ -1113,125 +1116,119 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Attempt peak fit:
                 x_gaussian = linspace(startPlotFit, stopPlotFit, 50)
 
-                ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)  # Extract peak guess range
-                # Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.05, 0.05)  # Extract sigma guess range
-                Sig_guess = [guessStart_sig, guessStop_sig]
-
-                # Initialize parameters
-                p0 = None
+                ECT_guess = np.round(np.arange(guessStart, guessStop + 0.1, 0.05), 3).tolist()
+                # Sig_guess = np.round(np.arange(guessStart_sig, guessStop_sig + 0.05, 0.05), 3).tolist()
+                Sig_guess = [round(guessStart_sig, 3), round(guessStop_sig, 3)]
 
                 if include_Disorder:
-                    # best_guess_df = pd.DataFrame()
-                    # p0_list = []
-                    # R2_list = []
+                    best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
+                                                                startE=startFit,
+                                                                stopE=stopFit,
+                                                                function=self.gaussian_disorder,
+                                                                guessRange=ECT_guess,
+                                                                guessRange_sig=Sig_guess,
+                                                                include_disorder=True,
+                                                                bounds=True  # to use fit model instead of fit function
+                                                                )
 
-                    # ECT_guess_list = []
-                    # sig_guess_list = []
-                    # f_list = []
-                    # l_list = []
-                    # ECT_list = []
-                    # sig_list = []
+                    if r_squared > 0:
+                        y_gaussian = [self.gaussian_disorder(value,
+                                                             best_vals[0],
+                                                             best_vals[1],
+                                                             best_vals[2],
+                                                             best_vals[3]
+                                                             ) for value in x_gaussian]
+                        fit_ok = True
 
-                    finish_loop = False
-
-                    # TODO: Replace with "guess_fit" function?
-                    for ECT in ECT_guess:
-                        for sig in Sig_guess:
-                            try:
-                                best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
-                                                                               energy_fit,
-                                                                               eqe_fit,
-                                                                               p0=p0,
-                                                                               include_disorder=True
-                                                                               )
-                                if r_squared > 0:
-                                    y_gaussian = [self.gaussian_disorder(value,
-                                                                         best_vals[0],
-                                                                         best_vals[1],
-                                                                         best_vals[2],
-                                                                         best_vals[3]
-                                                                         ) for value in x_gaussian]
-                                    best_p0 = p0
-                                    fit_ok = True
-                                    break
-
-                                # if r_squared > 0: # Old code to loop through initial guesses and find best one
-                                #     p0_list.append(p0)
-                                #     R2_list.append(r_squared)
-
-                                    # ECT_guess_list.append(ECT)
-                                    # sig_guess_list.append(sig)
-                                    # f_list.append(best_vals[0])
-                                    # l_list.append(best_vals[1])
-                                    # ECT_list.append(best_vals[2])
-                                    # sig_list.append(best_vals[3])
-
-                                else:
-                                    raise Exception('Wrong fit determined.')
-                                p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
-                            except:
-                                p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
-                        if r_squared > 0:
-                            break
-
-
-                    # best_guess_df['p0'] = p0_list # Old code to loop through initial guesses and find best one
-                    # best_guess_df['R2'] = R2_list
+                    # NOTE: Old code that was replaced by guess fit function
+                    # Initialize parameters
+                    # p0 = None
                     #
-                    # # best_guess_df['ECT Guess'] = ECT_guess_list
-                    # # best_guess_df['Sigma Guess'] = sig_guess_list
-                    # # best_guess_df['f'] = f_list
-                    # # best_guess_df['l'] = l_list
-                    # # best_guess_df['ECT'] = ECT_list
-                    # # best_guess_df['Sigma'] = sig_list
-                    # # best_guess_df.to_csv('~/Desktop/Best_Guesses.csv')
+                    # for ECT in ECT_guess:
+                    #     for sig in Sig_guess:
+                    #         try:
+                    #             best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
+                    #                                                            energy_fit,
+                    #                                                            eqe_fit,
+                    #                                                            p0=p0,
+                    #                                                            include_disorder=True
+                    #                                                            )
+                    #             if r_squared > 0:
+                    #                 y_gaussian = [self.gaussian_disorder(value,
+                    #                                                      best_vals[0],
+                    #                                                      best_vals[1],
+                    #                                                      best_vals[2],
+                    #                                                      best_vals[3]
+                    #                                                      ) for value in x_gaussian]
+                    #                 fit_ok = True
+                    #                 break
                     #
-                    # best_R2 = max(best_guess_df['R2'])
-                    # best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
+                    #             # if r_squared > 0: # Old code to loop through initial guesses and find best one
+                    #             #     p0_list.append(p0)
+                    #             #     R2_list.append(r_squared)
                     #
-                    # # Determine fit values of fit with best intial guess
-                    # best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
-                    #                                                energy_fit,
-                    #                                                eqe_fit,
-                    #                                                p0=best_p0,
-                    #                                                include_disorder=True
-                    #                                                )
-                    # y_gaussian = [self.gaussian_disorder(value,
-                    #                                      best_vals[0],
-                    #                                      best_vals[1],
-                    #                                      best_vals[2],
-                    #                                      best_vals[3]
-                    #                                      ) for value in x_gaussian]
-                    # fit_ok = True  # Accept fit
+                    #                 # ECT_guess_list.append(ECT)
+                    #                 # sig_guess_list.append(sig)
+                    #                 # f_list.append(best_vals[0])
+                    #                 # l_list.append(best_vals[1])
+                    #                 # ECT_list.append(best_vals[2])
+                    #                 # sig_list.append(best_vals[3])
+                    #
+                    #             else:
+                    #                 raise Exception('Wrong fit determined.')
+                    #             p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
+                    #         except:
+                    #             p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
+                    #     if r_squared > 0:
+                    #         break
 
                 else:  # If disorder is not included
-                    # TODO: Replace with "guess_fit" function?
-                    for ECT in ECT_guess:
-                        try:
-                            best_vals, covar, y_fit, r_squared = fit_function(self.gaussian,
-                                                                              energy_fit,
-                                                                              eqe_fit,
-                                                                              p0=p0
-                                                                              )
-                            if r_squared > 0:
-                                y_gaussian = [self.gaussian(value,
-                                                                best_vals[0],
-                                                                best_vals[1],
-                                                                best_vals[2]
-                                                                ) for value in x_gaussian]
-                                best_p0 = p0
-                                fit_ok = True
-                                break  # This breaks the for loop
-                            else:
-                                raise Exception('Wrong fit determined.')
-                        except:
-                            p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
+                    best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
+                                                                startE=startFit,
+                                                                stopE=stopFit,
+                                                                function=self.gaussian,
+                                                                guessRange=ECT_guess,
+                                                                guessRange_sig=Sig_guess,
+                                                                include_disorder=False,
+                                                                bounds=None  # to use fit function instead of fit model
+                                                                )
+
+                    if r_squared > 0:
+                        y_gaussian = [self.gaussian(value,
+                                                    best_vals[0],
+                                                    best_vals[1],
+                                                    best_vals[2]
+                                                    ) for value in x_gaussian]
+                        fit_ok = True
+
+                    # NOTE: Old code that was replaced by guess fit function
+                    # Initialize parameters
+                    # p0 = None
+                    # for ECT in ECT_guess:
+                    #     try:
+                    #         best_vals, covar, y_fit, r_squared = fit_function(self.gaussian,
+                    #                                                           energy_fit,
+                    #                                                           eqe_fit,
+                    #                                                           p0=p0
+                    #                                                           )
+                    #         if r_squared > 0:
+                    #             y_gaussian = [self.gaussian(value,
+                    #                                             best_vals[0],
+                    #                                             best_vals[1],
+                    #                                             best_vals[2]
+                    #                                             ) for value in x_gaussian]
+                    #             fit_ok = True
+                    #             break  # This breaks the for loop
+                    #         else:
+                    #             raise Exception('Wrong fit determined.')
+                    #     except:
+                    #         p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
 
                 if fit_ok:
 
                     self.logger.info('Fit Results: ')
                     print("")
-                    print('Initial Guess (eV) : ', best_p0)
+                    print('Initial Guess (eV) : ', p0)
 
                     print('-' * 80)
                     print('Temperature [T] (K) : ', self.T_CT)
@@ -1344,9 +1341,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Attempt peak fit:
                 x_MLJ_theory = linspace(startPlotFit, stopPlotFit, 50)
 
-                ECT_guess = np.arange(guessStart_CT, guessStop_CT + 0.1, 0.05)
-                # sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.1, 0.2)
-                sig_guess = [guessStart_sig, guessStop_sig]
+                ECT_guess = np.round(np.arange(guessStart_CT, guessStop_CT + 0.1, 0.05), 3).tolist()
+                # Sig_guess = np.round(np.arange(guessStart_sig, guessStop_sig + 0.1, 0.2), 3).tolist()
+                Sig_guess = [round(guessStart_sig, 3), round(guessStop_sig, 3)]
 
                 # Initialize parameters
                 r_squared = 0
@@ -1354,9 +1351,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 bounds = None  # First try without bounds and initial guesses
 
                 if include_Disorder:
-                    # TODO: Replace with "guess_fit" function?
+                    # NOTE: This code could be replaced by the guess fit function
                     for ECT in ECT_guess:
-                        for sig in sig_guess:
+                        for sig in Sig_guess:
                             try:
                                 best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
                                                                                   energy_fit,
@@ -1384,26 +1381,44 @@ class MainWindow(QtWidgets.QMainWindow):
                             break
 
                 else:
-                    # TODO: Replace with "guess_fit" function?
-                    for ECT in ECT_guess:
-                        try:
-                            best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
-                                                                              energy_fit,
-                                                                              eqe_fit,
-                                                                              p0=p0
-                                                                              )
-                            if r_squared > 0:
-                                y_MLJ_theory = [self.MLJ_gaussian(value,
-                                                                  best_vals[0],
-                                                                  best_vals[1],
-                                                                  best_vals[2]
-                                                                  ) for value in x_MLJ_theory]
-                                fit_ok = True
-                                break
-                            else:
-                                raise Exception('Wrong fit determined.')
-                        except:
-                            p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
+                    best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
+                                                                startE=startFit,
+                                                                stopE=stopFit,
+                                                                function=self.MLJ_gaussian,
+                                                                guessRange=ECT_guess,
+                                                                guessRange_sig=Sig_guess,
+                                                                include_disorder=False,
+                                                                bounds=None  # to use fit function instead of fit model
+                                                                )
+
+                    if r_squared > 0:
+                        y_MLJ_theory = [self.MLJ_gaussian(value,
+                                                          best_vals[0],
+                                                          best_vals[1],
+                                                          best_vals[2]
+                                                          ) for value in x_MLJ_theory]
+                        fit_ok = True
+
+                    # NOTE: Old code that was replaced by guess fit function
+                    # for ECT in ECT_guess:
+                    #     try:
+                    #         best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
+                    #                                                           energy_fit,
+                    #                                                           eqe_fit,
+                    #                                                           p0=p0
+                    #                                                           )
+                    #         if r_squared > 0:
+                    #             y_MLJ_theory = [self.MLJ_gaussian(value,
+                    #                                               best_vals[0],
+                    #                                               best_vals[1],
+                    #                                               best_vals[2]
+                    #                                               ) for value in x_MLJ_theory]
+                    #             fit_ok = True
+                    #             break
+                    #         else:
+                    #             raise Exception('Wrong fit determined.')
+                    #     except:
+                    #         p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
 
                 if fit_ok:
                     self.logger.info('Fit Results: ')
@@ -1549,166 +1564,121 @@ class MainWindow(QtWidgets.QMainWindow):
                 stopEnergies.append(round(y, 3))
                 y += 0.005
 
-            for start in tqdm(startEnergies):  # Iterate through start energies
-                for stop in tqdm(stopEnergies):  # Iterate through stop energies
+            # Fit EQE (Marcus Theory)
+            if (str(file_no)).isnumeric():
 
-                    wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, start, stop, 1)
+                if file_no == 1:  # Range 1
+                    self.T_CT = self.ui.Temperature_1.value()
+                    guessStart = self.ui.guessStart_1.value()
+                    guessStop = self.ui.guessStop_1.value()
+                    guessStart_sig = self.ui.guessStartSig_1.value()
+                    guessStop_sig = self.ui.guessStopSig_1.value()
+                    if self.ui.disorder_1.isChecked():
+                        include_Disorder = True
+                    if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check peak to fit
+                        fit_opticalPeak = True
+                    elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
+                        self.logger.error('Please select a valid peak to fit.')
+                    elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
+                        self.logger.error('Please select a valid peak to fit.')
 
-                    # Fit EQE (Marcus Theory)
-                    if (str(file_no)).isnumeric():
+                elif file_no == 2:  # Range 2
+                    self.T_CT = self.ui.Temperature_2.value()
+                    guessStart = self.ui.guessStart_2.value()
+                    guessStop = self.ui.guessStop_2.value()
+                    guessStart_sig = self.ui.guessStartSig_2.value()
+                    guessStop_sig = self.ui.guessStopSig_2.value()
+                    if self.ui.disorder_2.isChecked():
+                        include_Disorder = True
+                    if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
+                        fit_opticalPeak = True
+                    elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
+                        self.logger.error('Please select a valid peak to fit.')
+                    elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
+                        self.logger.error('Please select a valid peak to fit.')
 
-                        if file_no == 1:  # Range 1
-                            self.T_CT = self.ui.Temperature_1.value()
-                            guessStart = self.ui.guessStart_1.value()
-                            guessStop = self.ui.guessStop_1.value()
-                            guessStart_sig = self.ui.guessStartSig_1.value()
-                            guessStop_sig = self.ui.guessStopSig_1.value()
-                            if self.ui.disorder_1.isChecked():
-                                include_Disorder = True
-                            if self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():  # Check peak to fit
-                                fit_opticalPeak = True
-                            elif self.ui.OptButton_1.isChecked() and self.ui.CTButton_1.isChecked():
-                                self.logger.error('Please select a valid peak to fit.')
-                            elif not self.ui.OptButton_1.isChecked() and not self.ui.CTButton_1.isChecked():
-                                self.logger.error('Please select a valid peak to fit.')
+                # Attempt peak fit:
+                ECT_guess = np.round(np.arange(guessStart, guessStop + 0.2, 0.2), 3).tolist()  # Increased step
+                # Sig_guess = np.round(np.arange(guessStart_sig, guessStop_sig + 0.05, 0.05), 3).tolist()
+                Sig_guess = [round(guessStart_sig, 3), round(guessStop_sig, 3)]
 
-                        elif file_no == 2:  # Range 2
-                            self.T_CT = self.ui.Temperature_2.value()
-                            guessStart = self.ui.guessStart_2.value()
-                            guessStop = self.ui.guessStop_2.value()
-                            guessStart_sig = self.ui.guessStartSig_2.value()
-                            guessStop_sig = self.ui.guessStopSig_2.value()
-                            if self.ui.disorder_2.isChecked():
-                                include_Disorder = True
-                            if self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
-                                fit_opticalPeak = True
-                            elif self.ui.OptButton_2.isChecked() and self.ui.CTButton_2.isChecked():
-                                self.logger.error('Please select a valid peak to fit.')
-                            elif not self.ui.OptButton_2.isChecked() and not self.ui.CTButton_2.isChecked():
-                                self.logger.error('Please select a valid peak to fit.')
-
-                        # Attempt peak fit:
-                        ECT_guess = np.arange(guessStart, guessStop + 0.2, 0.2)  # Increased step to accelerate process
-                        # Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.05, 0.05)  # Extract sigma guess range
-                        Sig_guess = [guessStart_sig, guessStop_sig]
-
-                        p0 = None
-
+                for start in tqdm(startEnergies):  # Iterate through start energies
+                    for stop in tqdm(stopEnergies):  # Iterate through stop energies
                         if include_Disorder:
-                            best_guess_df = pd.DataFrame()
-                            p0_list = []
-                            R2_list = []
-                            # TODO: Replace with "guess_fit" function?
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
+                                                                        startE=start,
+                                                                        stopE=stop,
+                                                                        function=self.gaussian_disorder,
+                                                                        guessRange=ECT_guess,
+                                                                        guessRange_sig=Sig_guess,
+                                                                        include_disorder=True,
+                                                                        bounds=True # to use fit model
+                                                                        )
+
+                            if r_squared > 0:
+                                start_df.append(start)
+                                stop_df.append(stop)
+                                f_df.append(best_vals[0])
+                                l_df.append(best_vals[1])
+                                Ect_df.append(best_vals[2])
+                                sig_df.append(best_vals[3])
+                                R_df.append(r_squared)
+                            else:
+                                self.logger.info('Optimal parameters not found.')
+
+                        else:
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
+                                                                        startE=start,
+                                                                        stopE=stop,
+                                                                        function=self.gaussian,
+                                                                        guessRange=ECT_guess,
+                                                                        guessRange_sig=Sig_guess,
+                                                                        include_disorder=False,
+                                                                        bounds=None # to use fit function
+                                                                        )
+
+                            if r_squared > 0:
+                                start_df.append(start)
+                                stop_df.append(stop)
+                                f_df.append(best_vals[0])
+                                l_df.append(best_vals[1])
+                                Ect_df.append(best_vals[2])
+                                R_df.append(r_squared)
+                            else:
+                                self.logger.info('Optimal parameters not found.')
+
+            # Fit EQE (MLJ Theory)
+            elif file_no == 'x1':
+
+                self.S_i = self.ui.Huang_Rhys.value()
+                self.hbarw_i = self.ui.vib_Energy.value()
+                self.T_x = self.ui.extra_Temperature.value()
+
+                guessStart = self.ui.extraGuessStart.value()
+                guessStop = self.ui.extraGuessStop.value()
+                guessStart_sig = self.ui.extraGuessStart_sig.value()
+                guessStop_sig = self.ui.extraGuessStop_sig.value()
+
+                if self.ui.extra_static_Disorder.isChecked():
+                    include_Disorder = True
+
+                # Attempt peak fit:
+                ECT_guess = np.round(np.arange(guessStart, guessStop + 0.2, 0.2), 3).tolist()  # Increased step
+                # Sig_guess = np.round(np.arange(guessStart_sig, guessStop_sig + 0.05, 0.05), 3).tolist()
+                Sig_guess = [round(guessStart_sig, 3), round(guessStop_sig, 3)]
+
+                for start in tqdm(startEnergies):  # Iterate through start energies
+                    for stop in tqdm(stopEnergies):  # Iterate through stop energies
+
+                        wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df,
+                                                                                 start,
+                                                                                 stop,
+                                                                                 1)
+                        if include_Disorder:
+                            # NOTE: This code could be replaced by the guess fit function
                             for ECT in ECT_guess:
                                 for sig in Sig_guess:
-                                    try:
-                                        best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
-                                                                                       energy_fit,
-                                                                                       eqe_fit,
-                                                                                       p0=p0,
-                                                                                       include_disorder=True
-                                                                                       )
-                                        if r_squared > 0:
-                                            start_df.append(start)
-                                            stop_df.append(stop)
-                                            f_df.append(best_vals[0])
-                                            l_df.append(best_vals[1])
-                                            Ect_df.append(best_vals[2])
-                                            sig_df.append(best_vals[3])
-                                            R_df.append(r_squared)
-                                            break
-
-                                        # if r_squared > 0: # Old code to loop through initial guesses and find best one
-                                        #     p0_list.append(p0)
-                                        #     R2_list.append(r_squared)
-
-                                        else:
-                                            raise Exception('Wrong fit determined.')
-                                        p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
-                                    except:
-                                        p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
-                                if r_squared > 0:  # To break the second loop
-                                    break
-
-                            # if len(p0_list) != 0: # Old code to loop through initial guesses and find best one
-                            #
-                            #     best_guess_df['p0'] = p0_list
-                            #     best_guess_df['R2'] = R2_list
-                            #
-                            #     best_R2 = max(best_guess_df['R2'])
-                            #     best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[
-                            #         0]  # Find best guess
-                            #
-                            #     # Determine fit values of fit with best initial guess
-                            #     best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
-                            #                                                    energy_fit,
-                            #                                                    eqe_fit,
-                            #                                                    p0=best_p0,
-                            #                                                    include_disorder=True
-                            #                                                    )
-                            #     start_df.append(start)
-                            #     stop_df.append(stop)
-                            #     f_df.append(best_vals[0])
-                            #     l_df.append(best_vals[1])
-                            #     Ect_df.append(best_vals[2])
-                            #     sig_df.append(best_vals[3])
-                            #     R_df.append(r_squared)
-
-                            # else:
-                            #     self.logger.info('Optimal parameters not found.')
-
-                        else:  # If disorder is not to be included
-                            # TODO: Replace with "guess_fit" function?
-                            for ECT in ECT_guess:
-                                try:
-                                    best_vals, covar, y_fit, r_squared = fit_function(self.gaussian,
-                                                                                      energy_fit,
-                                                                                      eqe_fit,
-                                                                                      p0=p0
-                                                                                      )
-                                    if r_squared > 0:
-                                        start_df.append(start)
-                                        stop_df.append(stop)
-                                        f_df.append(best_vals[0])
-                                        l_df.append(best_vals[1])
-                                        Ect_df.append(best_vals[2])
-                                        R_df.append(r_squared)
-                                        break
-
-                                except:
-                                    p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
-                                    if ECT == ECT_guess[-1]:
-                                        self.logger.info('Optimal parameters not found.')
-
-                    # Fit EQE (MLJ Theory)
-                    elif file_no == 'x1':
-
-                        self.S_i = self.ui.Huang_Rhys.value()
-                        self.hbarw_i = self.ui.vib_Energy.value()
-                        self.T_x = self.ui.extra_Temperature.value()
-
-                        guessStart = self.ui.extraGuessStart.value()
-                        guessStop = self.ui.extraGuessStop.value()
-                        guessStart_sig = self.ui.extraGuessStart_sig.value()
-                        guessStop_sig = self.ui.extraGuessStop_sig.value()
-
-                        if self.ui.extra_static_Disorder.isChecked():
-                            include_Disorder = True
-
-                        # Attempt peak fit:
-                        ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
-                        # sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.1, 0.2)
-                        sig_guess = [guessStart_sig, guessStop_sig]
-
-                        p0 = None
-                        bounds = None
-                        r_squared = 0
-
-                        if include_Disorder:
-                            # TODO: Replace with "guess_fit" function?
-                            for ECT in ECT_guess:
-                                for sig in sig_guess:
-                                    print(p0)
+                                    r_squared = 0
                                     try:
                                         best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
                                                                                           energy_fit,
@@ -1717,57 +1687,202 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                                           bounds=bounds,
                                                                                           include_disorder=include_Disorder
                                                                                           )
-                                        if r_squared > 0:
-                                            start_df.append(start)
-                                            stop_df.append(stop)
-                                            f_df.append(best_vals[0])
-                                            l_df.append(best_vals[1])
-                                            Ect_df.append(best_vals[2])
-                                            R_df.append(r_squared)
-                                            sig_df.append(best_vals[3])
-                                            break
-
                                     except:
                                         p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
                                         bounds = self.bounds_sig
                                         if ECT == ECT_guess[-1]:
                                             self.logger.info('Optimal parameters not found.')
-                                if r_squared > 0: # To break the second loop
-                                    break
-                        else:
-                            # TODO: Replace with "guess_fit" function?
-                            for ECT in ECT_guess:
-                                print(p0)
-                                try:
-                                    best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
-                                                                                      energy_fit,
-                                                                                      eqe_fit,
-                                                                                      p0=p0
-                                                                                      )
                                     if r_squared > 0:
                                         start_df.append(start)
                                         stop_df.append(stop)
                                         f_df.append(best_vals[0])
                                         l_df.append(best_vals[1])
                                         Ect_df.append(best_vals[2])
+                                        sig_df.append(best_vals[3])
                                         R_df.append(r_squared)
                                         break
+                                if r_squared > 0:  # To break the second loop
+                                    break
 
-                                except:
-                                    p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
-                                    if ECT == ECT_guess[-1]:
-                                        self.logger.info('Optimal parameters not found.')
+                        else:
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
+                                                                        startE=start,
+                                                                        stopE=stop,
+                                                                        function=self.MLJ_gaussian,
+                                                                        guessRange=ECT_guess,
+                                                                        guessRange_sig=Sig_guess,
+                                                                        include_disorder=False,
+                                                                        bounds=None  # to use fit function
+                                                                        )
+
+                            if r_squared > 0:
+                                start_df.append(start)
+                                stop_df.append(stop)
+                                f_df.append(best_vals[0])
+                                l_df.append(best_vals[1])
+                                Ect_df.append(best_vals[2])
+                                R_df.append(r_squared)
+                            else:
+                                self.logger.info('Optimal parameters not found.')
+
+                    # NOTE: Old code that was replaced by guess fit function
+                    # wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe_df, start, stop, 1)
+                    # p0 = None
+                    #
+                    # if include_Disorder:
+                    #     best_guess_df = pd.DataFrame()
+                    #     p0_list = []
+                    #     R2_list = []
+                    #
+                    #     for ECT in ECT_guess:
+                    #         for sig in Sig_guess:
+                    #             try:
+                    #                 best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
+                    #                                                                energy_fit,
+                    #                                                                eqe_fit,
+                    #                                                                p0=p0,
+                    #                                                                include_disorder=True
+                    #                                                                )
+                    #                 if r_squared > 0:
+                    #                     start_df.append(start)
+                    #                     stop_df.append(stop)
+                    #                     f_df.append(best_vals[0])
+                    #                     l_df.append(best_vals[1])
+                    #                     Ect_df.append(best_vals[2])
+                    #                     sig_df.append(best_vals[3])
+                    #                     R_df.append(r_squared)
+                    #                     break
+                    #
+                    #                 # if r_squared > 0: # Old code to loop through initial guesses and find best one
+                    #                 #     p0_list.append(p0)
+                    #                 #     R2_list.append(r_squared)
+                    #
+                    #                 else:
+                    #                     raise Exception('Wrong fit determined.')
+                    #                 p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
+                    #             except:
+                    #                 p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
+                    #         if r_squared > 0:  # To break the second loop
+                    #             break
+                    #
+                    # else:  # If disorder is not to be included
+                    #     for ECT in ECT_guess:
+                    #         try:
+                    #             best_vals, covar, y_fit, r_squared = fit_function(self.gaussian,
+                    #                                                               energy_fit,
+                    #                                                               eqe_fit,
+                    #                                                               p0=p0
+                    #                                                               )
+                    #             if r_squared > 0:
+                    #                 start_df.append(start)
+                    #                 stop_df.append(stop)
+                    #                 f_df.append(best_vals[0])
+                    #                 l_df.append(best_vals[1])
+                    #                 Ect_df.append(best_vals[2])
+                    #                 R_df.append(r_squared)
+                    #                 break
+                    #
+                    #         except:
+                    #             p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
+                    #             if ECT == ECT_guess[-1]:
+                    #                 self.logger.info('Optimal parameters not found.')
+
+                    # # Fit EQE (MLJ Theory)
+                    # elif file_no == 'x1':
+                    #
+                    #     self.S_i = self.ui.Huang_Rhys.value()
+                    #     self.hbarw_i = self.ui.vib_Energy.value()
+                    #     self.T_x = self.ui.extra_Temperature.value()
+                    #
+                    #     guessStart = self.ui.extraGuessStart.value()
+                    #     guessStop = self.ui.extraGuessStop.value()
+                    #     guessStart_sig = self.ui.extraGuessStart_sig.value()
+                    #     guessStop_sig = self.ui.extraGuessStop_sig.value()
+                    #
+                    #     if self.ui.extra_static_Disorder.isChecked():
+                    #         include_Disorder = True
+                    #
+                    #     # Attempt peak fit:
+                    #     ECT_guess = np.arange(guessStart, guessStop + 0.1, 0.05)
+                    #     # Sig_guess = np.arange(guessStart_sig, guessStop_sig + 0.1, 0.2)
+                    #     Sig_guess = [guessStart_sig, guessStop_sig]
+                    #
+                    #     p0 = None
+                    #     bounds = None
+                    #     r_squared = 0
+                    #
+                    #     if include_Disorder:
+                    #         for ECT in ECT_guess:
+                    #             for sig in Sig_guess:
+                    #                 print(p0)
+                    #                 try:
+                    #                     best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian_disorder,
+                    #                                                                       energy_fit,
+                    #                                                                       eqe_fit,
+                    #                                                                       p0=p0,
+                    #                                                                       bounds=bounds,
+                    #                                                                       include_disorder=include_Disorder
+                    #                                                                       )
+                    #                     if r_squared > 0:
+                    #                         start_df.append(start)
+                    #                         stop_df.append(stop)
+                    #                         f_df.append(best_vals[0])
+                    #                         l_df.append(best_vals[1])
+                    #                         Ect_df.append(best_vals[2])
+                    #                         R_df.append(r_squared)
+                    #                         sig_df.append(best_vals[3])
+                    #                         break
+                    #
+                    #                 except:
+                    #                     p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
+                    #                     bounds = self.bounds_sig
+                    #                     if ECT == ECT_guess[-1]:
+                    #                         self.logger.info('Optimal parameters not found.')
+                    #             if r_squared > 0: # To break the second loop
+                    #                 break
+                    #     else:
+                    #         for ECT in ECT_guess:
+                    #             print(p0)
+                    #             try:
+                    #                 best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
+                    #                                                                   energy_fit,
+                    #                                                                   eqe_fit,
+                    #                                                                   p0=p0
+                    #                                                                   )
+                    #                 if r_squared > 0:
+                    #                     start_df.append(start)
+                    #                     stop_df.append(stop)
+                    #                     f_df.append(best_vals[0])
+                    #                     l_df.append(best_vals[1])
+                    #                     Ect_df.append(best_vals[2])
+                    #                     R_df.append(r_squared)
+                    #                     break
+                    #
+                    #             except:
+                    #                 p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
+                    #                 if ECT == ECT_guess[-1]:
+                    #                     self.logger.info('Optimal parameters not found.')
 
             if len(R_df) != 0:  # Check that there are results to plot
 
                 if include_Disorder:
                     parameter_df = pd.DataFrame(
-                        {'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df,
-                         'R_Squared': R_df, 'Sig': sig_df})  # Create a dataFrame with all results
+                        {'Start': start_df,
+                         'Stop': stop_df,
+                         'f': f_df,
+                         'l': l_df,
+                         'Ect': Ect_df,
+                         'R_Squared': R_df,
+                         'Sig': sig_df})
                 else:
                     parameter_df = pd.DataFrame(
-                        {'Start': start_df, 'Stop': stop_df, 'f': f_df, 'l': l_df, 'Ect': Ect_df,
-                         'R_Squared': R_df})  # Create a dataFrame with all results
+                        {'Start': start_df,
+                         'Stop': stop_df,
+                         'f': f_df,
+                         'l': l_df,
+                         'Ect': Ect_df,
+                         'R_Squared': R_df})
+
                 max_index = parameter_df[parameter_df['R_Squared'] == max(parameter_df['R_Squared'])].index.values[0]
 
                 self.logger.info('Fit Results: ')
@@ -1832,7 +1947,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 print('-' * 80)
                 print("")
 
-                f_df = parameter_df.pivot('Stop', 'Start', 'f')  # Pivot the dataFrame: x-value = Stop, y-value = Start, value = f
+                f_df = parameter_df.pivot('Stop', 'Start', 'f')  # Pivot dataFrame: x-value = Stop, y-value = Start, value = f
                 l_df = parameter_df.pivot('Stop', 'Start', 'l')
                 Ect_df = parameter_df.pivot('Stop', 'Start', 'Ect')
                 R_df = parameter_df.pivot('Stop', 'Start', 'R_Squared')
@@ -1955,6 +2070,25 @@ class MainWindow(QtWidgets.QMainWindow):
         return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
             -((Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (sig ** 2 / (2 * self.k * self.T_CT)) - E) ** 2 / (
                     4 * l * self.k * self.T_CT + 2 * sig ** 2)))
+
+
+
+    def gaussian_disorder_test(self, E, f, l, Ect, sig):
+        """
+        Standard gaussian functions including disorder to separately fit double peaks
+        :param E: List of energy values [list of floats]
+        :param f: Oscillator strength [float]
+        :param l: Reorganization Energy [float]
+        :param Ect: Charge Transfer State Energy [float]
+        :param sig: Gaussian disorder [float]
+        :return: list of EQE values [list of floats]
+        """
+
+        return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
+            -(Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (
+                    sig ** 2 / (2 * self.k * self.T_CT)) - e) ** 2 / (
+                    4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
+
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -2903,8 +3037,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Check that all start and stop energies are valid
 
-        startOpt_ok = StartStop_is_valid(startStart_Opt, startStop_Opt)
-        stopOpt_ok = StartStop_is_valid(stopStart_Opt, stopStop_Opt)
+        # startOpt_ok = StartStop_is_valid(startStart_Opt, startStop_Opt)
+        # stopOpt_ok = StartStop_is_valid(stopStart_Opt, stopStop_Opt)
+
+
+        #### TEST ####
+
+        startOpt_ok = True
+        stopOpt_ok = True
 
         startCT_ok = StartStop_is_valid(startStart_CT, startStop_CT)
         stopCT_ok = StartStop_is_valid(stopStart_CT, stopStop_CT)
@@ -2916,8 +3056,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if startOpt_ok and stopOpt_ok and guessOpt_ok and startCT_ok and stopCT_ok and guessCT_ok:
 
-            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01),
-                                      3).tolist()  # Change step to 0.05
+            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01), 3).tolist()  # Change step to 0.05
             stopRange_Opt = np.round(np.arange(stopStart_Opt, stopStop_Opt + 0.005, 0.01), 3).tolist()
 
             startRange_CT = np.round(np.arange(startStart_CT, startStop_CT + 0.005, 0.01), 3).tolist()
@@ -3006,25 +3145,30 @@ class MainWindow(QtWidgets.QMainWindow):
                 for x in tqdm(range(len(df_Opt))):
                     for y in tqdm(range(len(df_CT))):
                         if df_Opt['R2'][x] > 0:  # Check that the optical peak fit was successful
+
+                            print('-----------------------------------------')
+                            print('Start: ', df_CT['Start'][y], ' Stop: ', df_CT['Stop'][y])
+                            print('Start Opt: ', df_Opt['Start'][x], 'Stop: ', df_Opt['Stop'][x])
+
                             new_eqe = subtract_Opt(eqe, df_Opt['Fit'][x], T=self.T_double)
 
                             if include_disorder:
-                                best_vals, r_squared = guess_fit(eqe=new_eqe,
-                                                                 startE=df_CT['Start'][y],
-                                                                 stopE=df_CT['Stop'][y],
-                                                                 function=self.gaussian_disorder_double,
-                                                                 guessRange=guessRange_CT,
-                                                                 guessRange_sig=guessRange_Sig,
-                                                                 include_disorder=True,
-                                                                 bounds=True # to use fit model instead of fit function
-                                                                 )
+                                best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                            startE=df_CT['Start'][y],
+                                                                            stopE=df_CT['Stop'][y],
+                                                                            function=self.gaussian_disorder_double,
+                                                                            guessRange=guessRange_CT,
+                                                                            guessRange_sig=guessRange_Sig,
+                                                                            include_disorder=True,
+                                                                            bounds=True # to use fit model instead of fit function
+                                                                            )
                             else:
-                                best_vals, r_squared = guess_fit(eqe=new_eqe,
-                                                                 startE=df_CT['Start'][y],
-                                                                 stopE=df_CT['Stop'][y],
-                                                                 function=self.gaussian_double,
-                                                                 guessRange=guessRange_CT
-                                                                 )
+                                best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                            startE=df_CT['Start'][y],
+                                                                            stopE=df_CT['Stop'][y],
+                                                                            function=self.gaussian_double,
+                                                                            guessRange=guessRange_CT
+                                                                            )
                         else:
                             best_vals = [0, 0, 0]
                             r_squared = 0
@@ -3090,22 +3234,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 for y in tqdm(range(len(df_CT))):
 
                     if include_disorder:
-                        best_vals, r_squared = guess_fit(eqe=new_eqe,
-                                                         startE=df_CT['Start'][y],
-                                                         stopE=df_CT['Stop'][y],
-                                                         function=self.gaussian_disorder_double,
-                                                         guessRange=guessRange_CT,
-                                                         guessRange_sig=guessRange_Sig,
-                                                         include_disorder=True,
-                                                         bounds=True  # to use fit model instead of fit function
-                                                         )
+                        best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                    startE=df_CT['Start'][y],
+                                                                    stopE=df_CT['Stop'][y],
+                                                                    function=self.gaussian_disorder_double,
+                                                                    guessRange=guessRange_CT,
+                                                                    guessRange_sig=guessRange_Sig,
+                                                                    include_disorder=True,
+                                                                    bounds=True  # to use fit model instead of fit function
+                                                                    )
                     else:
-                        best_vals, r_squared = guess_fit(eqe=new_eqe,
-                                                         startE=df_CT['Start'][y],
-                                                         stopE=df_CT['Stop'][y],
-                                                         function=self.gaussian_double,
-                                                         guessRange=guessRange_CT
-                                                         )
+                        best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                    startE=df_CT['Start'][y],
+                                                                    stopE=df_CT['Stop'][y],
+                                                                    function=self.gaussian_double,
+                                                                    guessRange=guessRange_CT
+                                                                    )
 
                     start_Opt_list.append(df_Opt['Start'][best_fit_index])
                     stop_Opt_list.append(df_Opt['Stop'][best_fit_index])
@@ -3144,22 +3288,22 @@ class MainWindow(QtWidgets.QMainWindow):
                     for y in tqdm(range(len(df_CT))):
 
                         if include_disorder:
-                            best_vals, r_squared = guess_fit(eqe=eqe,
-                                                             startE=df_CT['Start'][y],
-                                                             stopE=df_CT['Stop'][y],
-                                                             function=self.gaussian_disorder_double,
-                                                             guessRange=guessRange_CT,
-                                                             guessRange_sig=guessRange_Sig,
-                                                             include_disorder=True,
-                                                             bounds=True  # to use fit model instead of fit function
-                                                             )
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
+                                                                        startE=df_CT['Start'][y],
+                                                                        stopE=df_CT['Stop'][y],
+                                                                        function=self.gaussian_disorder_double,
+                                                                        guessRange=guessRange_CT,
+                                                                        guessRange_sig=guessRange_Sig,
+                                                                        include_disorder=True,
+                                                                        bounds=True  # to use fit model instead of fit function
+                                                                        )
                         else:
-                            best_vals, r_squared = guess_fit(eqe=eqe,
-                                                             startE=df_CT['Start'][y],
-                                                             stopE=df_CT['Stop'][y],
-                                                             function=self.gaussian_double,
-                                                             guessRange=guessRange_CT
-                                                             )
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
+                                                                        startE=df_CT['Start'][y],
+                                                                        stopE=df_CT['Stop'][y],
+                                                                        function=self.gaussian_double,
+                                                                        guessRange=guessRange_CT
+                                                                        )
 
                     start_Opt_list.append(df_Opt['Start'][x])
                     stop_Opt_list.append(df_Opt['Stop'][x])
@@ -3323,21 +3467,35 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Gaussian fitting function including disorder for double fit
 
+    # def gaussian_disorder_double(self, E, f, l, Ect, sig):
+    #     """
+    #     Standard gaussian functions including disorder to separately fit double peaks
+    #     :param E: List of energy values [list of floats]
+    #     :param f: Oscillator strength [float]
+    #     :param l: Reorganization Energy [float]
+    #     :param Ect: Charge Transfer State Energy [float]
+    #     :param sig: Gaussian disorder [float]
+    #     :return: list of EQE values [list of floats]
+    #     """
+    #
+    #     return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
+    #         -(Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (
+    #                 sig ** 2 / (2 * self.k * self.T_double)) - e) ** 2 / (
+    #                 4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
+
     def gaussian_disorder_double(self, E, f, l, Ect, sig):
         """
-        Standard gaussian functions including disorder to separately fit double peaks
+        New gaussian function including disorder
         :param E: List of energy values [list of floats]
         :param f: Oscillator strength [float]
         :param l: Reorganization Energy [float]
         :param Ect: Charge Transfer State Energy [float]
         :param sig: Gaussian disorder [float]
-        :return: list of EQE values [list of floats]
+        :return: EQE value [float]
         """
-
-        return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
-            -(Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (
-                    sig ** 2 / (2 * self.k * self.T_double)) - e) ** 2 / (
-                    4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
+        return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
+            -((Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (sig ** 2 / (2 * self.k * self.T_double)) - E) ** 2 / (
+                    4 * l * self.k * self.T_double + 2 * sig ** 2)))
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -3503,6 +3661,21 @@ class MainWindow(QtWidgets.QMainWindow):
         axDouble_2.set_ylim([10 ** (-7), max(eqe['EQE']) * 1.4])
         axDouble_2.legend()
 
+        if self.ui.save_simDoubleFit.isChecked():
+            fit_file = pd.DataFrame()
+            fit_file['Energy'] = x_plot
+            fit_file['Fit Sum'] = y_sum
+            fit_file['Fit CT Peak'] = y_CT
+            fit_file['Fit Optical Peak'] = y_opt
+
+            save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
+            save_fit_path, save_fit_filename = os.path.split(save_fit_file)
+            if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                os.chdir(save_fit_path)  # Change the working directory
+                fit_file.to_csv(save_fit_filename)  # Save data to csv
+                self.logger.info('Saving fit data to: %s' % str(save_fit_file))
+                os.chdir(self.data_dir)  # Change the directory back
+
     # -----------------------------------------------------------------------------------------------------------
 
     # Function to perform simultaneous double peak fitting multiple times
@@ -3625,16 +3798,16 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                                   print_report=False
                                                                                   )
 
-                            # # Old Code to test guess_fit function
-                            # best_vals, r_squared = guess_fit(eqe=eqe,
-                            #                                  startE=df['Start'][x],
-                            #                                  stopE=df['Stop'][x],
-                            #                                  function=self.gaussian_double_sim,
-                            #                                  guessRange=guessRange_CT,
-                            #                                  guessRange_opt=guessRange_Opt,
-                            #                                  bounds=bound_dict,
-                            #                                  simultaneous_double=True,
-                            #                                  )
+                            # NOTE:Old Code to test guess_fit function
+                            # best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
+                            #                                             startE=df['Start'][x],
+                            #                                             stopE=df['Stop'][x],
+                            #                                             function=self.gaussian_double_sim,
+                            #                                             guessRange=guessRange_CT,
+                            #                                             guessRange_opt=guessRange_Opt,
+                            #                                             bounds=bound_dict,
+                            #                                             simultaneous_double=True,
+                            #                                             )
 
                             best_CT = [
                                 best_vals[0],

@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="movable">
      <bool>true</bool>
@@ -4249,7 +4249,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>1.000000000000000</double>
+              <double>1.360000000000000</double>
              </property>
             </widget>
            </item>
@@ -4268,7 +4268,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>3.600000000000000</double>
+              <double>1.570000000000000</double>
              </property>
             </widget>
            </item>
@@ -4340,7 +4340,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>1.000000000000000</double>
+              <double>1.200000000000000</double>
              </property>
             </widget>
            </item>
@@ -4359,7 +4359,7 @@
               <double>3.600000000000000</double>
              </property>
              <property name="value">
-              <double>3.600000000000000</double>
+              <double>2.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -6545,7 +6545,7 @@
               <double>800.000000000000000</double>
              </property>
              <property name="value">
-              <double>295.000000000000000</double>
+              <double>350.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -6693,7 +6693,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>3.600000000000000</double>
+            <double>1.850000000000000</double>
            </property>
           </widget>
          </item>
@@ -6712,7 +6712,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.000000000000000</double>
+            <double>1.760000000000000</double>
            </property>
           </widget>
          </item>
@@ -6743,7 +6743,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>3.600000000000000</double>
+            <double>1.770000000000000</double>
            </property>
           </widget>
          </item>
@@ -6821,7 +6821,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.000000000000000</double>
+            <double>1.840000000000000</double>
            </property>
           </widget>
          </item>
@@ -6941,7 +6941,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.000000000000000</double>
+            <double>1.360000000000000</double>
            </property>
           </widget>
          </item>
@@ -6960,7 +6960,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>1.000000000000000</double>
+            <double>1.560000000000000</double>
            </property>
           </widget>
          </item>
@@ -6993,7 +6993,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>3.600000000000000</double>
+            <double>1.370000000000000</double>
            </property>
           </widget>
          </item>
@@ -7031,7 +7031,7 @@
             <double>3.600000000000000</double>
            </property>
            <property name="value">
-            <double>3.600000000000000</double>
+            <double>1.570000000000000</double>
            </property>
           </widget>
          </item>
@@ -7310,6 +7310,79 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
+     <widget class="QCheckBox" name="save_simDoubleFit">
+      <property name="geometry">
+       <rect>
+        <x>1040</x>
+        <y>880</y>
+        <width>120</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Save Fit</string>
+      </property>
+     </widget>
+     <widget class="Line" name="line_450">
+      <property name="geometry">
+       <rect>
+        <x>1020</x>
+        <y>860</y>
+        <width>141</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_451">
+      <property name="geometry">
+       <rect>
+        <x>1150</x>
+        <y>870</y>
+        <width>20</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_452">
+      <property name="geometry">
+       <rect>
+        <x>1010</x>
+        <y>870</y>
+        <width>20</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line_456">
+      <property name="geometry">
+       <rect>
+        <x>1020</x>
+        <y>910</y>
+        <width>141</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -7372,7 +7445,7 @@
        <rect>
         <x>30</x>
         <y>40</y>
-        <width>1111</width>
+        <width>1126</width>
         <height>291</height>
        </rect>
       </property>

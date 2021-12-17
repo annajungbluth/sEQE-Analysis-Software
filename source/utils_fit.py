@@ -27,6 +27,8 @@ l_guess = 0.150
 fopt_guess = 0.01
 lopt_guess = 0.150
 
+# Set floating point precision
+precision = 8  # decimal places
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -149,7 +151,7 @@ def guess_fit(eqe,
     if len(eqe) != 0:
 
         # Compile EQE to fit
-        wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, startE, stopE, 1)
+        wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe, startE, stopE, 1) # precision 8
 
         # Attempt peak fit:
         p0 = None
@@ -208,15 +210,17 @@ def guess_fit(eqe,
                                                                           include_disorder=include_disorder
                                                                           )
                     if r_squared > 0:
-                        return best_vals, r_squared
+                        return best_vals, covar, p0, r_squared
                     else:
                         raise ArithmeticError
                 except:
                     if p0 == p0_list[-1]:
                         if include_disorder:
                             best_vals = [0, 0, 0, 0, 0, 0, 0]
+                            covar = np.ones((7, 7))
                         else:
                             best_vals = [0, 0, 0, 0, 0, 0]
+                            covar = np.ones((6, 6))
                         r_squared = 0
         # Single peak fitting
         else:
@@ -239,7 +243,7 @@ def guess_fit(eqe,
                                                                        include_disorder=include_disorder
                                                                        )
                     if r_squared > 0:
-                        return best_vals, r_squared
+                        return best_vals, covar, p0, r_squared
                     else:
                         raise ArithmeticError
                 except Exception as e:
@@ -248,13 +252,15 @@ def guess_fit(eqe,
                     if p0_guess == p0_list[-1]:
                         if include_disorder:
                             best_vals = [0, 0, 0, 0]
+                            covar = np.ones((4, 4))
                         else:
                             best_vals = [0, 0, 0]
+                            covar = np.ones((3, 3))
                         r_squared = 0
 
-        return best_vals, r_squared
+        return best_vals, covar, p0, r_squared
 
-        # # Old code to loop through all initial guesses and determine the best fit
+        # NOTE: Old code to loop through all initial guesses and determine best fit
         # if include_disorder:
         #     best_guess_df = pd.DataFrame()
         #     p0_list = []
@@ -349,17 +355,17 @@ def calculate_guess_fit(x,
              df['Stop'][x]: Stop value of the fit [float]
     """
 
-    best_vals, r_squared = guess_fit(eqe=eqe,
-                                     startE=df['Start'][x],
-                                     stopE=df['Stop'][x],
-                                     function=function,
-                                     guessRange=guessRange,
-                                     guessRange_opt=guessRange_opt,
-                                     guessRange_sig=guessRange_sig,
-                                     include_disorder=include_disorder,
-                                     simultaneous_double=simultaneous_double,
-                                     bounds=bounds
-                                     )
+    best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
+                                                startE=df['Start'][x],
+                                                stopE=df['Stop'][x],
+                                                function=function,
+                                                guessRange=guessRange,
+                                                guessRange_opt=guessRange_opt,
+                                                guessRange_sig=guessRange_sig,
+                                                include_disorder=include_disorder,
+                                                simultaneous_double=simultaneous_double,
+                                                bounds=bounds
+                                                )
 
     return [best_vals, r_squared, df['Start'][x], df['Stop'][x]]
 
@@ -505,6 +511,7 @@ def fit_model(function,
              y_fit: calculated EQE values of the fit [list]
              r_squared: R^2 of the fit [float]
     """
+
     if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
         if include_disorder:
             p0 = [1, 1, 1, 1]
@@ -771,6 +778,7 @@ def find_best_fit(df_both,
                                                                    df_both['Fit_Opt'][max_index][2],
                                                                    T)
                                      for e in energy_plot])
+
             # print('-' * 80)
             # print(('Combined Best Fit:').format(n_fit))
             # print('-' * 25)
