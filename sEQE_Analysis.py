@@ -1809,7 +1809,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 print('-' * 80)
                 print("")
 
-                f_df = parameter_df.pivot('Stop', 'Start', 'f')  # Pivot dataFrame: x-value = Stop, y-value = Start, value = f
+                # Pivot dataFrame: x-value = Stop, y-value = Start, value = f
+                f_df = parameter_df.pivot('Stop', 'Start', 'f')
                 l_df = parameter_df.pivot('Stop', 'Start', 'l')
                 Ect_df = parameter_df.pivot('Stop', 'Start', 'Ect')
                 R_df = parameter_df.pivot('Stop', 'Start', 'R_Squared')
@@ -1906,7 +1907,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Gaussian function including disorder
 
-    # # Old function that I believe is incorrect
+    # NOTE: Old function that I believe is incorrect
     # def gaussian_disorder(self, E, f, l, Ect):
     #     """
     #     Standard gaussian function including disorder
@@ -1934,43 +1935,25 @@ class MainWindow(QtWidgets.QMainWindow):
                     4 * l * self.k * self.T_CT + 2 * sig ** 2)))
 
 
-
-    def gaussian_disorder_test(self, E, f, l, Ect, sig):
-        """
-        Standard gaussian functions including disorder to separately fit double peaks
-        :param E: List of energy values [list of floats]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Charge Transfer State Energy [float]
-        :param sig: Gaussian disorder [float]
-        :return: list of EQE values [list of floats]
-        """
-
-        return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
-            -(Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (
-                    sig ** 2 / (2 * self.k * self.T_CT)) - e) ** 2 / (
-                    4 * l * self.k * self.T_CT + 2 * sig ** 2)) for e in E]
-
-
     # -----------------------------------------------------------------------------------------------------------
 
     # MLJ function
 
-    def MLJ_gaussian(self, E, f, l_o, Ect):  # Double check if this equation is correct
+    def MLJ_gaussian(self, E, f, l, Ect):  # Double check if this equation is correct
         """
         MLJ function
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EQE value
         """
         EQE = 0
         for n in range(0, 6):
-            EQE_n = (f / (E * math.sqrt(4 * math.pi * l_o * self.T_x * self.k))) \
+            EQE_n = (f / (E * math.sqrt(4 * math.pi * l * self.T_x * self.k))) \
                     * (math.exp(-self.S_i) * self.S_i ** n / math.factorial(n)) \
-                    * exp(-(Ect + l_o - E + n * self.hbarw_i) ** 2 \
-                          / (4 * l_o * self.k * self.T_x))
+                    * exp(-(Ect + l - E + n * self.hbarw_i) ** 2 \
+                          / (4 * l * self.k * self.T_x))
             EQE += EQE_n
         return EQE
 
@@ -2002,6 +1985,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to scale and reduce EL and EQE
 
+    # TODO: Update function
     def pre_plot_EL_EQE(self,
                         data_df,
                         startE,
@@ -2155,6 +2139,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to fit reduced EL and EQE
 
+    # TODO: Update function
+    # TODO: Add sigma as a fit parameter
+    # TODO: Add guess fit function
     def fit_EL_EQE(self,
                    energy,
                    y,
@@ -2196,6 +2183,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.ui.Gaussian_EL_EQE.isChecked():  # Marcus Theory Fitting
 
                     if data_no == 0:  # EL Data
+                        # TODO: Add sigma as a fit parameter
                         if include_Disorder:  # Include Disorder in Fit
                             # y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
                             # y_fit_smooth = [x for x in y_fit_smooth]
@@ -2402,7 +2390,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Standard gaussian to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: reduced EL value
         """
@@ -2418,7 +2406,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Standard gaussian including disorder to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: reduced EL value
         """
@@ -2430,46 +2418,44 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function for reduced EL
 
-    # TODO: Change name of l_o for consistency
-    def MLJ_gaussian_EL(self, E, f, l_o, Ect):  # Double check if this equation is correct
+    def MLJ_gaussian_EL(self, E, f, l, Ect):  # Double check if this equation is correct
         """
         MLJ function to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EL value
         """
 
         EL = 0
         for n in range(0, 6):
-            EL_n = (f / (math.sqrt(4 * math.pi * l_o * self.T_EL * self.k))) \
+            EL_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) \
                    * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
-                   * exp(-(Ect - E - l_o - n * self.hbarw_i_EL) ** 2 \
-                         / (4 * l_o * self.k * self.T_EL))
+                   * exp(-(Ect - E - l - n * self.hbarw_i_EL) ** 2 \
+                         / (4 * l * self.k * self.T_EL))
             EL += EL_n
         return EL
 
     # MLJ function for reduced EL including disorder
 
     # TODO: Add sigma as a fit parameter
-    # TODO: Change name of l_o for consistency
-    def MLJ_gaussian_EL_disorder(self, E, f, l_o, Ect):  # Double check if this equation is correct
+    def MLJ_gaussian_EL_disorder(self, E, f, l, Ect):  # Double check if this equation is correct
         """
         MLJ function including disorder to fit EL
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EQE value
         """
 
         EL = 0
         for n in range(0, 6):
-            EL_n = (f / (math.sqrt(4 * math.pi * l_o * self.T_EL * self.k + 2 * self.sig_EL ** 2))) \
+            EL_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL ** 2))) \
                    * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
-                   * exp(-(Ect - E - l_o - n * self.hbarw_i_EL) ** 2 \
-                         / (4 * l_o * self.k * self.T_EL + 2 * self.sig_EL ** 2))
+                   * exp(-(Ect - E - l - n * self.hbarw_i_EL) ** 2 \
+                         / (4 * l * self.k * self.T_EL + 2 * self.sig_EL ** 2))
             EL += EL_n
         return EL
 
@@ -2482,7 +2468,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Standard gaussian function to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: reduced EL value
         """
@@ -2498,7 +2484,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Standard gaussian function including disorder to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: reduced EL value
         """
@@ -2510,46 +2496,44 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function for reduced EQE
 
-    # TODO: Change name of l_o for consistency
-    def MLJ_gaussian_EQE(self, E, f, l_o, Ect):  # Double check if this equation is correct
+    def MLJ_gaussian_EQE(self, E, f, l, Ect):  # Double check if this equation is correct
         """
         MLJ function to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EQE value
         """
 
         EQE = 0
         for n in range(0, 6):
-            EQE_n = (f / (math.sqrt(4 * math.pi * l_o * self.T_EL * self.k))) \
+            EQE_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) \
                     * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
-                    * exp(-(Ect - E + l_o + n * self.hbarw_i_EL) ** 2 \
-                          / (4 * l_o * self.k * self.T_EL))
+                    * exp(-(Ect - E + l + n * self.hbarw_i_EL) ** 2 \
+                          / (4 * l * self.k * self.T_EL))
             EQE += EQE_n
         return EQE
 
     # MLJ function for reduced EQE including disorder
 
-    # TODO: Change name of l_o for consistency
     # TODO: Add sigma as a fit parameter
-    def MLJ_gaussian_EQE_disorder(self, E, f, l_o, Ect):  # Double check if this equation is correct
+    def MLJ_gaussian_EQE_disorder(self, E, f, l, Ect):  # Double check if this equation is correct
         """
         MLJ function including disorder to fit reduced EQE
         :param E: List of energy values
         :param f: Oscillator strength
-        :param l_o: Reorganization Energy
+        :param l: Reorganization Energy
         :param Ect: Charge Transfer State Energy
         :return: EQE value
         """
 
         EQE = 0
         for n in range(0, 6):
-            EQE_n = (f / (math.sqrt(4 * math.pi * l_o * self.T_EL * self.k + 2 * self.sig_EL ** 2))) \
+            EQE_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL ** 2))) \
                     * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
-                    * exp(-(Ect - E + l_o + n * self.hbarw_i_EL) ** 2 \
-                          / (4 * l_o * self.k * self.T_EL + 2 * self.sig_EL ** 2))
+                    * exp(-(Ect - E + l + n * self.hbarw_i_EL) ** 2 \
+                          / (4 * l * self.k * self.T_EL + 2 * self.sig_EL ** 2))
             EQE += EQE_n
         return EQE
 
@@ -2918,14 +2902,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if startOpt_ok and stopOpt_ok and guessOpt_ok and startCT_ok and stopCT_ok and guessCT_ok:
 
-            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01), 3).tolist()  # Change step to 0.05
+            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01), 3).tolist() # Change step to 0.05
             stopRange_Opt = np.round(np.arange(stopStart_Opt, stopStop_Opt + 0.005, 0.01), 3).tolist()
 
             startRange_CT = np.round(np.arange(startStart_CT, startStop_CT + 0.005, 0.01), 3).tolist()
             stopRange_CT = np.round(np.arange(stopStart_CT, stopStop_CT + 0.005, 0.01), 3).tolist()
 
-            guessRange_Opt = np.round(np.arange(startGuess_Opt, stopGuess_Opt + 0.1, 0.05), 2).tolist()
-            guessRange_CT = np.round(np.arange(startGuess_CT, stopGuess_CT + 0.1, 0.05), 2).tolist()
+            guessRange_Opt = np.round(np.arange(startGuess_Opt, stopGuess_Opt + 0.1, 0.05), 3).tolist()
+            guessRange_CT = np.round(np.arange(startGuess_CT, stopGuess_CT + 0.1, 0.05), 3).tolist()
 
             # Compile a dataFrame with all combinations of start / stop values for Opt and CT fit
 
@@ -2967,10 +2951,11 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                   ), tqdm(range(len(df_Opt)))))
 
             best_vals_Opt = list(map(lambda list_: sep_list(list_, 0), cal_vals_Opt))
-
-            R2_Opt = list(map(lambda list_: sep_list(list_, 1), cal_vals_Opt))
+            covar_Opt = list(map(lambda list_: sep_list(list_, 1), cal_vals_Opt))
+            R2_Opt = list(map(lambda list_: sep_list(list_, 2), cal_vals_Opt))
 
             df_Opt['Fit'] = best_vals_Opt
+            df_Opt['Covar'] = covar_Opt
             df_Opt['R2'] = R2_Opt
 
             # Calculate CT state fits
@@ -2982,6 +2967,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             best_vals_Opt = []
             best_vals_CT = []
+
+            Opt_covar_list = []
+            CT_covar_list = []
 
             R2_Opt = []
             R2_CT = []
@@ -3008,10 +2996,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     for y in tqdm(range(len(df_CT))):
                         if df_Opt['R2'][x] > 0:  # Check that the optical peak fit was successful
 
-                            print('-----------------------------------------')
-                            print('Start: ', df_CT['Start'][y], ' Stop: ', df_CT['Stop'][y])
-                            print('Start Opt: ', df_Opt['Start'][x], 'Stop: ', df_Opt['Stop'][x])
-
                             new_eqe = subtract_Opt(eqe, df_Opt['Fit'][x], T=self.T_double)
 
                             if include_disorder:
@@ -3022,19 +3006,23 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                             guessRange=guessRange_CT,
                                                                             guessRange_sig=guessRange_Sig,
                                                                             include_disorder=True,
-                                                                            bounds=True # to use fit model instead of fit function
+                                                                            bounds=True # to use fit model
                                                                             )
                             else:
                                 best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
                                                                             startE=df_CT['Start'][y],
                                                                             stopE=df_CT['Stop'][y],
                                                                             function=self.gaussian_double,
-                                                                            guessRange=guessRange_CT
+                                                                            guessRange=guessRange_CT,
+                                                                            include_disorder=False,
+                                                                            bounds=None  # to use fit function
                                                                             )
                         else:
                             best_vals = [0, 0, 0]
                             r_squared = 0
 
+                        Opt_covar_list.append(df_Opt['Covar'][x])
+                        CT_covar_list.append(covar)
                         start_Opt_list.append(df_Opt['Start'][x])
                         stop_Opt_list.append(df_Opt['Stop'][x])
                         start_CT_list.append(df_CT['Start'][y])
@@ -3103,16 +3091,20 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                     guessRange=guessRange_CT,
                                                                     guessRange_sig=guessRange_Sig,
                                                                     include_disorder=True,
-                                                                    bounds=True  # to use fit model instead of fit function
+                                                                    bounds=True  # to use fit model
                                                                     )
                     else:
                         best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
                                                                     startE=df_CT['Start'][y],
                                                                     stopE=df_CT['Stop'][y],
                                                                     function=self.gaussian_double,
-                                                                    guessRange=guessRange_CT
+                                                                    guessRange=guessRange_CT,
+                                                                    include_disorder=False,
+                                                                    bounds=None  # to use fit function
                                                                     )
 
+                    Opt_covar_list.append(df_Opt['Covar'][x])
+                    CT_covar_list.append(covar)
                     start_Opt_list.append(df_Opt['Start'][best_fit_index])
                     stop_Opt_list.append(df_Opt['Stop'][best_fit_index])
                     start_CT_list.append(df_CT['Start'][y])
@@ -3157,16 +3149,19 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                         guessRange=guessRange_CT,
                                                                         guessRange_sig=guessRange_Sig,
                                                                         include_disorder=True,
-                                                                        bounds=True  # to use fit model instead of fit function
+                                                                        bounds=True  # to use fit model
                                                                         )
                         else:
                             best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
                                                                         startE=df_CT['Start'][y],
                                                                         stopE=df_CT['Stop'][y],
                                                                         function=self.gaussian_double,
-                                                                        guessRange=guessRange_CT
+                                                                        guessRange=guessRange_CT,
+                                                                        include_disorder=False,
+                                                                        bounds=None  # to use fit function
                                                                         )
-
+                    Opt_covar_list.append(df_Opt['Covar'][x])
+                    CT_covar_list.append(covar)
                     start_Opt_list.append(df_Opt['Start'][x])
                     stop_Opt_list.append(df_Opt['Stop'][x])
                     start_CT_list.append(df_CT['Start'][y])
@@ -3200,7 +3195,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.logger.info('Please select valid fit settings.')
 
-            # The same code but using map functions
+            # NOTE: The same code but using map functions
             # # If Optical peak to be subtracted before CT fit
             #
             # if self.ui.subtract_DoubleFit.isChecked():
@@ -3278,6 +3273,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 df_results['Stop_CT'] = stop_CT_list
                 df_results['Fit_CT'] = best_vals_CT
                 df_results['R2_CT'] = R2_CT
+                df_results['Covar_Opt'] = Opt_covar_list
+                df_results['Covar_CT'] = CT_covar_list
 
                 # Add combined fit to dataFrame
                 df_results['Total_R2'] = combined_R2_list
@@ -3327,23 +3324,6 @@ class MainWindow(QtWidgets.QMainWindow):
         return (f / (E * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(
             -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_double))
 
-    # Gaussian fitting function including disorder for double fit
-
-    # def gaussian_disorder_double(self, E, f, l, Ect, sig):
-    #     """
-    #     Standard gaussian functions including disorder to separately fit double peaks
-    #     :param E: List of energy values [list of floats]
-    #     :param f: Oscillator strength [float]
-    #     :param l: Reorganization Energy [float]
-    #     :param Ect: Charge Transfer State Energy [float]
-    #     :param sig: Gaussian disorder [float]
-    #     :return: list of EQE values [list of floats]
-    #     """
-    #
-    #     return [(f / (e * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
-    #         -(Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (
-    #                 sig ** 2 / (2 * self.k * self.T_double)) - e) ** 2 / (
-    #                 4 * l * self.k * self.T_double + 2 * sig ** 2)) for e in E]
 
     def gaussian_disorder_double(self, E, f, l, Ect, sig):
         """
@@ -3370,8 +3350,8 @@ class MainWindow(QtWidgets.QMainWindow):
         Function to perform simultaneous double peak fitting once
         :return: None
         """
-        # Import relevant parameters
 
+        # Import relevant parameters
         if self.ui.disorder_Sim.isChecked():
             include_disorder = True
         else:
@@ -3547,8 +3527,8 @@ class MainWindow(QtWidgets.QMainWindow):
         Function to perform simultaneous double peak fitting multiple times to find best fit
         :return: None
         """
-        # Import relevant parameters
 
+        # Import relevant parameters
         eqe = self.data_sim
         self.T_sim = self.ui.Temperature_Sim.value()
 
@@ -3602,6 +3582,8 @@ class MainWindow(QtWidgets.QMainWindow):
             best_vals_Opt = []
             best_vals_CT = []
 
+            covar_list = []
+
             start_list = []
             stop_list = []
 
@@ -3626,15 +3608,14 @@ class MainWindow(QtWidgets.QMainWindow):
                         p0 = self.sim_guess_sig
                         try:
                             best_vals, covar, y_fit, r_squared = fit_model_double(
-                                function=self.gaussian_disorder_double_sim,
-                                energy_fit=energy_fit,
-                                eqe_fit=eqe_fit,
-                                bound_dict=bound_dict,
-                                p0=p0,
-                                include_disorder=include_disorder,
-                                print_report=False
-                                )
-
+                                                                            function=self.gaussian_disorder_double_sim,
+                                                                            energy_fit=energy_fit,
+                                                                            eqe_fit=eqe_fit,
+                                                                            bound_dict=bound_dict,
+                                                                            p0=p0,
+                                                                            include_disorder=include_disorder,
+                                                                            print_report=False
+                                                                            )
                             best_CT = [
                                 best_vals[0],
                                 best_vals[1],
@@ -3660,7 +3641,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                                   print_report=False
                                                                                   )
 
-                            # NOTE:Old Code to test guess_fit function
+                            # NOTE: Old Code to test guess_fit function
                             # best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
                             #                                             startE=df['Start'][x],
                             #                                             stopE=df['Stop'][x],
@@ -3696,6 +3677,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                 include_disorder=include_disorder
                                                                 )
 
+                        covar_list.append(covar)
+
                         start_list.append(df['Start'][x])
                         stop_list.append(df['Stop'][x])
                         best_vals_CT.append(best_CT)
@@ -3726,6 +3709,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 df_results['R2_Opt'] = R2_Opt_list
                 df_results['Fit_CT'] = best_vals_CT
                 df_results['R2_CT'] = R2_CT_list
+                df_results['Covar'] = covar_list
 
                 # Add combined fit to dataFrame
                 df_results['Total_R2'] = R2_sum_list

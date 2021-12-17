@@ -1,3 +1,4 @@
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -108,6 +109,230 @@ def fit_function(function,
                 best_vals[1],
                 best_vals[2]
             ) for x in energy_fit]
+    r_squared = R_squared(eqe_fit, y_fit)
+
+    return best_vals, covar, y_fit, r_squared
+
+
+# -----------------------------------------------------------------------------------------------------------
+
+# Function to perform curve fit using lmfit.Model
+
+def fit_model(function,
+              energy_fit,
+              eqe_fit,
+              p0=None,
+              include_disorder=False
+              ):
+    """
+    Function to perform curve fit using lmfit
+    This function is used for standard / disorder single peak fits.
+    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
+    :param energy_fit: energy values to fit against [list or array]
+    :param eqe_fit: EQE values to fit against [list or array]
+    :param p0: list of initial guesses for curve_fit function [list]
+    :param include_disorder: boolean value
+    :return: best_vals: list of best fit parameters [list]
+             covar: covariance matrix of fit
+             y_fit: calculated EQE values of the fit [list]
+             r_squared: R^2 of the fit [float]
+    """
+
+    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
+        if include_disorder:
+            p0 = [1, 1, 1, 1]
+        else:
+            p0 = [1, 1, 1]
+
+    gmodel = Model(function)
+
+    gmodel.set_param_hint('Ect', min=0, max=1.6)
+    gmodel.set_param_hint('l', min=0, max=0.6) # changed from 0.4
+    gmodel.set_param_hint('f', min=0, max=0.1) # changed from 0.4
+
+    if include_disorder:
+        gmodel.set_param_hint('sig', min=0, max=0.2)
+
+        result = gmodel.fit(eqe_fit,
+                            f=p0[0],
+                            l=p0[1],
+                            Ect=p0[2],
+                            sig=p0[3],
+                            E=energy_fit
+                            )
+
+        f = float(result.params['f'].value)
+        l = float(result.params['l'].value)
+        Ect = float(result.params['Ect'].value)
+        sig = float(result.params['sig'].value)
+
+        best_vals = [f, l, Ect, sig]
+
+        covar = result.covar
+        if covar is None:
+            covar = np.ones((4, 4))
+
+        y_fit = gmodel.eval(E=np.array(energy_fit),
+                            f=f,
+                            l=l,
+                            Ect=Ect,
+                            sig=sig
+                            )
+    else:
+        result = gmodel.fit(eqe_fit,
+                            f=p0[0],
+                            l=p0[1],
+                            Ect=p0[2],
+                            E=energy_fit
+                            )
+
+        f = float(result.params['f'].value)
+        l = float(result.params['l'].value)
+        Ect = float(result.params['Ect'].value)
+
+        best_vals = [f, l, Ect]
+
+        covar = result.covar
+        if covar is None:
+            covar = np.ones((4, 4))
+
+        y_fit = gmodel.eval(E=np.array(energy_fit),
+                            f=f,
+                            l=l,
+                            Ect=Ect
+                            )
+
+    r_squared = R_squared(eqe_fit, y_fit)
+
+    return best_vals, covar, y_fit, r_squared
+
+
+# -----------------------------------------------------------------------------------------------------------
+
+# Function to perform curve fit using lmfit.Model
+
+def fit_model_double(function,
+                     energy_fit,
+                     eqe_fit,
+                     bound_dict,
+                     p0=None,
+                     include_disorder=False,
+                     print_report=False
+                     ):
+    """
+    Function to perform curve fit using lmfit
+    This function is used for simultaneous double peak fitting
+    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
+    :param energy_fit: energy values to fit against [list or array]
+    :param eqe_fit: EQE values to fit against [list or array]
+    :param bound_dict: dictionary of boundary values [dict]
+                       dict keys:
+                       start_ECT, stop_ECT
+                       start_lCT, stop_lCT
+                       start_fCT, stop_fCT
+                       start_Eopt, stop_Eopt
+                       start_lopt, stop_lopt
+                       start_fopt, stop_fopt
+                       start_sig, stop_sig
+    :param p0: list of initial guesses for curve_fit function [list]
+    :param include_disorder: boolean value to specify whether to include disorder [bool]
+    :param print_report: boolean value to specify whether to print fit report [bool]
+    :return: best_vals: list of best fit parameters [list]
+             covar: covariance matrix of fit
+             y_fit: calculated EQE values of the fit [list]
+             r_squared: R^2 of the fit [float]
+    """
+    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
+        if include_disorder:
+            p0 = [1, 1, 1, 1, 1, 1, 1]
+        else:
+            p0 = [1, 1, 1, 1, 1, 1]
+
+    gmodel = Model(function)
+
+    gmodel.set_param_hint('ECT', min=bound_dict['start_ECT'], max=bound_dict['stop_ECT'])
+    gmodel.set_param_hint('lCT', min=bound_dict['start_lCT'], max=bound_dict['stop_lCT'])
+    gmodel.set_param_hint('fCT', min=bound_dict['start_fCT'], max=bound_dict['stop_fCT'])
+    gmodel.set_param_hint('Eopt', min=bound_dict['start_Eopt'], max=bound_dict['stop_Eopt'])
+    gmodel.set_param_hint('lopt', min=bound_dict['start_lopt'], max=bound_dict['stop_lopt'])
+    gmodel.set_param_hint('fopt', min=bound_dict['start_fopt'], max=bound_dict['stop_fopt'])
+
+    if include_disorder:
+        gmodel.set_param_hint('sig', min=bound_dict['start_sig'], max=bound_dict['stop_sig'])
+
+        result = gmodel.fit(eqe_fit,
+                            E=energy_fit,
+                            fCT=p0[0],
+                            lCT=p0[1],
+                            ECT=p0[2],
+                            fopt=p0[3],
+                            lopt=p0[4],
+                            Eopt=p0[5],
+                            sig=p0[6]
+                            )
+
+        if print_report:
+            print(result.fit_report())
+
+        fCT = float(result.params['fCT'].value)
+        lCT = float(result.params['lCT'].value)
+        ECT = float(result.params['ECT'].value)
+        fopt = float(result.params['fopt'].value)
+        lopt = float(result.params['lopt'].value)
+        Eopt = float(result.params['Eopt'].value)
+        sig = float(result.params['sig'].value)
+
+        best_vals = [fCT, lCT, ECT, fopt, lopt, Eopt, sig]
+
+        covar = result.covar
+        if covar is None:
+            covar = np.ones((7, 7))
+
+        y_fit = gmodel.eval(E=np.array(energy_fit),
+                            fCT=fCT,
+                            lCT=lCT,
+                            ECT=ECT,
+                            fopt=fopt,
+                            lopt=lopt,
+                            Eopt=Eopt,
+                            sig=sig
+                            )
+    else:
+        result = gmodel.fit(eqe_fit,
+                            E=energy_fit,
+                            fCT=p0[0],
+                            lCT=p0[1],
+                            ECT=p0[2],
+                            fopt=p0[3],
+                            lopt=p0[4],
+                            Eopt=p0[5]
+                            )
+
+        if print_report:
+            print(result.fit_report())
+
+        fCT = float(result.params['fCT'].value)
+        lCT = float(result.params['lCT'].value)
+        ECT = float(result.params['ECT'].value)
+        fopt = float(result.params['fopt'].value)
+        lopt = float(result.params['lopt'].value)
+        Eopt = float(result.params['Eopt'].value)
+
+        best_vals = [fCT, lCT, ECT, fopt, lopt, Eopt]
+
+        covar = result.covar
+        if covar is None:
+            covar = np.ones((6, 6))
+
+        y_fit = gmodel.eval(E=np.array(energy_fit),
+                            fCT=fCT,
+                            lCT=lCT,
+                            ECT=ECT,
+                            fopt=fopt,
+                            lopt=lopt,
+                            Eopt=Eopt
+                            )
+
     r_squared = R_squared(eqe_fit, y_fit)
 
     return best_vals, covar, y_fit, r_squared
@@ -367,7 +592,7 @@ def calculate_guess_fit(x,
                                                 bounds=bounds
                                                 )
 
-    return [best_vals, r_squared, df['Start'][x], df['Stop'][x]]
+    return [best_vals, covar, r_squared, df['Start'][x], df['Stop'][x]]
 
 
 # -----------------------------------------------------------------------------------------------------------
@@ -427,7 +652,8 @@ def map_fit(x,
                                                   ), range(len(df_CT))))
 
             best_vals_CT = list(map(lambda list_: sep_list(list_, 0), cal_vals_CT))
-            R2_CT = list(map(lambda list_: sep_list(list_, 1), cal_vals_CT))
+            covar_CT = list(map(lambda list_: sep_list(list_, 1), cal_vals_CT))
+            R2_CT = list(map(lambda list_: sep_list(list_, 2), cal_vals_CT))
 
         else:
             best_vals_CT = [0, 0, 0]
@@ -447,6 +673,7 @@ def map_fit(x,
                                               ), range(len(df_CT))))
 
         best_vals_CT = list(map(lambda list_: sep_list(list_, 0), cal_vals_CT))
+        covar_CT = list(map(lambda list_: sep_list(list_, 1), cal_vals_CT))
         R2_CT = list(map(lambda list_: sep_list(list_, 1), cal_vals_CT))
 
     start_Opt_list = [df_Opt['Start'][x]]
@@ -490,230 +717,6 @@ def map_fit(x,
 
 # -----------------------------------------------------------------------------------------------------------
 
-# Function to perform curve fit using lmfit.Model
-
-def fit_model(function,
-              energy_fit,
-              eqe_fit,
-              p0=None,
-              include_disorder=False
-              ):
-    """
-    Function to perform curve fit using lmfit
-    This function is used for standard / disorder single peak fits.
-    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
-    :param energy_fit: energy values to fit against [list or array]
-    :param eqe_fit: EQE values to fit against [list or array]
-    :param p0: list of initial guesses for curve_fit function [list]
-    :param include_disorder: boolean value
-    :return: best_vals: list of best fit parameters [list]
-             covar: covariance matrix of fit
-             y_fit: calculated EQE values of the fit [list]
-             r_squared: R^2 of the fit [float]
-    """
-
-    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
-        if include_disorder:
-            p0 = [1, 1, 1, 1]
-        else:
-            p0 = [1, 1, 1]
-
-    gmodel = Model(function)
-
-    gmodel.set_param_hint('Ect', min=0, max=1.6)
-    gmodel.set_param_hint('l', min=0, max=0.6) # changed from 0.4
-    gmodel.set_param_hint('f', min=0, max=0.1) # changed from 0.4
-
-    if include_disorder:
-        gmodel.set_param_hint('sig', min=0, max=0.2)
-
-        result = gmodel.fit(eqe_fit,
-                            f=p0[0],
-                            l=p0[1],
-                            Ect=p0[2],
-                            sig=p0[3],
-                            E=energy_fit
-                            )
-
-        f = float(result.params['f'].value)
-        l = float(result.params['l'].value)
-        Ect = float(result.params['Ect'].value)
-        sig = float(result.params['sig'].value)
-
-        best_vals = [f, l, Ect, sig]
-
-        covar = result.covar
-        if covar is None:
-            covar = np.zeros((4, 4))
-
-        y_fit = gmodel.eval(E=np.array(energy_fit),
-                            f=f,
-                            l=l,
-                            Ect=Ect,
-                            sig=sig
-                            )
-    else:
-        result = gmodel.fit(eqe_fit,
-                            f=p0[0],
-                            l=p0[1],
-                            Ect=p0[2],
-                            E=energy_fit
-                            )
-
-        f = float(result.params['f'].value)
-        l = float(result.params['l'].value)
-        Ect = float(result.params['Ect'].value)
-
-        best_vals = [f, l, Ect]
-
-        covar = result.covar
-        if covar is None:
-            covar = np.zeros((4, 4))
-
-        y_fit = gmodel.eval(E=np.array(energy_fit),
-                            f=f,
-                            l=l,
-                            Ect=Ect
-                            )
-
-    r_squared = R_squared(eqe_fit, y_fit)
-
-    return best_vals, covar, y_fit, r_squared
-
-
-# -----------------------------------------------------------------------------------------------------------
-
-# Function to perform curve fit using lmfit.Model
-
-def fit_model_double(function,
-                     energy_fit,
-                     eqe_fit,
-                     bound_dict,
-                     p0=None,
-                     include_disorder=False,
-                     print_report=False
-                     ):
-    """
-    Function to perform curve fit using lmfit
-    This function is used for simultaneous double peak fitting
-    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
-    :param energy_fit: energy values to fit against [list or array]
-    :param eqe_fit: EQE values to fit against [list or array]
-    :param bound_dict: dictionary of boundary values [dict]
-                       dict keys:
-                       start_ECT, stop_ECT
-                       start_lCT, stop_lCT
-                       start_fCT, stop_fCT
-                       start_Eopt, stop_Eopt
-                       start_lopt, stop_lopt
-                       start_fopt, stop_fopt
-                       start_sig, stop_sig
-    :param p0: list of initial guesses for curve_fit function [list]
-    :param include_disorder: boolean value to specify whether to include disorder [bool]
-    :param print_report: boolean value to specify whether to print fit report [bool]
-    :return: best_vals: list of best fit parameters [list]
-             covar: covariance matrix of fit
-             y_fit: calculated EQE values of the fit [list]
-             r_squared: R^2 of the fit [float]
-    """
-    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
-        if include_disorder:
-            p0 = [1, 1, 1, 1, 1, 1, 1]
-        else:
-            p0 = [1, 1, 1, 1, 1, 1]
-
-    gmodel = Model(function)
-
-    gmodel.set_param_hint('ECT', min=bound_dict['start_ECT'], max=bound_dict['stop_ECT'])
-    gmodel.set_param_hint('lCT', min=bound_dict['start_lCT'], max=bound_dict['stop_lCT'])
-    gmodel.set_param_hint('fCT', min=bound_dict['start_fCT'], max=bound_dict['stop_fCT'])
-    gmodel.set_param_hint('Eopt', min=bound_dict['start_Eopt'], max=bound_dict['stop_Eopt'])
-    gmodel.set_param_hint('lopt', min=bound_dict['start_lopt'], max=bound_dict['stop_lopt'])
-    gmodel.set_param_hint('fopt', min=bound_dict['start_fopt'], max=bound_dict['stop_fopt'])
-
-    if include_disorder:
-        gmodel.set_param_hint('sig', min=bound_dict['start_sig'], max=bound_dict['stop_sig'])
-
-        result = gmodel.fit(eqe_fit,
-                            E=energy_fit,
-                            fCT=p0[0],
-                            lCT=p0[1],
-                            ECT=p0[2],
-                            fopt=p0[3],
-                            lopt=p0[4],
-                            Eopt=p0[5],
-                            sig=p0[6]
-                            )
-
-        if print_report:
-            print(result.fit_report())
-
-        fCT = float(result.params['fCT'].value)
-        lCT = float(result.params['lCT'].value)
-        ECT = float(result.params['ECT'].value)
-        fopt = float(result.params['fopt'].value)
-        lopt = float(result.params['lopt'].value)
-        Eopt = float(result.params['Eopt'].value)
-        sig = float(result.params['sig'].value)
-
-        best_vals = [fCT, lCT, ECT, fopt, lopt, Eopt, sig]
-
-        covar = result.covar
-        if covar is None:
-            covar = np.zeros((7, 7))
-
-        y_fit = gmodel.eval(E=np.array(energy_fit),
-                            fCT=fCT,
-                            lCT=lCT,
-                            ECT=ECT,
-                            fopt=fopt,
-                            lopt=lopt,
-                            Eopt=Eopt,
-                            sig=sig
-                            )
-    else:
-        result = gmodel.fit(eqe_fit,
-                            E=energy_fit,
-                            fCT=p0[0],
-                            lCT=p0[1],
-                            ECT=p0[2],
-                            fopt=p0[3],
-                            lopt=p0[4],
-                            Eopt=p0[5]
-                            )
-
-        if print_report:
-            print(result.fit_report())
-
-        fCT = float(result.params['fCT'].value)
-        lCT = float(result.params['lCT'].value)
-        ECT = float(result.params['ECT'].value)
-        fopt = float(result.params['fopt'].value)
-        lopt = float(result.params['lopt'].value)
-        Eopt = float(result.params['Eopt'].value)
-
-        best_vals = [fCT, lCT, ECT, fopt, lopt, Eopt]
-
-        covar = result.covar
-        if covar is None:
-            covar = np.zeros((6, 6))
-
-        y_fit = gmodel.eval(E=np.array(energy_fit),
-                            fCT=fCT,
-                            lCT=lCT,
-                            ECT=ECT,
-                            fopt=fopt,
-                            lopt=lopt,
-                            Eopt=Eopt
-                            )
-
-    r_squared = R_squared(eqe_fit, y_fit)
-
-    return best_vals, covar, y_fit, r_squared
-
-
-# -----------------------------------------------------------------------------------------------------------
-
     # Function to determine the best fit for separate double peak fitting
 
 def find_best_fit(df_both,
@@ -746,28 +749,38 @@ def find_best_fit(df_both,
         max_index = df_both[df_both['Total_R2'] == max(df_both['Total_R2'])].index.values[0]
 
         if simultaneous_double: # Adjusts some of the print statements
-            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
-                                                                         df_both['Stop'][max_index] * ext_factor, 1)
+            wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe,
+                                                                         min(eqe['Energy']),
+                                                                         df_both['Stop'][max_index] * ext_factor,
+                                                                         1)
             Opt_fit_plot = np.array([calculate_gaussian_absorption(e,
                                                                    df_both['Fit_Opt'][max_index][0],
                                                                    df_both['Fit_Opt'][max_index][1],
                                                                    df_both['Fit_Opt'][max_index][2],
                                                                    T)
                                      for e in energy_plot])
+
             print('-' * 35)
             print('R_Squared : ', format(df_both['Total_R2'][max_index], '.6f'))
             print('Fit Range (eV): ', df_both['Start'][max_index], ' - ', df_both['Stop'][max_index])
             print('-' * 35)
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'))
-            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'))
-            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'))
+            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar'][max_index][3, 3]), '.6f'))
+            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar'][max_index][4, 4]), '.6f'))
+            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar'][max_index][5, 5]), '.6f'))
             print('-' * 35)
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'))
-            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'))
-            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'))
+            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar'][max_index][0, 0]), '.6f'))
+            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar'][max_index][1, 1]), '.6f'))
+            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar'][max_index][2, 2]), '.6f'))
 
             if include_disorder:
-                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'))
+                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'),
+                      '+/-', format(math.sqrt(df_both['Covar'][max_index][6, 6]), '.6f'))
 
         else:
             wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
@@ -787,17 +800,24 @@ def find_best_fit(df_both,
             print('R_Squared : ', format(df_both['Total_R2'][max_index], '.6f'))
             print('-' * 35)
             print('Opt Fit Range (eV): ', df_both['Start_Opt'][max_index], ' - ', df_both['Stop_Opt'][max_index])
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'))
-            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'))
-            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'))
+            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar_Opt'][max_index][0, 0]), '.6f'))
+            print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar_Opt'][max_index][1, 1]), '.6f'))
+            print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar_Opt'][max_index][2, 2]), '.6f'))
             print('-' * 35)
             print('CT Fit Range (eV): ', df_both['Start_CT'][max_index], ' - ', df_both['Stop_CT'][max_index])
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'))
-            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'))
-            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'))
+            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][0, 0]), '.6f'))
+            print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][1, 1]), '.6f'))
+            print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'),
+                  '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][2, 2]), '.6f'))
 
             if include_disorder:
-                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'))
+                print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'),
+                      '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][3, 3]), '.6f'))
 
             # print('Temperature [T] (K) : ', T)
             # print('-' * 80)
