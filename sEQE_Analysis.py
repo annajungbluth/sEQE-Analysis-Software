@@ -1245,8 +1245,10 @@ class MainWindow(QtWidgets.QMainWindow):
                               format(math.sqrt(covar[2, 2]), '.6f'))
 
                     if include_Disorder:
-                        print('Disorder (eV) : ', format(best_vals[3], '.6f'), '+/-',
+                        print('Sigma (eV) : ', format(best_vals[3], '.6f'), '+/-',
                               format(math.sqrt(covar[3, 3]), '.6f'))
+                        W = best_vals[1]*self.T_CT + (best_vals[3]**2)/(2*self.k)
+                        print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
                     print('R_Squared : ', format(r_squared, '.6f'))
                     print('-' * 80)
@@ -1420,6 +1422,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     #     except:
                     #         p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
 
+                # TODO: Implement save fit function
+
                 if fit_ok:
                     self.logger.info('Fit Results: ')
                     print("")
@@ -1434,8 +1438,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     print('CT State Energy [ECT] (eV) : ', format(best_vals[2], '.6f'), '+/-',
                           format(math.sqrt(covar[2, 2]), '.6f'))
                     if include_Disorder:
-                        print('Disorder (eV) : ', format(best_vals[3], '.6f'), '+/-',
+                        print('Sigma (eV) : ', format(best_vals[3], '.6f'), '+/-',
                               format(math.sqrt(covar[3, 3]), '.6f'))
+                        W = best_vals[1]*self.T_x + (best_vals[3]**2)/(2*self.k)
+                        print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
                     print('R_Squared : ', format(r_squared, '.6f'))
                     print('-' * 80)
@@ -1768,8 +1774,15 @@ class MainWindow(QtWidgets.QMainWindow):
                           format(parameter_df['Ect'].std(), '.6f'))
 
                 if include_Disorder:
-                    print('Average Gaussian Disorder [Sig] (eV) : ', format(parameter_df['Sig'].mean(), '.6f'), '+/-',
+                    print('Average Sigma [Sig] (eV) : ', format(parameter_df['Sig'].mean(), '.6f'), '+/-',
                           format(parameter_df['Sig'].std(), '.6f'))
+                    if file_no == 'x1':
+                        Average_W = parameter_df['l'].mean() * self.T_x + (parameter_df['Sig'].mean() ** 2) / (
+                                    2 * self.k)
+                    else:
+                        Average_W = parameter_df['l'].mean() * self.T_CT + (parameter_df['Sig'].mean() ** 2) / (
+                                2 * self.k)
+                    print('Gaussian Variance [W] (eV K) : ', format(Average_W, '.2f'))
 
                 print('Average R_Squared : ', format(parameter_df['R_Squared'].mean(), '.6f'), '+/-',
                       format(parameter_df['R_Squared'].std(), '.6f'))
@@ -1798,9 +1811,16 @@ class MainWindow(QtWidgets.QMainWindow):
                               format(parameter_df['Ect'][parameter_df['R_Squared'] == 1.0].std(), '.6f'))
 
                     if include_Disorder:
-                        print('Average Gaussian Disorder [Sig] (eV) : ',
+                        print('Average Sigma [Sig] (eV) : ',
                               format(parameter_df['Sig'][parameter_df['R_Squared'] == 1.0].mean(), '.6f'), '+/-',
                               format(parameter_df['Sig'][parameter_df['R_Squared'] == 1.0].std(), '.6f'))
+                        if file_no == 'x1':
+                            Average_W = parameter_df['l'][parameter_df['R_Squared'] == 1.0].mean() * self.T_x + (
+                                    parameter_df['Sig'][parameter_df['R_Squared'] == 1.0].mean() ** 2) / (2 * self.k)
+                        else:
+                            Average_W = parameter_df['l'][parameter_df['R_Squared'] == 1.0].mean() * self.T_CT + (
+                                    parameter_df['Sig'][parameter_df['R_Squared'] == 1.0].mean() ** 2) / (2 * self.k)
+                        print('Gaussian Variance [W] (eV K) : ', format(Average_W, '.2f'))
 
                 else:
                     print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
@@ -1878,7 +1898,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.heatmap_5 = seaborn.heatmap(Sig_df, xticklabels=3, yticklabels=3)
                     plt.xlabel('Initial Energy Value (eV)', fontsize=17, fontweight='medium')
                     plt.ylabel('Final Energy Value (eV)', fontsize=17, fontweight='medium')
-                    plt.title('Gaussian Disorder (eV)', fontsize=17, fontweight='medium')
+                    plt.title('Sigma (eV)', fontsize=17, fontweight='medium')
                     cbar = self.heatmap_5.collections[0].colorbar
                     cbar.ax.tick_params(labelsize=15)
                     plt.yticks(rotation=360)
@@ -2142,6 +2162,7 @@ class MainWindow(QtWidgets.QMainWindow):
     # TODO: Update function
     # TODO: Add sigma as a fit parameter
     # TODO: Add guess fit function
+    # TODO: Implement save fit function
     def fit_EL_EQE(self,
                    energy,
                    y,
@@ -3290,6 +3311,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.logger.info('Fit Results: ')
                 print("")
 
+                # Save fit data
+                if self.ui.save_DoubleFit.isChecked():
+                    save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
+                    save_fit = True
+                    self.logger.info('Saving fit data.')
+                else:
+                    save_fit_file = None
+                    save_fit = False
+
                 label = pick_EQE_Label(self.ui.textBox_dF2, self.ui.textBox_dF1)
 
                 for x in np.arange(1, 6, 1):
@@ -3300,7 +3330,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                                T=self.T_double,
                                                label=label,
                                                n_fit=x,
-                                               include_disorder=include_disorder
+                                               include_disorder=include_disorder,
+                                               save_fit=save_fit,
+                                               save_fit_file=save_fit_file
                                                )
                 print('-' * 80)
                 print("")
@@ -3441,6 +3473,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if include_disorder:
             print('Sigma (eV) : ', format(best_vals[6], '.6f'), '+/-', format(math.sqrt(covar[6, 6]), '.6f'))
+            W = best_vals[1] * self.T_sim + (best_vals[6] ** 2) / (2 * self.k)
+            print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
         # print('Temperature [T] (K) : ', T)
         # print('-' * 80)
@@ -3504,19 +3538,34 @@ class MainWindow(QtWidgets.QMainWindow):
         axDouble_2.legend()
 
         if self.ui.save_simDoubleFit.isChecked():
-            fit_file = pd.DataFrame()
-            fit_file['Energy'] = x_plot
-            fit_file['Fit Sum'] = y_sum
-            fit_file['Fit CT Peak'] = y_CT
-            fit_file['Fit Optical Peak'] = y_opt
+            opt_file = pd.DataFrame()
+            opt_file['Energy'] = x_plot
+            opt_file['Signal'] = y_opt
+            opt_file['Temperature'] = self.T_sim
+            opt_file['Oscillator Strength (eV**2)'] = best_vals[3]
+            opt_file['Reorganization Energy (eV)'] = best_vals[4]
+            opt_file['Optical Peak Energy (eV)'] = best_vals[5]
+
+            CT_file = pd.DataFrame()
+            CT_file['Energy'] = x_plot
+            CT_file['Signal'] = y_CT
+            CT_file['Temperature'] = self.T_sim
+            CT_file['Oscillator Strength (eV**2)'] = best_vals[0]
+            CT_file['Reorganization Energy (eV)'] = best_vals[1]
+            CT_file['CT State Energy (eV)'] = best_vals[2]
+
+            if include_disorder:
+                CT_file['Sigma (eV)'] = best_vals[6]
 
             save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
             save_fit_path, save_fit_filename = os.path.split(save_fit_file)
             if len(save_fit_path) != 0:  # Check if the user actually selected a path
                 os.chdir(save_fit_path)  # Change the working directory
-                fit_file.to_csv(save_fit_filename)  # Save data to csv
+                opt_file.to_csv(f'{save_fit_filename}_Fit_simDouble_Opt')  # Save data to csv
+                CT_file.to_csv(f'{save_fit_filename}_Fit_simDouble_CT')  # Save data to csv
                 self.logger.info('Saving fit data to: %s' % str(save_fit_file))
                 os.chdir(self.data_dir)  # Change the directory back
+
 
     # -----------------------------------------------------------------------------------------------------------
 
@@ -3726,6 +3775,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.logger.info('Fit Results: ')
                 print("")
 
+                # Save fit data
+                if self.ui.save_simDoubleFit.isChecked():
+                    save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
+                    save_fit = True
+                    self.logger.info('Saving fit data.')
+                else:
+                    save_fit_file = None
+                    save_fit = False
+
                 label = pick_EQE_Label(self.ui.textBox_simFit_label, self.ui.textBox_simFit)
 
                 for x in np.arange(1, 6, 1):
@@ -3737,7 +3795,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                                label=label,
                                                n_fit=x,
                                                include_disorder=include_disorder,
-                                               simultaneous_double=True
+                                               simultaneous_double=True,
+                                               save_fit=save_fit,
+                                               save_fit_file=save_fit_file
                                                )
 
                 print('-' * 80)

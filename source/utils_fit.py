@@ -1,10 +1,12 @@
 import math
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from lmfit import Model
 from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
+from tkinter import filedialog
 
 from source.compilation import compile_EQE
 from source.gaussian import calculate_combined_fit, calculate_gaussian_absorption, calculate_gaussian_disorder_absorption
@@ -19,6 +21,8 @@ from source.plot import set_up_plot
 # Define parameters for initial guesses
 # NOTE: Modify initial guesses if fit is unsuccessful
 # NOTE: Some of these parameters are repeated/hard coded in sEQE_Analysis.py
+
+k = 8.617 * math.pow(10, -5)  # [ev/K]
 
 # These values are used for single and simultaneous double fitting
 f_guess = 0.001
@@ -726,7 +730,9 @@ def find_best_fit(df_both,
                   n_fit=0,
                   include_disorder=False,
                   simultaneous_double=False,
-                  ext_factor=1.2
+                  ext_factor=1.2,
+                  save_fit=False,
+                  save_fit_file=None
                   ):
     """
     Function to find best EQE fits
@@ -738,6 +744,8 @@ def find_best_fit(df_both,
     :param include_disorder: boolean of whether to include disorder [bool]
     :param simultaneous_double: boolean value to specify whether double peaks were fit simultaneously [bool]
     :param ext_factor: multiplication factor to extend data for R2 calculation [float]
+    :param save_fit: boolean value to specify whether to save the fit
+    :param save_fit_file: directory and folder name to save data to [string]
     :return: df_copy: copy of df_both [dataFrame]
     """
 
@@ -781,6 +789,8 @@ def find_best_fit(df_both,
             if include_disorder:
                 print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'),
                       '+/-', format(math.sqrt(df_both['Covar'][max_index][6, 6]), '.6f'))
+                W = df_both['Fit_CT'][max_index][1] * T + (df_both['Fit_CT'][max_index][3] ** 2) / (2 * k)
+                print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
         else:
             wave_plot, energy_plot, eqe_plot, log_eqe_plot = compile_EQE(eqe, min(eqe['Energy']),
@@ -818,9 +828,42 @@ def find_best_fit(df_both,
             if include_disorder:
                 print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'),
                       '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][3, 3]), '.6f'))
+                W = df_both['Fit_CT'][max_index][1] * T + (df_both['Fit_CT'][max_index][3] ** 2) / (2 * k)
+                print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
             # print('Temperature [T] (K) : ', T)
             # print('-' * 80)
+
+        # Save fit data
+        if save_fit:
+            opt_file = pd.DataFrame()
+            opt_file['Energy'] = df_both['Energy'][max_index]
+            opt_file['Signal'] = df_both['Opt_Fit'][max_index]
+            opt_file['Temperature'] = T
+            opt_file['Oscillator Strength (eV**2)'] = df_both['Fit_Opt'][max_index][0]
+            opt_file['Reorganization Energy (eV)'] = df_both['Fit_Opt'][max_index][1]
+            opt_file['Optical Peak Energy (eV)'] = df_both['Fit_Opt'][max_index][2]
+
+            CT_file = pd.DataFrame()
+            CT_file['Energy'] = df_both['Energy'][max_index]
+            CT_file['Signal'] = df_both['CT_Fit'][max_index]
+            CT_file['Temperature'] = T
+            CT_file['Oscillator Strength (eV**2)'] = df_both['Fit_CT'][max_index][0]
+            CT_file['Reorganization Energy (eV)'] = df_both['Fit_CT'][max_index][1]
+            CT_file['CT State Energy (eV)'] = df_both['Fit_CT'][max_index][2]
+
+            if include_disorder:
+                CT_file['Sigma (eV)'] = df_both['Fit_CT'][max_index][3]
+
+            save_fit_path, save_fit_filename = os.path.split(save_fit_file)
+            if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                os.chdir(save_fit_path)  # Change the working directory
+                if simultaneous_double:
+                    opt_file.to_csv(f'{save_fit_filename}_Fit_simDouble_Opt_Range{n_fit}')  # Save data to csv
+                    CT_file.to_csv(f'{save_fit_filename}_Fit_simDouble_CT_Range{n_fit}')  # Save data to csv
+                else:
+                    opt_file.to_csv(f'{save_fit_filename}_Fit_Opt_Range{n_fit}')  # Save data to csv
+                    CT_file.to_csv(f'{save_fit_filename}_Fit_subOpt_CT_Range{n_fit}')  # Save data to csv
 
         axDouble_1, axDouble_2 = set_up_plot(flag='Energy')
 
