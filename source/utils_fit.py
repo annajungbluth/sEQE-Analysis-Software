@@ -174,7 +174,7 @@ def fit_model(function,
 
         covar = result.covar
         if covar is None:
-            covar = np.ones((4, 4))
+            covar = np.zeros((4, 4))
 
         y_fit = gmodel.eval(E=np.array(energy_fit),
                             f=f,
@@ -198,7 +198,7 @@ def fit_model(function,
 
         covar = result.covar
         if covar is None:
-            covar = np.ones((4, 4))
+            covar = np.zeros((4, 4))
 
         y_fit = gmodel.eval(E=np.array(energy_fit),
                             f=f,
@@ -290,7 +290,7 @@ def fit_model_double(function,
 
         covar = result.covar
         if covar is None:
-            covar = np.ones((7, 7))
+            covar = np.zeros((7, 7))
 
         y_fit = gmodel.eval(E=np.array(energy_fit),
                             fCT=fCT,
@@ -326,7 +326,7 @@ def fit_model_double(function,
 
         covar = result.covar
         if covar is None:
-            covar = np.ones((6, 6))
+            covar = np.zeros((6, 6))
 
         y_fit = gmodel.eval(E=np.array(energy_fit),
                             fCT=fCT,
@@ -446,10 +446,10 @@ def guess_fit(eqe,
                     if p0 == p0_list[-1]:
                         if include_disorder:
                             best_vals = [0, 0, 0, 0, 0, 0, 0]
-                            covar = np.ones((7, 7))
+                            covar = np.zeros((7, 7))
                         else:
                             best_vals = [0, 0, 0, 0, 0, 0]
-                            covar = np.ones((6, 6))
+                            covar = np.zeros((6, 6))
                         r_squared = 0
         # Single peak fitting
         else:
@@ -481,10 +481,10 @@ def guess_fit(eqe,
                     if p0_guess == p0_list[-1]:
                         if include_disorder:
                             best_vals = [0, 0, 0, 0]
-                            covar = np.ones((4, 4))
+                            covar = np.zeros((4, 4))
                         else:
                             best_vals = [0, 0, 0]
-                            covar = np.ones((3, 3))
+                            covar = np.zeros((3, 3))
                         r_squared = 0
 
         return best_vals, covar, p0, r_squared

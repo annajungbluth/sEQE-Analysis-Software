@@ -2159,10 +2159,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to fit reduced EL and EQE
 
-    # TODO: Update function
-    # TODO: Add sigma as a fit parameter
-    # TODO: Add guess fit function
-    # TODO: Implement save fit function
+    # TODO: Update function:
+    #       Add sigma as a fit parameter
+    #       Add guess fit function
+    #       Implement save fit function
     def fit_EL_EQE(self,
                    energy,
                    y,
@@ -2233,6 +2233,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                                            ) for value in x_gaussian]
                     elif data_no == 1:  # EQE / Abs Data
                         x_gaussian = linspace(startFit, stopFit + 2 * diff, 50)
+                        # TODO: Add sigma as a fit parameter
                         if include_Disorder:
                             best_vals, covar = curve_fit(self.gaussian_EQE_disorder,
                                                          energy_fit, y_fit,
@@ -2307,6 +2308,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     x_gaussian = linspace(1.18, stopFit + 0.5 * diff, 50)
 
                     if data_no == 0:  # EL Data
+                        # TODO: Add sigma as a fit parameter
                         if include_Disorder:
                             best_vals, covar = curve_fit(self.MLJ_gaussian_EL_disorder,
                                                          energy_fit,
@@ -2331,6 +2333,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                ) for value in x_gaussian]
                     elif data_no == 1:  # EQE / Abs Data
                         x_gaussian = linspace(startFit, stopFit + 2 * diff, 50)
+                        # TODO: Add sigma as a fit parameter
                         if include_Disorder:
                             best_vals, covar = curve_fit(self.MLJ_gaussian_EQE_disorder,
                                                          energy_fit,
@@ -2697,6 +2700,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to add peak fits
 
+    # TODO: Expand to plot MLJ fits
     def add_Fits(self,
                  data_OptFit,
                  data_CTFit,
@@ -2709,6 +2713,8 @@ class MainWindow(QtWidgets.QMainWindow):
         :param data_EQE: EQE data [dataFrame]
         :return: None
         """
+
+        include_disorder = False
 
         add_Energy = []
         add_Fits = []
@@ -2746,6 +2752,11 @@ class MainWindow(QtWidgets.QMainWindow):
             f_CTFit = data_CTFit['Oscillator Strength (eV**2)'][0]
             l_CTFit = data_CTFit['Reorganization Energy (eV)'][0]
             E_CTFit = data_CTFit['CT State Energy (eV)'][0]
+            try:
+                sig_CTFit = data_CTFit['Sigma (eV)'][0]
+                include_disorder = True
+            except:
+                include_disorder = False
         except:
             self.logger.error('No CT state fit imported.')
 
@@ -2761,12 +2772,22 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                      E_OptFit,
                                                                      T_OptFit
                                                                      )
-                        CTFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x],
-                                                                    f_CTFit,
-                                                                    l_CTFit,
-                                                                    E_CTFit,
-                                                                    T_CTFit
-                                                                    )
+                        if include_disorder:
+                            CTFit_value = calculate_gaussian_disorder_absorption(data_EQE['Energy'][x],
+                                                                                 f_CTFit,
+                                                                                 l_CTFit,
+                                                                                 E_CTFit,
+                                                                                 sig_CTFit,
+                                                                                 T_CTFit
+                                                                                 )
+
+                        else:
+                            CTFit_value = calculate_gaussian_absorption(data_EQE['Energy'][x],
+                                                                        f_CTFit,
+                                                                        l_CTFit,
+                                                                        E_CTFit,
+                                                                        T_CTFit
+                                                                        )
                         add_Energy.append(data_EQE['Energy'][x])
                         add_Fits.append(OptFit_value + CTFit_value)
 
