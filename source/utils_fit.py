@@ -768,27 +768,27 @@ def find_best_fit(df_both,
                                                                    T)
                                      for e in energy_plot])
 
-            print('-' * 35)
-            print('R_Squared : ', format(df_both['Total_R2'][max_index], '.6f'))
+            print('-' * 80)
+            print('R2 : ', format(df_both['Total_R2'][max_index], '.6f'))
             print('Fit Range (eV): ', df_both['Start'][max_index], ' - ', df_both['Stop'][max_index])
             print('-' * 35)
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar'][max_index][3, 3]), '.6f'))
+            print('f_Opt (eV^2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][3, 3])), '.6f'))
             print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar'][max_index][4, 4]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][4, 4])), '.6f'))
             print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar'][max_index][5, 5]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][5, 5])), '.6f'))
             print('-' * 35)
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar'][max_index][0, 0]), '.6f'))
+            print('f_CT (eV^2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][0, 0])), '.6f'))
             print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar'][max_index][1, 1]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][1, 1])), '.6f'))
             print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar'][max_index][2, 2]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][2, 2])), '.6f'))
 
             if include_disorder:
                 print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'),
-                      '+/-', format(math.sqrt(df_both['Covar'][max_index][6, 6]), '.6f'))
+                      '+/-', format(math.sqrt(abs(df_both['Covar'][max_index][6, 6])), '.6f'))
                 W = df_both['Fit_CT'][max_index][1] * T + (df_both['Fit_CT'][max_index][3] ** 2) / (2 * k)
                 print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
@@ -806,28 +806,28 @@ def find_best_fit(df_both,
             # print(('Combined Best Fit:').format(n_fit))
             # print('-' * 25)
 
-            print('-' * 35)
-            print('R_Squared : ', format(df_both['Total_R2'][max_index], '.6f'))
+            print('-' * 80)
+            print('R2 : ', format(df_both['Total_R2'][max_index], '.6f'))
             print('-' * 35)
             print('Opt Fit Range (eV): ', df_both['Start_Opt'][max_index], ' - ', df_both['Stop_Opt'][max_index])
-            print('f_Opt (eV**2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar_Opt'][max_index][0, 0]), '.6f'))
+            print('f_Opt (eV^2) : ', format(df_both['Fit_Opt'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(abs(df_both['Covar_Opt'][max_index][0, 0])), '.6f'))
             print('l_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][1], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar_Opt'][max_index][1, 1]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar_Opt'][max_index][1, 1])), '.6f'))
             print('E_Opt (eV) : ', format(df_both['Fit_Opt'][max_index][2], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar_Opt'][max_index][2, 2]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar_Opt'][max_index][2, 2])), '.6f'))
             print('-' * 35)
             print('CT Fit Range (eV): ', df_both['Start_CT'][max_index], ' - ', df_both['Stop_CT'][max_index])
-            print('f_CT (eV**2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][0, 0]), '.6f'))
+            print('f_CT (eV^2) : ', format(df_both['Fit_CT'][max_index][0], '.6f'),
+                  '+/-', format(math.sqrt(abs(df_both['Covar_CT'][max_index][0, 0])), '.6f'))
             print('l_CT (eV) : ', format(df_both['Fit_CT'][max_index][1], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][1, 1]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar_CT'][max_index][1, 1])), '.6f'))
             print('E_CT (eV) : ', format(df_both['Fit_CT'][max_index][2], '.6f'),
-                  '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][2, 2]), '.6f'))
+                  '+/-', format(math.sqrt(abs(df_both['Covar_CT'][max_index][2, 2])), '.6f'))
 
             if include_disorder:
                 print('Sigma (eV) : ', format(df_both['Fit_CT'][max_index][3], '.6f'),
-                      '+/-', format(math.sqrt(df_both['Covar_CT'][max_index][3, 3]), '.6f'))
+                      '+/-', format(math.sqrt(abs(df_both['Covar_CT'][max_index][3, 3])), '.6f'))
                 W = df_both['Fit_CT'][max_index][1] * T + (df_both['Fit_CT'][max_index][3] ** 2) / (2 * k)
                 print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
@@ -926,8 +926,17 @@ def find_best_fit(df_both,
         # axDouble_2.set_title(('Range No. {}').format(n_fit))
         axDouble_2.legend()
 
+        if save_fit:
+            if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                os.chdir(save_fit_path)  # Change the working directory
+                if simultaneous_double:
+                    plt.savefig((f'{save_fit_filename}_Fit_simDouble_Range{n_fit}.png'))
+                else:
+                    plt.savefig((f'{save_fit_filename}_Fit_Range{n_fit}.png'))
+
+
         df_copy = df_both.copy()
-        df_copy['Total_R2'][max_index] = 0
+        df_copy['Total_R2'][max_index] = -10000
 
     return df_copy
 

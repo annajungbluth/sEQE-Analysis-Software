@@ -1250,7 +1250,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         W = best_vals[1]*self.T_CT + (best_vals[3]**2)/(2*self.k)
                         print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
-                    print('R_Squared : ', format(r_squared, '.6f'))
+                    print('R2 : ', format(r_squared, '.6f'))
                     print('-' * 80)
                     print("")
 
@@ -1443,7 +1443,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         W = best_vals[1]*self.T_x + (best_vals[3]**2)/(2*self.k)
                         print('Gaussian Variance [W] (eV K) : ', format(W, '.2f'))
 
-                    print('R_Squared : ', format(r_squared, '.6f'))
+                    print('R2 : ', format(r_squared, '.6f'))
                     print('-' * 80)
                     print("")
 
@@ -1782,9 +1782,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     else:
                         Average_W = parameter_df['l'].mean() * self.T_CT + (parameter_df['Sig'].mean() ** 2) / (
                                 2 * self.k)
-                    print('Gaussian Variance [W] (eV K) : ', format(Average_W, '.2f'))
+                    print('Average Gaussian Variance [W] (eV K) : ', format(Average_W, '.2f'))
 
-                print('Average R_Squared : ', format(parameter_df['R_Squared'].mean(), '.6f'), '+/-',
+                print('Average R2 : ', format(parameter_df['R_Squared'].mean(), '.6f'), '+/-',
                       format(parameter_df['R_Squared'].std(), '.6f'))
 
                 print('-' * 80)
@@ -1820,7 +1820,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         else:
                             Average_W = parameter_df['l'][parameter_df['R_Squared'] == 1.0].mean() * self.T_CT + (
                                     parameter_df['Sig'][parameter_df['R_Squared'] == 1.0].mean() ** 2) / (2 * self.k)
-                        print('Gaussian Variance [W] (eV K) : ', format(Average_W, '.2f'))
+                        print('Average Gaussian Variance [W] (eV K) : ', format(Average_W, '.2f'))
 
                 else:
                     print('Max R_squared : ', format(max(parameter_df['R_Squared']), '.6f'))
@@ -2928,14 +2928,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # startOpt_ok = StartStop_is_valid(startStart_Opt, startStop_Opt)
         # stopOpt_ok = StartStop_is_valid(stopStart_Opt, stopStop_Opt)
 
-
-        #### TEST ####
-
         startOpt_ok = True
         stopOpt_ok = True
 
-        startCT_ok = StartStop_is_valid(startStart_CT, startStop_CT)
-        stopCT_ok = StartStop_is_valid(stopStart_CT, stopStop_CT)
+        # startCT_ok = StartStop_is_valid(startStart_CT, startStop_CT)
+        # stopCT_ok = StartStop_is_valid(stopStart_CT, stopStop_CT)
+
+        startCT_ok = True
+        stopCT_ok = True
 
         guessOpt_ok = StartStop_is_valid(startGuess_Opt, stopGuess_Opt)
         guessCT_ok = StartStop_is_valid(startGuess_CT, stopGuess_CT)
@@ -3343,7 +3343,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 label = pick_EQE_Label(self.ui.textBox_dF2, self.ui.textBox_dF1)
 
-                for x in np.arange(1, 6, 1):
+                # for x in np.arange(1, 6, 1):
+                for x in np.arange(1, 11, 1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
                     df_results = find_best_fit(df_both=df_results,
@@ -3355,8 +3356,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                                save_fit=save_fit,
                                                save_fit_file=save_fit_file
                                                )
+                    print(' ' * 80)
                 print('-' * 80)
-                print("")
 
         self.bias = False
 
@@ -3482,7 +3483,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                                T=self.T_sim
                                                ) for i in x_plot]
         print('-' * 35)
-        print('R_Squared : ', format(r_squared, '.6f'))
+        print('R2 : ', format(r_squared, '.6f'))
         print('-' * 35)
         print('f_Opt (eV**2) : ', format(best_vals[3], '.6f'), '+/-', format(math.sqrt(covar[3, 3]), '.6f'))
         print('l_Opt (eV) : ', format(best_vals[4], '.6f'), '+/-', format(math.sqrt(covar[4, 4]), '.6f'))
@@ -3807,7 +3808,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 label = pick_EQE_Label(self.ui.textBox_simFit_label, self.ui.textBox_simFit)
 
-                for x in np.arange(1, 6, 1):
+                # for x in np.arange(1, 6, 1):
+                for x in np.arange(1, 11, 1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
                     df_results = find_best_fit(df_both=df_results,
@@ -3820,7 +3822,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                                save_fit=save_fit,
                                                save_fit_file=save_fit_file
                                                )
-
+                    print(' ' * 80)
                 print('-' * 80)
                 print("")
 
