@@ -27,7 +27,6 @@ def calculate_gaussian_absorption(x, f, l, E, T):
 
     return (f / (x * math.sqrt(4 * math.pi * l * T * k))) * exp(-(E + l - x) ** 2 / (4 * l * k * T))
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to calculate gaussian absorption including disorder
@@ -49,6 +48,62 @@ def calculate_gaussian_disorder_absorption(x, f, l, E, sig, T):
     return (f / (x * math.sqrt(2 * math.pi * (2 * l * T * k + sig ** 2))) * exp(
         -(E + l - x) ** 2 / (4 * l * k * T + 2 * sig ** 2)))
 
+# -----------------------------------------------------------------------------------------------------------
+
+    # Function to calculate absorption using MLJ theory
+
+def calculate_MLJ_absorption(x, f, l, E, T, S, hbarw): # Double check if this equation is correct
+    """
+    :param x: List of energy values [list]
+    :param f: Oscillator strength [float]
+    :param l: Reorganization Energy [float]
+    :param E: Peak Energy [float]
+    :param T: Temperature [float or int]
+    :param S: Huang-Rhys parameter [float]
+    :param hbarw: Vibrational Energy [float]
+    :return: EQE value [float]
+    """
+
+    # Define variables
+    k = 8.617 * math.pow(10, -5)  # [ev/K]
+
+    EQE = 0
+    for n in range(0, 6):
+        EQE_n = (f / (x * math.sqrt(4 * math.pi * l * T * k))) \
+                * (math.exp(-S) * S ** n / math.factorial(n)) \
+                * exp(-(E + l - x + n * hbarw) ** 2 \
+                      / (4 * l * k * T))
+        EQE += EQE_n
+    return EQE
+
+# -----------------------------------------------------------------------------------------------------------
+
+    # Function to calculate absorption including disorder using MLJ theory
+
+def calculate_MLJ_disorder_absorption(x, f, l, E, T, sig, S, hbarw): # Double check if this equation is correct
+    """
+    :param x: List of energy values [list]
+    :param f: Oscillator strength [float]
+    :param l: Reorganization Energy [float]
+    :param E: Peak Energy [float]
+    :param T: Temperature [float or int]
+    :param sig: Peak disorder [float]
+    :param S: Huang Rhys parameter [float]
+    :param hbarw: Vibrational Energy [float]
+    :return: EQE value [float]
+    """
+
+    # Define variables
+    k = 8.617 * math.pow(10, -5)  # [ev/K]
+
+    EQE = 0
+    for n in range(0, 6):
+        EQE_n = (f / (x * math.sqrt(2 * math.pi * (2 * l * T * k + sig ** 2))) \
+                 * (math.exp(-S) * S ** n / math.factorial(n)) \
+                 * exp(-(E + l - x + n * hbarw) ** 2 \
+                       / (4 * l * k * T + 2 * sig ** 2)))
+        EQE += EQE_n
+    return EQE
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -128,6 +183,130 @@ def calculate_combined_fit(eqe,
                                                              best_vals_CT[1],
                                                              best_vals_CT[2],
                                                              T)
+                               for e in energy_data])
+        if R2_CT is None:
+            R2_CT = R_squared(y_data=eqe_data,
+                              yfit_data=CT_fit.tolist(),
+                              bias=bias,
+                              tolerance=tolerance)
+
+        if len(Opt_fit) == len(CT_fit):
+            combined_Fit = Opt_fit + CT_fit
+            combined_R_Squared = R_squared(y_data=eqe_data,
+                                           yfit_data=combined_Fit.tolist(),
+                                           bias=bias,
+                                           tolerance=tolerance)
+
+    else:  # if any of the fits were unsuccessful
+        Opt_fit = 0
+        CT_fit = 0
+        combined_Fit = 0
+        combined_R_Squared = 0
+
+    average_R_Squared = (R2_CT + R2_Opt + combined_R_Squared) / 3
+
+    result_dict = {'R2_Combined': combined_R_Squared,
+                   'R2_CT': R2_CT,
+                   'R2_Opt': R2_Opt,
+                   'R2_Average': average_R_Squared,
+                   'Combined_Fit': combined_Fit,
+                   'Opt_Fit': Opt_fit,
+                   'CT_Fit': CT_fit,
+                   'Energy': energy_data,
+                   'EQE': eqe_data
+                   }
+
+    return result_dict
+
+    # # Old code to return a list instead of dictionary
+    # return [combined_R_Squared, combined_Fit, Opt_fit, CT_fit, energy_data, eqe_data]
+
+# -----------------------------------------------------------------------------------------------------------
+
+# Function to calculate parameters for double peak MLJ fit
+
+def calculate_combined_fit_MLJ(eqe,
+                               stopE,
+                               best_vals_Opt,
+                               best_vals_CT,
+                               T,
+                               S,
+                               hbarw,
+                               R2_Opt=None,
+                               R2_CT=None,
+                               include_disorder=False,
+                               bias=False,
+                               tolerance=0,
+                               range=1.05
+                               ):
+    """
+    Function to compile combined fit for S1 and CT peak absorption after single peak fits
+    :param eqe: EQE values [list]
+    :param stopE: stop energy of fit [float]
+    :param best_vals_Opt: Opt fit values [list]
+    :param best_vals_CT: CT fit values [list]
+    :param T: Temperature [float]
+    :param S: Huang Rhy parameter [float]
+    :param hbarw: Vibrational Energy [float]
+    :param R2_Opt: Opt fit R2 [float]
+    :param R2_CT: CT fit R2 [float]
+    :param include_disorder: boolean value to see whether to include disorder [bool]
+    :param bias: bias fit below data [boolean]
+    :param tolerance: tolerance accepted of fit above data [float]
+    :param range: defines upper bound of R2 calculation [float]
+    :return: result_dict : dictionary with fit results [dict]
+                Dict keys:
+                R2_Combined: R2 of sum of CT and Opt fit [float]
+                R2_CT: R2 of CT fit [float]
+                R2_Opt: R2 of Opt fit [float]
+                R2_Average: average R2 of CT / Opt / Combined fit [float]
+                Combined_Fit: sum of CT and Opt fit [list]
+                Opt_fit: Opt fit values [list]
+                CT_fit: CT fit values [list]
+                Energy: Energy values [list]
+                EQE: original EQE data [list]
+    """
+
+    wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe,
+                                                                 min(eqe['Energy']),
+                                                                 stopE * range,  # Increase stop energy to expand fit!
+                                                                 1)
+    # # Optional code to add interpolation to the data
+    # int_func = interp1d(eqe['Energy'], eqe['EQE'])
+    # energy_data = np.arange(min(eqe['Energy']), stopE * range, 1)
+    # eqe_data = int_func(energy_data)
+
+    if sum(best_vals_Opt) != 0 and sum(best_vals_CT) != 0:
+        Opt_fit = np.array([calculate_gaussian_absorption(e,
+                                                          best_vals_Opt[0],
+                                                          best_vals_Opt[1],
+                                                          best_vals_Opt[2],
+                                                          T)
+                            for e in energy_data])
+        if R2_Opt is None:
+            R2_Opt = R_squared(y_data=eqe_data,
+                               yfit_data=Opt_fit.tolist(),
+                               bias=bias,
+                               tolerance=tolerance)
+        if include_disorder:
+            CT_fit = np.array([calculate_MLJ_disorder_absorption(x=e,
+                                                                 f=best_vals_CT[0],
+                                                                 l=best_vals_CT[1],
+                                                                 E=best_vals_CT[2],
+                                                                 sig=best_vals_CT[3],
+                                                                 T=T,
+                                                                 S=S,
+                                                                 hbarw=hbarw)
+                               for e in energy_data])
+
+        else:
+            CT_fit = np.array([calculate_MLJ_absorption(x=e,
+                                                        f=best_vals_CT[0],
+                                                        l=best_vals_CT[1],
+                                                        E=best_vals_CT[2],
+                                                        T=T,
+                                                        S=S,
+                                                        hbarw=hbarw)
                                for e in energy_data])
         if R2_CT is None:
             R2_CT = R_squared(y_data=eqe_data,

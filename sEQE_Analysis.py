@@ -30,7 +30,7 @@ from source.add_subtract import subtract_Opt
 from source.compilation import compile_EQE, compile_EL, compile_Data
 from source.electroluminescence import bb_spectrum
 from source.gaussian import calculate_gaussian_absorption, calculate_gaussian_disorder_absorption, \
-    calculate_combined_fit
+    calculate_MLJ_absorption, calculate_MLJ_disorder_absorption, calculate_combined_fit, calculate_combined_fit_MLJ
 from source.normalization import normalize_EQE
 from source.plot import plot, set_up_plot, set_up_EQE_plot, set_up_EL_plot
 from source.reference_correction import calculate_Power
@@ -229,6 +229,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Handle Clear Extra Fit Button
         self.ui.clearButton_extraFit.clicked.connect(self.clear_EQE_plot)
+
+        # Double Fits
+
+        self.bias = False
+        self.tolerance = None
+
+        self.data_extraDouble = []
+
+        # Handle Import Data Button
+        self.ui.browseButton_extraDoubleFit.clicked.connect(lambda: self.writeText(self.ui.textBox_extraDouble, 'xDF1'))
+
+        # Handle Double Fit Button
+        self.ui.extraDoubleFitButton.clicked.connect(lambda: self.double_fit_MLJ())
 
         ## Page 6 - Fit EL and EQE
 
@@ -464,6 +477,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             elif textBox_no == 'xF1':
                 self.data_xFit_1 = pd.read_csv(file_)
+
+            elif textBox_no == 'xDF1':
+                self.data_extraDouble = pd.read_csv(file_)
 
             ## Page 6 - Fit EL and EQE
 
@@ -1422,7 +1438,26 @@ class MainWindow(QtWidgets.QMainWindow):
                     #     except:
                     #         p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
 
-                # TODO: Implement save fit function
+                # Save fit data
+                if self.ui.save_extraFit.isChecked():
+                    fit_file = pd.DataFrame()
+                    fit_file['Energy'] = x_MLJ_theory
+                    fit_file['Signal'] = y_MLJ_theory
+                    fit_file['Temperature'] = self.T_x
+                    fit_file['Oscillator Strength (eV**2)'] = best_vals[0]
+                    fit_file['Reorganization Energy (eV)'] = best_vals[1]
+                    fit_file['CT State Energy (eV)'] = best_vals[2]
+
+                    if include_Disorder:
+                        fit_file['Sigma (eV)'] = best_vals[3]
+
+                    save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
+                    save_fit_path, save_fit_filename = os.path.split(save_fit_file)
+                    if len(save_fit_path) != 0:  # Check if the user actually selected a path
+                        os.chdir(save_fit_path)  # Change the working directory
+                        fit_file.to_csv(save_fit_filename)  # Save data to csv
+                        self.logger.info('Saving fit data to: %s' % str(save_fit_file))
+                        os.chdir(self.data_dir)  # Change the directory back
 
                 if fit_ok:
                     self.logger.info('Fit Results: ')
@@ -3032,7 +3067,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.logger.info('Including CT State Disorder ...')
 
             # If Optical peak to be subtracted before CT fit
-            if self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit_2.isChecked():
+            if self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit.isChecked():
                 self.logger.info('Subtracting All Optical Peak Fits ...')
                 for x in tqdm(range(len(df_Opt))):
                     for y in tqdm(range(len(df_CT))):
@@ -3096,7 +3131,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         EQE_list.append(parameter_dict['EQE'])
 
             # If only best Optical peak is to be subtracted before CT fit
-            elif self.ui.bestSubtract_DoubleFit_2.isChecked() and not self.ui.subtract_DoubleFit.isChecked():
+            elif self.ui.bestSubtract_DoubleFit.isChecked() and not self.ui.subtract_DoubleFit.isChecked():
                 self.logger.info('Subtracting Only Best Optical Peak Fit ...')
 
                 # best_fit_index = df_Opt['Fit'][df_Opt['R2']==max(df_Opt['R2'])].index[0]
@@ -3178,7 +3213,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     EQE_list.append(parameter_dict['EQE'])
 
             # If Optical peak not to be subtracted before CT fit
-            elif not self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit_2.isChecked():
+            elif not self.ui.subtract_DoubleFit.isChecked() and not self.ui.bestSubtract_DoubleFit.isChecked():
                 self.logger.info('Not Subtracting Optical Peak Fits.')
                 for x in tqdm(range(len(df_Opt))):
                     for y in tqdm(range(len(df_CT))):
@@ -3344,7 +3379,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 label = pick_EQE_Label(self.ui.textBox_dF2, self.ui.textBox_dF1)
 
                 # for x in np.arange(1, 6, 1):
-                for x in np.arange(1, 11, 1):
+                n = int(self.ui.n.value())
+                for x in np.arange(1, n+1, 1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
                     df_results = find_best_fit(df_both=df_results,
@@ -3619,8 +3655,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.logger.info('Not constraining fit.')
 
         # Check that all start and stop energies are valid
-        start_ok = StartStop_is_valid(bound_dict['start_start'], bound_dict['start_stop'])
-        stop_ok = StartStop_is_valid(bound_dict['stop_start'], bound_dict['stop_stop'])
+        # start_ok = StartStop_is_valid(bound_dict['start_start'], bound_dict['start_stop'])
+        # stop_ok = StartStop_is_valid(bound_dict['stop_start'], bound_dict['stop_stop'])
+
+        start_ok = True
+        stop_ok = True
 
         # Compile all start / stop energies for CT fit
         if start_ok and stop_ok:
@@ -3808,8 +3847,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 label = pick_EQE_Label(self.ui.textBox_simFit_label, self.ui.textBox_simFit)
 
-                # for x in np.arange(1, 6, 1):
-                for x in np.arange(1, 11, 1):
+                n = int(self.ui.n_Sim.value())
+                for x in np.arange(1, n+1, 1):
                     print('-' * 80)
                     print(('Best Fit No. {} : ').format(x))
                     df_results = find_best_fit(df_both=df_results,
@@ -3935,6 +3974,503 @@ class MainWindow(QtWidgets.QMainWindow):
             -(Eopt + lopt - E) ** 2 / (4 * lopt * self.k * self.T_sim))
 
         return val_CT + val_opt
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    # Page 5 - Extended Fits (MLJ Theory)
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    # Separate Double Peak Fit
+
+    # Function to compile fits for separate double peak fitting
+
+    def double_fit_MLJ(self):
+        """
+        Function to perform separate double fit of S1 and CT peaks using MLJ theory
+        :return: None
+        """
+
+        print('Using new double function')
+
+        increase_factor = 1.05  # NOTE: Modify to increase data range for R2 calculation and fit selection
+        include_disorder = False
+        guessRange_Sig = None
+
+        # Import relevant parameters
+
+        if self.ui.bias_extraDoubleFit.isChecked():
+            self.bias = True
+            self.tolerance = float(self.ui.extraDouble_Tolerance.value()) / 100
+            self.logger.info('Constraining fit below EQE data.')
+        else:
+            self.bias = False
+            self.logger.info('Not constraining fit.')
+
+        if self.ui.disorder_extraDoubleFit.isChecked():
+            include_disorder = True
+            startGuess_Sig = float(self.ui.extraGuessStartSig_CT.value())
+            stopGuess_Sig = float(self.ui.extraGuessStopSig_CT.value())
+            guessSig_ok = StartStop_is_valid(startGuess_Sig, stopGuess_Sig)
+            if guessSig_ok:
+                # guessRange_Sig = np.round(np.arange(startGuess_Sig, stopGuess_Sig + 0.05, 0.05), 3).tolist()
+                guessRange_Sig = [startGuess_Sig, stopGuess_Sig]
+            else:
+                # guessRange_Sig = np.round(np.arange(startGuess_Sig, startGuess_Sig + 0.05, 0.05), 3).tolist()
+                guessRange_Sig = [startGuess_Sig, stopGuess_Sig]
+
+        eqe = self.data_extraDouble
+        self.T_xDouble = self.ui.extraDouble_Temperature.value()
+        self.hbarw_Double = self.ui.extraDouble_vibEnergy.value()
+        self.S_Double = self.ui.extraDouble_HuangRhys.value()
+
+        startStart_Opt = float(self.ui.extraStartStart_Opt.value())
+        startStop_Opt = float(self.ui.extraStartStop_Opt.value())
+        stopStart_Opt = float(self.ui.extraStopStart_Opt.value())
+        stopStop_Opt = float(self.ui.extraStopStop_Opt.value())
+
+        startStart_CT = float(self.ui.extraStartStart_CT.value())
+        startStop_CT = float(self.ui.extraStartStop_CT.value())
+        stopStart_CT = float(self.ui.extraStopStart_CT.value())
+        stopStop_CT = float(self.ui.extraStopStop_CT.value())
+
+        startGuess_Opt = float(self.ui.extraGuessStart_Opt.value())
+        stopGuess_Opt = float(self.ui.extraGuessStop_Opt.value())
+        startGuess_CT = float(self.ui.extraGuessStart_CT.value())
+        stopGuess_CT = float(self.ui.extraGuessStop_CT.value())
+
+        # Check that all start and stop energies are valid
+
+        # startOpt_ok = StartStop_is_valid(startStart_Opt, startStop_Opt)
+        # stopOpt_ok = StartStop_is_valid(stopStart_Opt, stopStop_Opt)
+
+        startOpt_ok = True # Checks removed to allow same start/stop value
+        stopOpt_ok = True
+
+        # startCT_ok = StartStop_is_valid(startStart_CT, startStop_CT)
+        # stopCT_ok = StartStop_is_valid(stopStart_CT, stopStop_CT)
+
+        startCT_ok = True
+        stopCT_ok = True
+
+        guessOpt_ok = StartStop_is_valid(startGuess_Opt, stopGuess_Opt)
+        guessCT_ok = StartStop_is_valid(startGuess_CT, stopGuess_CT)
+
+        # Compile all start / stop energies for Opt and CT fit
+
+        if startOpt_ok and stopOpt_ok and guessOpt_ok and startCT_ok and stopCT_ok and guessCT_ok:
+
+            startRange_Opt = np.round(np.arange(startStart_Opt, startStop_Opt + 0.005, 0.01), 3).tolist() # Change step to 0.05
+            stopRange_Opt = np.round(np.arange(stopStart_Opt, stopStop_Opt + 0.005, 0.01), 3).tolist()
+
+            startRange_CT = np.round(np.arange(startStart_CT, startStop_CT + 0.005, 0.01), 3).tolist()
+            stopRange_CT = np.round(np.arange(stopStart_CT, stopStop_CT + 0.005, 0.01), 3).tolist()
+
+            guessRange_Opt = np.round(np.arange(startGuess_Opt, stopGuess_Opt + 0.1, 0.05), 3).tolist()
+            guessRange_CT = np.round(np.arange(startGuess_CT, stopGuess_CT + 0.1, 0.05), 3).tolist()
+
+            # Compile a dataFrame with all combinations of start / stop values for Opt and CT fit
+
+            self.logger.info('Compiling Fit Ranges ...')
+
+            df_Opt = pd.DataFrame()
+            df_CT = pd.DataFrame()
+
+            start_Opt_list = []
+            stop_Opt_list = []
+            start_CT_list = []
+            stop_CT_list = []
+
+            for startOpt in startRange_Opt:
+                for stopOpt in stopRange_Opt:
+                    start_Opt_list.append(startOpt)
+                    stop_Opt_list.append(stopOpt)
+
+            for startCT in startRange_CT:
+                for stopCT in stopRange_CT:
+                    start_CT_list.append(startCT)
+                    stop_CT_list.append(stopCT)
+
+            df_Opt['Start'] = start_Opt_list
+            df_Opt['Stop'] = stop_Opt_list
+
+            df_CT['Start'] = start_CT_list
+            df_CT['Stop'] = stop_CT_list
+
+            # Calculate all optical peak fits
+
+            self.logger.info('Calculating Optical Peak Fits ...')
+
+            cal_vals_Opt = list(map(lambda x: calculate_guess_fit(x=x,
+                                                                  df=df_Opt,
+                                                                  eqe=eqe,
+                                                                  function=self.MLJ_double_gaussian,
+                                                                  guessRange=guessRange_Opt
+                                                                  ), tqdm(range(len(df_Opt)))))
+
+            best_vals_Opt = list(map(lambda list_: sep_list(list_, 0), cal_vals_Opt))
+            covar_Opt = list(map(lambda list_: sep_list(list_, 1), cal_vals_Opt))
+            R2_Opt = list(map(lambda list_: sep_list(list_, 2), cal_vals_Opt))
+
+            df_Opt['Fit'] = best_vals_Opt
+            df_Opt['Covar'] = covar_Opt
+            df_Opt['R2'] = R2_Opt
+
+            # Calculate CT state fits
+
+            start_Opt_list = []
+            stop_Opt_list = []
+            start_CT_list = []
+            stop_CT_list = []
+
+            best_vals_Opt = []
+            best_vals_CT = []
+
+            Opt_covar_list = []
+            CT_covar_list = []
+
+            R2_Opt = []
+            R2_CT = []
+
+            combined_R2_list = []
+
+            Opt_Fit_list = []
+            CT_Fit_list = []
+            combined_Fit_list = []
+            Energy_list = []
+            EQE_list = []
+
+            df_results = pd.DataFrame()
+
+            self.logger.info('Calculating CT State Fits ...')
+
+            if include_disorder:
+                self.logger.info('Including CT State Disorder ...')
+
+            # If Optical peak to be subtracted before CT fit
+            if self.ui.subtract_extraDoubleFit.isChecked() and not self.ui.bestSubtract_extraDoubleFit.isChecked():
+                self.logger.info('Subtracting All Optical Peak Fits ...')
+                for x in tqdm(range(len(df_Opt))):
+                    for y in tqdm(range(len(df_CT))):
+                        if df_Opt['R2'][x] > 0:  # Check that the optical peak fit was successful
+
+                            new_eqe = subtract_Opt(eqe, df_Opt['Fit'][x], T=self.T_xDouble)
+
+                            if include_disorder:
+                                best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                            startE=df_CT['Start'][y],
+                                                                            stopE=df_CT['Stop'][y],
+                                                                            function=self.MLJ_double_disorder,
+                                                                            guessRange=guessRange_CT,
+                                                                            guessRange_sig=guessRange_Sig,
+                                                                            include_disorder=True,
+                                                                            bounds=True # to use fit model
+                                                                            )
+                            else:
+                                best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                            startE=df_CT['Start'][y],
+                                                                            stopE=df_CT['Stop'][y],
+                                                                            function=self.MLJ_double,
+                                                                            guessRange=guessRange_CT,
+                                                                            include_disorder=False,
+                                                                            bounds=None  # to use fit function
+                                                                            )
+                        else:
+                            best_vals = [0, 0, 0]
+                            r_squared = 0
+
+                        Opt_covar_list.append(df_Opt['Covar'][x])
+                        CT_covar_list.append(covar)
+                        start_Opt_list.append(df_Opt['Start'][x])
+                        stop_Opt_list.append(df_Opt['Stop'][x])
+                        start_CT_list.append(df_CT['Start'][y])
+                        stop_CT_list.append(df_CT['Stop'][y])
+                        best_vals_Opt.append(df_Opt['Fit'][x])
+                        best_vals_CT.append(best_vals)
+                        R2_Opt.append(df_Opt['R2'][x])
+                        R2_CT.append(r_squared)
+
+                        # Calculate combined fit here
+                        parameter_dict = calculate_combined_fit_MLJ(stopE=df_Opt['Stop'][x],
+                                                                    best_vals_Opt=df_Opt['Fit'][x],
+                                                                    best_vals_CT=best_vals,
+                                                                    R2_Opt=df_Opt['R2'][x],
+                                                                    R2_CT=r_squared,
+                                                                    eqe=eqe,
+                                                                    T=self.T_xDouble,
+                                                                    S=self.S_Double,
+                                                                    hbarw=self.hbarw_Double,
+                                                                    bias=self.bias,
+                                                                    tolerance=self.tolerance,
+                                                                    range=increase_factor,
+                                                                    include_disorder=include_disorder
+                                                                    )
+
+                        combined_R2_list.append(parameter_dict['R2_Combined'])
+                        combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                        Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                        CT_Fit_list.append(parameter_dict['CT_Fit'])
+                        Energy_list.append(parameter_dict['Energy'])
+                        EQE_list.append(parameter_dict['EQE'])
+
+            # If only best Optical peak is to be subtracted before CT fit
+            elif self.ui.bestSubtract_extraDoubleFit.isChecked() and not self.ui.subtract_extraDoubleFit.isChecked():
+                self.logger.info('Subtracting Only Best Optical Peak Fit ...')
+
+                # best_fit_index = df_Opt['Fit'][df_Opt['R2']==max(df_Opt['R2'])].index[0]
+                # print(best_fit_index)
+
+                # To avoid picking a fit that has a high R2 but moves above the data
+                advanced_R2_list = []
+                for x in range(len(df_Opt)):
+                    wave_fit, energy_fit, eqe_fit, log_eqe_fit = compile_EQE(eqe,
+                                                                             df_Opt['Start'][x],
+                                                                             df_Opt['Stop'][x] * increase_factor,
+                                                                             1)
+                    y_fit = [self.MLJ_double_gaussian(e,
+                                                      df_Opt['Fit'][x][0],
+                                                      df_Opt['Fit'][x][1],
+                                                      df_Opt['Fit'][x][2]
+                                                      ) for e in energy_fit]
+                    advanced_R2_list.append(R_squared(eqe_fit, y_fit))
+
+                df_Opt['Advanced R2'] = advanced_R2_list
+
+                best_fit_index = df_Opt['Fit'][df_Opt['Advanced R2'] == max(df_Opt['Advanced R2'])].index[0]
+                # print(best_fit_index)
+
+                new_eqe = subtract_Opt(eqe, df_Opt['Fit'][best_fit_index], T=self.T_xDouble)
+
+                for y in tqdm(range(len(df_CT))):
+
+                    if include_disorder:
+                        best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                    startE=df_CT['Start'][y],
+                                                                    stopE=df_CT['Stop'][y],
+                                                                    function=self.MLJ_double_disorder,
+                                                                    guessRange=guessRange_CT,
+                                                                    guessRange_sig=guessRange_Sig,
+                                                                    include_disorder=True,
+                                                                    bounds=True  # to use fit model
+                                                                    )
+                    else:
+                        best_vals, covar, p0, r_squared = guess_fit(eqe=new_eqe,
+                                                                    startE=df_CT['Start'][y],
+                                                                    stopE=df_CT['Stop'][y],
+                                                                    function=self.MLJ_double,
+                                                                    guessRange=guessRange_CT,
+                                                                    include_disorder=False,
+                                                                    bounds=None  # to use fit function
+                                                                    )
+
+                    Opt_covar_list.append(df_Opt['Covar'][x])
+                    CT_covar_list.append(covar)
+                    start_Opt_list.append(df_Opt['Start'][best_fit_index])
+                    stop_Opt_list.append(df_Opt['Stop'][best_fit_index])
+                    start_CT_list.append(df_CT['Start'][y])
+                    stop_CT_list.append(df_CT['Stop'][y])
+                    best_vals_Opt.append(df_Opt['Fit'][best_fit_index])
+                    best_vals_CT.append(best_vals)
+                    R2_Opt.append(df_Opt['R2'][best_fit_index])
+                    R2_CT.append(r_squared)
+
+                    # Calculate combined fit here
+                    parameter_dict = calculate_combined_fit_MLJ(stopE=df_Opt['Stop'][x],
+                                                                best_vals_Opt=df_Opt['Fit'][x],
+                                                                best_vals_CT=best_vals,
+                                                                R2_Opt=df_Opt['R2'][x],
+                                                                R2_CT=r_squared,
+                                                                eqe=eqe,
+                                                                T=self.T_xDouble,
+                                                                S=self.S_Double,
+                                                                hbarw=self.hbarw_Double,
+                                                                bias=self.bias,
+                                                                tolerance=self.tolerance,
+                                                                range=increase_factor,
+                                                                include_disorder=include_disorder
+                                                                )
+
+                    combined_R2_list.append(parameter_dict['R2_Combined'])
+                    combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                    Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                    CT_Fit_list.append(parameter_dict['CT_Fit'])
+                    Energy_list.append(parameter_dict['Energy'])
+                    EQE_list.append(parameter_dict['EQE'])
+
+            # If Optical peak not to be subtracted before CT fit
+            elif not self.ui.subtract_extraDoubleFit.isChecked() and not self.ui.bestSubtract_extraDoubleFit.isChecked():
+                self.logger.info('Not Subtracting Optical Peak Fits.')
+                for x in tqdm(range(len(df_Opt))):
+                    for y in tqdm(range(len(df_CT))):
+
+                        if include_disorder:
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
+                                                                        startE=df_CT['Start'][y],
+                                                                        stopE=df_CT['Stop'][y],
+                                                                        function=self.MLJ_double_disorder,
+                                                                        guessRange=guessRange_CT,
+                                                                        guessRange_sig=guessRange_Sig,
+                                                                        include_disorder=True,
+                                                                        bounds=True  # to use fit model
+                                                                        )
+                        else:
+                            best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
+                                                                        startE=df_CT['Start'][y],
+                                                                        stopE=df_CT['Stop'][y],
+                                                                        function=self.MLJ_double,
+                                                                        guessRange=guessRange_CT,
+                                                                        include_disorder=False,
+                                                                        bounds=None  # to use fit function
+                                                                        )
+                    Opt_covar_list.append(df_Opt['Covar'][x])
+                    CT_covar_list.append(covar)
+                    start_Opt_list.append(df_Opt['Start'][x])
+                    stop_Opt_list.append(df_Opt['Stop'][x])
+                    start_CT_list.append(df_CT['Start'][y])
+                    stop_CT_list.append(df_CT['Stop'][y])
+                    best_vals_Opt.append(df_Opt['Fit'][x])
+                    best_vals_CT.append(best_vals)
+                    R2_Opt.append(df_Opt['R2'][x])
+                    R2_CT.append(r_squared)
+
+                    # Calculate combined fit here
+                    parameter_dict = calculate_combined_fit_MLJ(stopE=df_Opt['Stop'][x],
+                                                                best_vals_Opt=df_Opt['Fit'][x],
+                                                                best_vals_CT=best_vals,
+                                                                R2_Opt=df_Opt['R2'][x],
+                                                                R2_CT=r_squared,
+                                                                eqe=eqe,
+                                                                T=self.T_xDouble,
+                                                                S=self.S_Double,
+                                                                hbarw=self.hbarw_Double,
+                                                                bias=self.bias,
+                                                                tolerance=self.tolerance,
+                                                                range=increase_factor,
+                                                                include_disorder=include_disorder
+                                                                )
+
+                    combined_R2_list.append(parameter_dict['R2_Combined'])
+                    combined_Fit_list.append(parameter_dict['Combined_Fit'])
+                    Opt_Fit_list.append(parameter_dict['Opt_Fit'])
+                    CT_Fit_list.append(parameter_dict['CT_Fit'])
+                    Energy_list.append(parameter_dict['Energy'])
+                    EQE_list.append(parameter_dict['EQE'])
+
+            else:
+                self.logger.info('Please select valid fit settings.')
+
+            if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt) != 0:  # Confirm lists are acceptable
+
+                df_results['Start_Opt'] = start_Opt_list
+                df_results['Stop_Opt'] = stop_Opt_list
+                df_results['Fit_Opt'] = best_vals_Opt
+                df_results['R2_Opt'] = R2_Opt
+                df_results['Start_CT'] = start_CT_list
+                df_results['Stop_CT'] = stop_CT_list
+                df_results['Fit_CT'] = best_vals_CT
+                df_results['R2_CT'] = R2_CT
+                df_results['Covar_Opt'] = Opt_covar_list
+                df_results['Covar_CT'] = CT_covar_list
+
+                # Add combined fit to dataFrame
+                df_results['Total_R2'] = combined_R2_list
+                df_results['Total_Fit'] = combined_Fit_list
+                df_results['Opt_Fit'] = Opt_Fit_list
+                df_results['CT_Fit'] = CT_Fit_list
+                df_results['Energy'] = Energy_list
+                df_results['EQE'] = EQE_list
+
+                # Find best fit
+
+                self.logger.info('Determining Best Fit ...')
+                self.logger.info('Fit Results: ')
+                print("")
+
+                # Save fit data
+                if self.ui.save_extraDoubleFit.isChecked():
+                    save_fit_file = filedialog.asksaveasfilename()  # User to pick folder & name to save to
+                    save_fit = True
+                    self.logger.info('Saving fit data.')
+                else:
+                    save_fit_file = None
+                    save_fit = False
+
+                label = pick_EQE_Label(self.ui.textBox_extraDouble_label, self.ui.textBox_extraDouble)
+
+                n = int(self.ui.n_Extra.value())
+                for x in np.arange(1, n+1, 1):
+                    print('-' * 80)
+                    print(('Best Fit No. {} : ').format(x))
+                    df_results = find_best_fit(df_both=df_results,
+                                               eqe=eqe,
+                                               T=self.T_xDouble,
+                                               label=label,
+                                               n_fit=x,
+                                               include_disorder=include_disorder,
+                                               save_fit=save_fit,
+                                               save_fit_file=save_fit_file
+                                               )
+                    print(' ' * 80)
+                print('-' * 80)
+
+        self.bias = False
+
+    # -----------------------------------------------------------------------------------------------------------
+
+    # Gaussian fitting function for double fit
+
+    def MLJ_double_gaussian(self, E, f, l, Eopt):
+        """
+        Standard gaussian functions to separately fit double peaks
+        :param x: List of energy values [list]
+        :param f: Oscillator strength [float]
+        :param l: Reorganization Energy [float]
+        :param Eopt: Optical Peak Energy [float]
+        :return: EQE value [list]
+        """
+
+        return (f / (E * math.sqrt(4 * math.pi * l * self.T_xDouble * self.k))) * exp(
+            -(Eopt + l - E) ** 2 / (4 * l * self.k * self.T_xDouble))
+
+    # MLJ function
+
+    def MLJ_double(self, E, f, l, Ect):  # Double check if this equation is correct
+        """
+        MLJ function
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l: Reorganization Energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        EQE = 0
+        for n in range(0, 6):
+            EQE_n = (f / (E * math.sqrt(4 * math.pi * l * self.T_xDouble * self.k))) \
+                    * (math.exp(-self.S_Double) * self.S_Double ** n / math.factorial(n)) \
+                    * exp(-(Ect + l - E + n * self.hbarw_Double) ** 2 \
+                          / (4 * l * self.k * self.T_xDouble))
+            EQE += EQE_n
+        return EQE
+
+    # MLJ function including disorder
+
+    def MLJ_double_disorder(self, E, f, l, Ect, sig):  # Double check if this equation is correct
+        """
+        MLJ function including disorder
+        :param E: List of energy values
+        :param f: Oscillator strength
+        :param l: Low frequency reorganization energy
+        :param Ect: Charge Transfer State Energy
+        :return: EQE value
+        """
+        EQE = 0
+        for n in range(0, 6):
+            EQE_n = (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_xDouble * self.k + sig ** 2))) \
+                     * (math.exp(-self.S_Double) * self.S_Double ** n / math.factorial(n)) \
+                     * exp(-(Ect + l - E + n * self.hbarw_Double) ** 2 \
+                           / (4 * l * self.k * self.T_xDouble + 2 * sig ** 2)))
+            EQE += EQE_n
+        return EQE
 
     # -----------------------------------------------------------------------------------------------------------
 
