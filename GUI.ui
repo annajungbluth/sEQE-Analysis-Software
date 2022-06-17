@@ -7438,7 +7438,7 @@
           <double>0.000000000000000</double>
          </property>
          <property name="maximum">
-          <double>20.000000000000000</double>
+          <double>40.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>1.000000000000000</double>
@@ -7469,7 +7469,7 @@
        <rect>
         <x>987</x>
         <y>880</y>
-        <width>161</width>
+        <width>162</width>
         <height>31</height>
        </rect>
       </property>
@@ -8567,7 +8567,7 @@
         <x>30</x>
         <y>520</y>
         <width>1111</width>
-        <height>331</height>
+        <height>336</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_48">

@@ -14,6 +14,7 @@ import warnings
 from tkinter import filedialog
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import seaborn
@@ -342,7 +343,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # These values are used for disorder Marcus / MLJ fitting functions
         # self.bounds_sig = ([0, 0, 0, 0], [0.1, 0.4, 1.6, 0.2])  # f, l, E, sig
+
+        # Normal Bounds:
         self.bounds_sig = ([0, 0, 0, 0], [0.1, 0.6, 1.6, 0.2])  # f, l, E, sig
+
+        # # Adjusted Bounds:
+        # self.bounds_sig = ([0, 0, 0, 0], [0.1, 0.6, 1.7, 0.2])  # f, l, E, si
 
         # These values are used in the standard/disorder simultaneous double peak fitting
         # CAVEAT: I tried using the guess_fit function to test other guesses but didn't achieve great results
@@ -913,6 +919,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 ok_EQE_9 and ok_EQE_10:
             self.axEQE_1.legend()
             self.axEQE_2.legend()
+            # self.axEQE_1.legend(frameon=False, fontsize=13) # Adjusted style
+            # self.axEQE_2.legend(frameon=False, fontsize=13) # Adjusted style
             plt.show()
         else:
             plt.close()
@@ -1366,7 +1374,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 # Initialize parameters
                 r_squared = 0
                 p0 = None
-                bounds = None  # First try without bounds and initial guesses
+                # bounds = None  # First try without bounds and initial guesses
+                bounds = self.bounds_sig  # Tried without bounds and it didn't work
 
                 if include_Disorder:
                     # NOTE: This code could be replaced by the guess fit function
