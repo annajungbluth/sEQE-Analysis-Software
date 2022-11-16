@@ -13,13 +13,25 @@ def Ref_Data_is_valid(ref_df,
                       stopNM,
                       range_no
                       ):
-    """
-    :param ref_df: dataFrame of reference diode
-    :param data_df: dataFrame of measurement data
-    :param startNM: start wavelength [float or int]
-    :param stopNM: stop wavelength [float or int]
-    :param range_no: number of measurment range to plot / reference correct [int]
-    :return: True or False
+    """Function to check if data files are non-empty and within wavelength range
+
+    Parameters
+    ----------
+    ref_df : dataFrame, required
+        DataFrame of reference diode measurements
+    data_df : dataFrame, required
+        DataFrame of sample measurements
+    startNM : float or int, required
+        Start wavelength [nm]
+    stopNM : float or int, required
+        Stop wavelength [nm]
+    range_no : int
+        Number of measurement range to reference correct and plot
+
+    Returns
+    -------
+    X : bool
+        Boolean value specifying whether range is valid
     """
 
     if len(ref_df) != 0 and len(data_df) != 0:
@@ -65,12 +77,23 @@ def EQE_is_valid(eqe_df,
                  stopNM,
                  EQE_no
                  ):
-    """
-    :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    :param startNM: start wavelength [float or int]
-    :param stopNM: stop wavelength [float or int]
-    :param EQE_no: number of EQE file to plot [int]
-    :return: True or False
+    """Function to check if EQE files are non-empty and within wavelength range
+
+    Parameters
+    ----------
+    eqe_df : dataFrame, required
+        DataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
+    startNM : float or int, required
+        Start wavelength [nm]
+    stopNM : float or int, required
+        Stop wavelength [nm]
+    EQE_no : int
+        Number of EQE file to plot
+
+    Returns
+    -------
+    X : bool
+        Boolean value specifying whether EQE range is valid
     """
 
     if len(eqe_df) != 0:
@@ -105,11 +128,21 @@ def Data_is_valid(df,
                   startE,
                   stopE
                   ):
-    """
-    :param df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    :param startE: start energy [float]
-    :param stopE: stop energy [float]
-    :return: True or False
+    """Function to check if data files are non-empty and within wavelength range
+
+    Parameters
+    ----------
+    df : dataFrame, required
+        DataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
+    startE : float or int, required
+        Start energy [eV]
+    stopE : float or int, required
+        Stop energy [eV]
+    
+    Returns
+    -------
+    X : bool
+        Boolean value specifying whether data range is valid
     """
 
     if len(df) != 0:
@@ -142,11 +175,21 @@ def Normalization_is_valid(eqe_df,
                            normNM,
                            EQE_no
                            ):
-    """
-    :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    :param normNM: normalization wavelength [float or int]
-    :param EQE_no: number of EQE file to normalize [int]
-    :return: True or False
+    """Function to check if normalization wavelength is within wavelength range
+
+    Parameters
+    ----------
+    eqe_df : dataFrame, required
+        DataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
+    normNM : float or int, required
+        Normalization wavelength [nm]
+    EQE_no : int
+        Number of EQE file to plot
+
+    Returns
+    -------
+    X : bool
+        Boolean value specifying whether normalization is valid
     """
 
     if len(eqe_df) != 0:
@@ -173,14 +216,27 @@ def Fit_is_valid(eqe_df,
                  stopFitE,
                  EQE_no
                  ):
-    """
-    :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    :param startE: EQE start energy [float]
-    :param stopE: EQE stop energy [float]
-    :param startFitE: start energy of fit [float]
-    :param stopFitE: stop energy of fit [float]
-    :param EQE_no: number of EQE file to fit [int]
-    :return: True or False
+    """Function to check if EQE files are non-empty and within fit energy range
+
+    Parameters
+    ----------
+    eqe_df : dataFrame, required
+        DataFrame of EQE measurements
+    startE : float or int, required
+        Start energy [eV]
+    stopE : float or int, required
+        Stop energy [eV]
+    startFitE : float
+        Start energy of fit
+    stopFitE : float
+        Stop energy of fit
+    EQE_no : int
+        Number of EQE file to fit
+
+    Returns
+    -------
+    X : bool
+        Boolean value specifying whether fit is valid
     """
 
     if len(eqe_df) != 0:
@@ -213,11 +269,21 @@ def Fit_is_valid(eqe_df,
 # Function to check if start fit energy is smaller than stop fit energy
 
 def StartStop_is_valid(start, stop):
+    """Function to check if fit energy is smaller than stop fit energy
+
+    Parameters
+    ----------
+    start : float, required
+        Start value (i.e. start energy or fit start)
+    stop : float, required
+        Stop value (i.e. stop energy or fit stop)
+
+    Returns
+    -------
+    X : bool
+        Boolean value specifying whether start-stop combination is valid
     """
-    :param start: start value (i.e. start energy or fit start) [float]
-    :param stop: stop value (i.e. stop energy or fit stop) [float]
-    :return: True or False
-    """
+
     if start < stop:
         return True
     else:
