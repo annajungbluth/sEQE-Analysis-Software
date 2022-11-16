@@ -8,10 +8,19 @@ from source.utils import interpolate
 def calculate_Power(ref_df,
                     cal_df
                     ):
-    """
-    :param ref_df: dataFrame of measured reference diode values including columns ['Wavelength', 'Mean Current']
-    :param cal_df: dataFrame of diode calibration values including columns ['Wavelength [nm]', 'Responsivity [A/W]']
-    :return: ref_df['Power']: column of power values calculated in reference dataFrame
+    """Function to calculate reference power
+
+    Parameters
+    ----------
+    ref_df : dataFrame, required
+        DataFrame of measured reference diode values including columns ['Wavelength', 'Mean Current']
+    cal_df : dataFrame, required
+        DataFrame of diode calibration values including columns ['Wavelength [nm]', 'Responsivity [A/W]']
+
+    Returns
+    -------
+    ref_df['Power'] : dataFrame
+        Column of power values calculated in reference dataFrame
     """
 
     # Define empty dictionaries and lists
