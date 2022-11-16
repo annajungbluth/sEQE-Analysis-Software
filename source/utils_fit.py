@@ -47,21 +47,37 @@ def fit_function(function,
                  include_disorder=False,
                  double=False
                  ):
+    """Function to perform curve fit
+
+    Parameters
+    ----------
+    function : function, required
+        Function to perform fit with (i.e. gaussian, gaussian_disorder etc.)
+    energy_fit : list or array, required
+        Energy values to fit against
+    eqe_fit : list or array, required
+        EQE values to fit again
+    p0 : list, optional
+        List of initial guesses for curve_fit function
+    bounds : tuple, optional
+        Tuple of fit bound values
+    include_disorder : bool, optional
+        Boolean value specifying whether to include CT state disorder
+    double : bool, optional
+        Boolean value specifying whether to perform double peak fit
+
+    Returns
+    -------
+    best_vals : list
+        List of best fit parameters
+    covar : array
+        Covariance matrix of fit
+    y_fit : list
+        Calculated EQE values of fit
+    r_squared : float
+        R squared of fit
     """
-    Function to perform fitting using curve_fit
-    This function is capable of performing single and double peak fits.
-    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
-    :param energy_fit: energy values to fit against [list or array]
-    :param eqe_fit: EQE values to fit against [list or array]
-    :param p0: list of initial guesses for curve_fit function [list]
-    :param bounds: tuple of bound values [tuple]
-    :param include_disorder: boolean
-    :param double: boolean
-    :return: best_vals: list of best fit parameters [list]
-             covar: covariance matrix of fit
-             y_fit: calculated EQE values of the fit [list]
-             r_squared: R^2 of the fit [float]
-    """
+
     if bounds is not None:
         best_vals, covar = curve_fit(function,
                                      energy_fit,
@@ -128,21 +144,34 @@ def fit_model(function,
               p0=None,
               include_disorder=False
               ):
-    """
-    Function to perform curve fit using lmfit
-    This function is used for standard / disorder single peak fits.
-    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
-    :param energy_fit: energy values to fit against [list or array]
-    :param eqe_fit: EQE values to fit against [list or array]
-    :param p0: list of initial guesses for curve_fit function [list]
-    :param include_disorder: boolean value
-    :return: best_vals: list of best fit parameters [list]
-             covar: covariance matrix of fit
-             y_fit: calculated EQE values of the fit [list]
-             r_squared: R^2 of the fit [float]
+    """Function to perform curve fit using lmfit
+
+    Parameters
+    ----------
+    function : function, required
+        Function to perform fit with (i.e. gaussian, gaussian_disorder etc.)
+    energy_fit : list or array, required
+        Energy values to fit against
+    eqe_fit : list or array, required
+        EQE values to fit again
+    p0 : list, optional
+        List of initial guesses for curve_fit function
+    include_disorder : bool, optional
+        Boolean value specifying whether to include CT state disorder
+
+    Returns
+    -------
+    best_vals : list
+        List of best fit parameters
+    covar : array
+        Covariance matrix of fit
+    y_fit : list
+        Calculated EQE values of fit
+    r_squared : float
+        R squared of fit
     """
 
-    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
+    if p0 is None: # if no guess is given, initialize with ones. This is consistent with curve_fit.
         if include_disorder:
             p0 = [1, 1, 1, 1]
         else:
@@ -224,30 +253,46 @@ def fit_model_double(function,
                      include_disorder=False,
                      print_report=False
                      ):
+    """Function to perform double peak curve fit using lmfit.Model
+
+    Parameters
+    ----------
+    function : function, required
+        Function to perform fit with (i.e. gaussian, gaussian_disorder etc.)
+    energy_fit : list or array, required
+        Energy values to fit against
+    eqe_fit : list or array, required
+        EQE values to fit again
+    bound_dict : dict
+        Dictionary of boundary values
+        Dict keys:
+            start_ECT, stop_ECT
+            start_lCT, stop_lCT
+            start_fCT, stop_fCT
+            start_Eopt, stop_Eopt
+            start_lopt, stop_lopt
+            start_fopt, stop_fopt
+            start_sig, stop_sig
+    p0 : list, optional
+        List of initial guesses for curve_fit function
+    include_disorder : bool, optional
+        Boolean value specifying whether to include CT state disorder
+    print_report : bool, optional
+        Boolean value specifying whether to print fit report
+    
+    Returns
+    -------
+    best_vals : list
+        List of best fit parameters
+    covar : array
+        Covariance matrix of fit
+    y_fit : list
+        Calculated EQE values of fit
+    r_squared : float
+        R squared of fit
     """
-    Function to perform curve fit using lmfit
-    This function is used for simultaneous double peak fitting
-    :param function: function to fit against (i.e. gaussian, gaussian_disorder etc.)
-    :param energy_fit: energy values to fit against [list or array]
-    :param eqe_fit: EQE values to fit against [list or array]
-    :param bound_dict: dictionary of boundary values [dict]
-                       dict keys:
-                       start_ECT, stop_ECT
-                       start_lCT, stop_lCT
-                       start_fCT, stop_fCT
-                       start_Eopt, stop_Eopt
-                       start_lopt, stop_lopt
-                       start_fopt, stop_fopt
-                       start_sig, stop_sig
-    :param p0: list of initial guesses for curve_fit function [list]
-    :param include_disorder: boolean value to specify whether to include disorder [bool]
-    :param print_report: boolean value to specify whether to print fit report [bool]
-    :return: best_vals: list of best fit parameters [list]
-             covar: covariance matrix of fit
-             y_fit: calculated EQE values of the fit [list]
-             r_squared: R^2 of the fit [float]
-    """
-    if p0 is None: # if no guess is given, initialize with all ones. This is consistent with curve_fit.
+
+    if p0 is None: # if no guess is given, initialize with ones. This is consistent with curve_fit.
         if include_disorder:
             p0 = [1, 1, 1, 1, 1, 1, 1]
         else:
@@ -358,26 +403,43 @@ def guess_fit(eqe,
               simultaneous_double=False,
               bounds=None
               ):
-    """
-    Function to loop through guesses and determine best fit using lmfit-based fit_model function
+    """Function to loop through guesses and determine best fit using lmfit-based fit_model function
     This function is used for both standard / disorder single and simultaneous double peak fitting.
-    :param eqe: EQE data [list]
-    :param startE: fit start energy value [float]
-    :param stopE: fit stop energy value [float]
-    :param function: function to fit [function]
-    :param guessRange: primary peak initial values [list].
-                       For single peak fitting, this can be for the CT or Opt peak.
-                       For simultaneous double peak fitting, this will be for the CT peak only.
-    :param guessRange_opt: Opt peak initial values for simultaneous double fits [list]
-    :param guessRange_sig: sigma initial values [list]
-    :param include_disorder: boolean value specifying whether to include disorder [bool]
-    :param simultaneous_double: boolean value specifying whether to perform a simultaneous double fit [bool]
-    :param bounds: dictionary of boundary values for simultaneous double fitting [dict]
-                   Escalates the use of lmfit.Model for single peak fitting.
-    :return: best_vals: fit result [list]
-             r_squared: R2 of fit [float]
-    """
 
+    Parameters
+    ----------
+    eqe : list, required
+        Input EQE data
+    startE : float, required
+        Fit start energy value [eV]
+    stopE : float, required
+        Fit stop energy value [eV]
+    function : function, required
+        Function to fit
+    guessRange : list, required
+        Primary peak initial values
+        For single peak fitting, this can be for the CT or Opt peak
+        For simultaneous double peak fitting, this will be for the CT peak only
+    guessRange_opt : list, optional
+        Optical (S1) peak initial values for simultaneous double peak fits
+    guessRange_sig : list, optional 
+        Disorder parameter initial values 
+    include_disorder : bool, optional
+        Boolean value specifying whether to include peak disorder
+    simultaneous_double : bool, optional
+        Boolean value specifying whether to perform simultaneous double peak fitting
+    bounds : dict, optional
+        Dictionary of boundary values for simultaneous double fitting
+        Escalates the use of lmfit.Model for single peak fitting
+    
+    Returns
+    -------
+    best_vals : list
+        List of best fit parameters
+    r_squared : float
+        R squared of fit
+    """
+    
     if len(eqe) != 0:
 
         # Compile EQE to fit
@@ -456,7 +518,7 @@ def guess_fit(eqe,
         else:
             for p0_guess in p0_list:
                 try:
-                    # TODO: Replace permanently with fit_model?
+                    # NOTE: Replace permanently with fit_model?
                     # NOTE: fit_function works better with single peak Marcus fitting
                     if bounds is None:
                         best_vals, covar, y_fit, r_squared = fit_function(function=function,
@@ -490,67 +552,6 @@ def guess_fit(eqe,
 
         return best_vals, covar, p0, r_squared
 
-        # NOTE: Old code to loop through all initial guesses and determine best fit
-        # if include_disorder:
-        #     best_guess_df = pd.DataFrame()
-        #     p0_list = []
-        #     R2_list = []
-        #     for CT_guess in guessRange_CT:
-        #         for sig_guess in guessRange_sig:
-        #             try:
-        #                 best_vals, covar, y_fit, r_squared = fit_model(function,
-        #                                                                energy_fit,
-        #                                                                eqe_fit,
-        #                                                                p0=p0,
-        #                                                                include_disorder=True
-        #                                                                )
-        #                 if r_squared > 0:
-        #                     p0_list.append(p0)
-        #                     R2_list.append(r_squared)
-        #                 else:
-        #                     raise Exception('Wrong fit determined.')
-        #                 p0 = [0.001, 0.1, round(CT_guess, 3), round(sig_guess, 3)]
-        #             except:
-        #                 p0 = [0.001, 0.1, round(CT_guess, 3), round(sig_guess, 3)]
-        #             # except Exception as e:
-        #             #     p0 = [0.001, 0.1, round(E_guess, 3), round(sig_guess, 3)]
-        #             #     print(e)
-        #
-        #     best_guess_df['p0'] = p0_list
-        #     best_guess_df['R2'] = R2_list
-        #
-        #     best_R2 = max(best_guess_df['R2'])
-        #     best_p0 = best_guess_df['p0'][best_guess_df['R2'] == best_R2].values[0]  # Find best initial guess
-        #
-        #     # Determine fit values of fit with best intial guess
-        #     best_vals, covar, y_fit, r_squared = fit_model(function,
-        #                                                    energy_fit,
-        #                                                    eqe_fit,
-        #                                                    p0=best_p0,
-        #                                                    include_disorder=True
-        #                                                    )
-        #
-        # else:
-        #     for CT_guess in guessRange_CT:
-        #         try:
-        #             best_vals, covar, y_fit, r_squared = fit_function(function,
-        #                                                               energy_fit,
-        #                                                               eqe_fit,
-        #                                                               p0=p0
-        #                                                               )
-        #             if r_squared > 0:
-        #                 return best_vals, r_squared
-        #             else:
-        #                 raise ArithmeticError
-        #         except:
-        #             p0 = [0.001, 0.1, CT_guess]
-        #             if CT_guess == guessRange_CT[-1]:
-        #                 best_vals = [0, 0, 0]
-        #                 r_squared = 0
-        #
-        # return best_vals, r_squared
-
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Mappable function to calculate guess fit
@@ -566,23 +567,40 @@ def calculate_guess_fit(x,
                         simultaneous_double=False,
                         bounds=None
                         ):
-    """
-    Mappable wrapper function to loop through initial guesses
+    """Mappable wrapper function to loop through initial guesses
     This function is used for standard / disorder single and simultaneous double peak fits.
-    :param x: row of the dataFrame [int]
-    :param df: results dataFrame
-    :param eqe: EQE values [list]
-    :param function: function to fit [function]
-    :param guessRange: primary peak (either CT or Opt) initial values [list]
-    :param guessRange_opt: Opt peak initial values [list]
-    :param guessRange_sig: sigma initial values [list]
-    :param bounds: dictionary of boundary values [dict]
-    :param include_disorder: boolean value specifying whether to include disorder [bool]
-    :param simultaneous_double: boolean value specifying whether to perform a simultaneous double fit [bool]
-    :return: best_vals: fit result [list]
-             r_squared: R2 of fit [float]
-             df['Start'][x]: Start value of the fit [float]
-             df['Stop'][x]: Stop value of the fit [float]
+
+    Parameters
+    ----------
+    x : int, required
+        Number specifying row of dataFrame
+    df : dataFrame, required
+        DataFrame of fit results
+    eqe : list, required
+        List of EQE values
+    function : function, required
+        Function to fit
+    guessRange : list, required
+        Primary peak (either CT or Optical (S1) peak) initial values
+    guessRange_opt : list, optional
+        Optical (S1) peak initial values
+    guessRange_sig : list, optional 
+        Disorder parameter initial values 
+    include_disorder : bool, optional
+        Boolean value specifying whether to include peak disorder
+    simultaneous_double : bool, optional
+        Boolean value specifying whether to perform simultaneous double peak fitting
+    
+    Returns
+    -------
+    best_vals : list
+        List of best fit parameters
+    r_squared : float
+        R squared of fit
+    df['Start'][x] : float, required
+        Start value of the fit
+    df['Stop'][x] : float, 
+        Stop value of the fit
     """
 
     best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
@@ -615,32 +633,64 @@ def map_fit(x,
             tolerance=0,
             sub_fit=1
             ):
-    """
-    Mappable function to determine individual / combined fits
-    :param x: row of the dataFrame [int]
-    :param df_Opt: dataFrame of Opt fit parameters [dataFrame]
-    :param df_CT: dataFrame of CT fit parameters [dataFrame]
-    :param eqe: EQE values [list]
-    :param guessRange_CT: CT state energy initial values [list]
-    :param function: function to fit [function]
-    :param T: Temperature [float]
-    :param bias: bias fit below data [boolean]
-    :param tolerance: tolerance accepted of fit above data [float]
-    :param sub_fit: indicates whether Opt fit is subtracted [0 - no subtract, 1 - subtract]
-    :return: best_vals_Opt: fit values of Opt fit [list]
-             R2_Opt: R2 of Opt fit [float]
-             best_vals_CT: fit values of CT fit [list]
-             R2_CT: R2 of CT fit [float]
-             start_Opt_list: start energies of Opt fit [list]
-             stop_Opt_list: stop energies of Opt fit [list]
-             start_CT_list: start energies of CT fit [list]
-             stop_CT_list: stop energies of CT fit [list]
-             combined_R2_list: R2 of sum of Opt and CT fit [float]
-             combined_Fit_list: sum of Opt and CT fit [list]
-             Opt_Fit_list: Opt fit values [list]
-             CT_Fit_list: CT fit values [list]
-             Energy_list: Energy values [list]
-             EQE_list: Original EQE data [list]
+    """Mappable function to determine individual / combined fits
+
+    Parameters
+    ----------
+    x : int, required
+        Number specifying row of dataFrame
+    df_Opt : dataFrame, required
+        DataFrame of Optical (S1) fit results
+    df_CT : dataFrame, required
+        DataFrame of CT state fit results
+    eqe : list, required
+        List of EQE values
+    guessRange_CT : list, optional
+        CT state initial values
+    function : function, required
+        Function to fit
+    T : float, required
+        Temperature [K]
+    bias : bool, optional
+        Boolean value specifying whether to bias fits above the data
+    tolerance : float, optional
+        Tolerance for fit above the data
+    sub_fit : int, optional
+        Number indicating whether Optical (S1) peak fit is substracted
+        0 - Don't subtract
+        1 - Subtract
+
+    Returns
+    -------
+    best_vals_Opt : list
+        List of Optical (S1) peak fit values
+    R2_Opt : list
+        R squared of Optical (S1) peak fit
+    best_vals_CT : list
+        List of CT state fit values
+    R2_CT : list
+        R squared of CT state fit
+    start_Opt_list : list
+        Start energies of Optical (S1) peak fit
+    stop_Opt_list : list
+        Stop energies of Optical (S1) peak fit
+    start_CT_list : list
+        Start energies of CT state fit
+    stop_CT_list : list
+        Stop energies of CT state fit
+    combined_R2_list: float
+        R squared of sum of Optical (S1) and CT state fit
+    combined_Fit_list: float
+        Sum of Optical (S1) and CT state fit
+    Opt_Fit_list: list
+        Optical (S1) fit values
+    CT_Fit_list: list
+        CT state fit values
+    Energy_list: list
+        Energy values
+    EQE_list: list
+        Original EQE data
+
     """
 
     if sub_fit == 1:  # to subtract optical fit
@@ -722,7 +772,7 @@ def map_fit(x,
 
 # -----------------------------------------------------------------------------------------------------------
 
-    # Function to determine the best fit for separate double peak fitting
+# Function to determine the best fit for separate double peak fitting
 
 def find_best_fit(df_both,
                   eqe,
@@ -735,19 +785,36 @@ def find_best_fit(df_both,
                   save_fit=False,
                   save_fit_file=None
                   ):
-    """
-    Function to find best EQE fits
-    :param df_both: dataFrame with final fit results [dataFrame]
-    :param eqe: original EQE data [dataFrame]
-    :param T: Temperature [float]
-    :param label: label to use in plot [string]
-    :param n_fit: fit number [int]
-    :param include_disorder: boolean of whether to include disorder [bool]
-    :param simultaneous_double: boolean value to specify whether double peaks were fit simultaneously [bool]
-    :param ext_factor: multiplication factor to extend data for R2 calculation [float]
-    :param save_fit: boolean value to specify whether to save the fit
-    :param save_fit_file: directory and folder name to save data to [string]
-    :return: df_copy: copy of df_both [dataFrame]
+    """Function to determine the best fit for separate double peak fitting
+
+    Parameters
+    ----------
+    df_both : dataFrame, required
+        DataFrame with results of separate double peak fitting
+    eqe : dataFrame, required
+        Input EQE data
+    T : float, required
+        Temperature [K]
+    label : str, optional
+        Plot label
+    n_fit : int, optional
+        Fit number 
+    include_disorder : bool, optional
+        Boolean value specifying whether to include peak disorder
+    simultaneous_double : bool, optional
+        Boolean value specifying whether simultaneous double peak fitting was performed
+    ext_factor : float, optional
+        Multiplication factor to extend data for R squared calculation
+    save_fit : bool, optional
+        Boolean value specifying whether to save fits
+    save_fit_file : str, optional
+        Directory or folder name to save data to
+
+    Returns
+    -------
+    df_copy : dataFrame
+        Copy of dataFrame summarizing Optical (S1) and CT state fits
+
     """
 
     if len(df_both) != 0:
