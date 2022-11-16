@@ -14,15 +14,28 @@ def plot(ax1,
          label_,
          color_
          ):
+    """Function to plot any data
+
+    Parameters
+    ----------
+    ax_1 : axis object, required
+        matplotlib axis object
+    ax_2 : axis object, required
+        matplotlib axis object
+    x : list or array, required
+        x input data
+    y : list or array, required
+        y input data
+    label_ : str, required
+        Plot label
+    color_ : str, required
+        Plot color
+        
+    Returns
+    -------
+    None
     """
-    :param ax1: plt axis object
-    :param ax2: plt axis object
-    :param x: x data [list or array]
-    :param y: y data [list or array]
-    :param label_: label to plot [string]
-    :param color_: color to plot [string]
-    :return:
-    """
+
     ax1.plot(x, y, linewidth=3, label=label_, color=color_)
     ax1.legend()
 
@@ -37,10 +50,20 @@ def plot(ax1,
 # Function to set up "Calculate EQE" plot
 
 def set_up_plot(flag='Wavelength'):
-    """
-    :param flag: Flag to specify if wavelength or energy are plotted [string]
-    :return: ax_1: plt axis object to plot EQE on linear scale
-             ax_2: plt axis objects to plot EQE on log scale
+    """Function to set up "Calculate EQE" plot
+
+    Parameters
+    ----------
+    flag : str, optional
+        Flag to specify whether to plot wavelength or energy on x-axis.
+        Options: "Wavelength", "Energy"
+        
+    Returns
+    -------
+    ax_1 : axis object
+        matplotlib axis object to plot EQE on linear scale
+    ax_2 : axis object
+        matplotlib axis object to plot EQE on logarithmic scale
     """
 
     if flag == 'Wavelength':
@@ -108,78 +131,28 @@ def set_up_plot(flag='Wavelength'):
 def set_up_EQE_plot(number=None,
                     norm_num=None
                     ):
-    """
-    :param: number: number indicating whether wavelength or energy are plotted [int]
-            number = 0 => plot wavelength
-            number = 1 => plot energy
-            number = None => plot energy
-    :param: norm_num: number indicating whether raw, normalized, or reduced data are plotted [int]
-            norm_num = 0 => plot raw EQE
-            norm_num = 1 => plot normalized EQE
-            norm_num = None => plot raw EQE
-    :return: ax_1: plt axis object to plot EQE on linear scale
-             ax_2: plt axis objects to plot EQE on log scale
-    """
+    """Function to set up EQE plot
 
-    # with mpl.rc_context({'axes.linewidth': 2}):
-    #
-    #     fontsize = 15
-    #     # fontsize = 17
-    #     plt.ion()
-    #
-    #     fig_1, ax_1 = plt.subplots(figsize=(6, 6))
-    #
-    #     if number == 0:  # number determines whether the x-axis is in wavelength or energy
-    #         plt.xlabel('Wavelength / nm', fontsize=fontsize, fontweight='medium')
-    #     elif number == 1:
-    #         plt.xlabel('Energy / eV', fontsize=fontsize, fontweight='medium')
-    #     elif number is None:
-    #         plt.xlabel('Energy / eV', fontsize=fontsize, fontweight='medium')
-    #
-    #     if norm_num == 0:  # norm_num determines whether the y-axis is "EQE" or "Normalized EQE"
-    #         plt.ylabel('EQE / a.u.', fontsize=fontsize, fontweight='medium')
-    #     elif norm_num == 1:
-    #         plt.ylabel('Normalized EQE / a.u.', fontsize=fontsize, fontweight='medium')
-    #     elif norm_num is None:
-    #         plt.ylabel('EQE / a.u.', fontsize=fontsize, fontweight='medium')
-    #
-    #     plt.xticks(np.arange(0.5, 2.5, 0.1))
-    #     plt.xlim(1.1, 1.7)
-    #
-    #     plt.rcParams['figure.facecolor'] = 'xkcd:white'
-    #     plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-    #     plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='major', length=6, width=1, top=True, right=False, left=True)
-    #     plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='minor', length=3, width=1, left=True, bottom=True, top=True)
-    #     plt.minorticks_on()
-    #     plt.show()
-    #
-    #     fig_2, ax_2 = plt.subplots(figsize=(6, 6))
-    #     ax_2.set_yscale('log')  # To generate log scale axis
-    #
-    #     if number == 0:
-    #         plt.xlabel('Wavelength / nm', fontsize=fontsize, fontweight='medium')
-    #     elif number == 1:
-    #         plt.xlabel('Energy / eV', fontsize=fontsize, fontweight='medium')
-    #     elif number is None:
-    #         plt.xlabel('Energy / eV', fontsize=fontsize, fontweight='medium')
-    #
-    #     if norm_num == 0:
-    #         plt.ylabel('EQE / a.u.', fontsize=fontsize, fontweight='medium')
-    #     elif norm_num == 1:
-    #         plt.ylabel('Normalized EQE / a.u.', fontsize=fontsize, fontweight='medium')
-    #     elif norm_num is None:
-    #         plt.ylabel('EQE / a.u.', fontsize=fontsize, fontweight='medium')
-    #
-    #     plt.ylim(5*10E-6, 10E0)
-    #     plt.xticks(np.arange(0.5, 2.5, 0.1))
-    #     plt.xlim(1.1, 1.7)
-    #
-    #     plt.rcParams['figure.facecolor'] = 'xkcd:white'
-    #     plt.rcParams['figure.edgecolor'] = 'xkcd:white'
-    #     plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='major', length=6, width=1, top=True, right=False, left=True)
-    #     plt.tick_params(labelsize=fontsize, direction='in', axis='both', which='minor', length=3, width=1, left=True, bottom=True, top=True)
-    #     plt.minorticks_on()
-    #     plt.show()
+    Parameters
+    ----------
+    number : int, optional
+        Number indicating whether wavelength or energy are plotted
+        number = 0 => plot wavelength
+        number = 1 => plot energy
+        number = None => plot energy
+    norm_num : int, optional
+        Number indicating whether raw, normalized, or reduced data are plotted [int]
+        norm_num = 0 => plot raw EQE
+        norm_num = 1 => plot normalized EQE
+        norm_num = None => plot raw EQE
+        
+    Returns
+    -------
+    ax_1 : axis object
+        matplotlib axis object to plot EQE on linear scale
+    ax_2 : axis object
+        matplotlib axis object to plot EQE on logarithmic scale
+    """
 
     fontsize = 15
     # fontsize = 17
@@ -244,9 +217,18 @@ def set_up_EQE_plot(number=None,
 # Function to set up EL and EQE plot
 
 def set_up_EL_plot():
-    """
-    :return: ax_1: plt axis object to plot EQE on linear scale
-             ax_2: plt axis objects to plot EQE on log scale
+    """Function to set up EL and eEQE plot
+
+    Parameters
+    ----------
+    None
+        
+    Returns
+    -------
+    ax_1 : axis object
+        matplotlib axis object to plot EQE on linear scale
+    ax_2 : axis object
+        matplotlib axis object to plot EQE on logarithmic scale
     """
 
     plt.ion()
