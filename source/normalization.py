@@ -11,15 +11,29 @@ def normalize_EQE(eqe_df,
                   stopNM,
                   normNM
                   ):
-    """
-    :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    :param startNM: start wavelength [float or int]
-    :param stopNM: stop wavelength [float or int]
-    :param normNM: normalization wavelength [float or int]
-    :return: Wavelength: list of wavelength values [list]
-             Energy: list of energy values [list]
-             EQE: list of normalized EQE values [list]
-             log_EQE: list of normalized log EQE values [list]
+    """Function to normalize EQE data
+
+    Parameters
+    ----------
+    eqe_df : dataFrame, required
+        DataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
+    startNM : float or int, required
+        Start wavelength [nm]
+    stopNM : float or int, required
+        Stop wavelength [nm]
+    normNM : float or int, required
+        Normalization Wavelength [nm]
+        
+    Returns
+    -------
+    Wavelength : list
+        List of wavelength values corresponding to normalized EQE
+    Energy : list
+        List of energy values corresponding to normalized EQE
+    EQE : list
+        List of normalized EQE values
+    log_EQE : list
+        List of normalized EQE values on a logarithmic scale
     """
 
     Wavelength = []
