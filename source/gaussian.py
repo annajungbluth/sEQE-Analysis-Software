@@ -13,13 +13,25 @@ from source.utils import R_squared
 # Function to calculate gaussian absorption
 
 def calculate_gaussian_absorption(x, f, l, E, T):
-    """
-    :param x: List of energy values [list]
-    :param f: Oscillator strength [float]
-    :param l: Reorganization Energy [float]
-    :param E: Peak Energy [float]
-    :param T: Temperature [float or int]
-    :return: EQE value [float]
+    """Function to calculate gaussian absorption
+
+    Parameters
+    ----------
+    x : list, required
+        List of energy values [eV]
+    f : float, required
+        Oscillator strength [eV^2]
+    l : float, required
+        Reorganization energy [eV]
+    E : float, required
+        Peak energy [eV]
+    T : float or int, required
+        Temperature [K]
+        
+    Returns
+    -------
+    EQE : float
+        Calculated EQE value
     """
 
     # Define variables
@@ -32,14 +44,27 @@ def calculate_gaussian_absorption(x, f, l, E, T):
 # Function to calculate gaussian absorption including disorder
 
 def calculate_gaussian_disorder_absorption(x, f, l, E, sig, T):
-    """
-    :param x: List of energy values [list]
-    :param f: Oscillator strength [float]
-    :param l: Reorganization Energy [float]
-    :param E: Peak Energy [float]
-    :param sig: Peak disorder [float]
-    :param T: Temperature [float or int]
-    :return: EQE value [float]
+    """Function to calculate gaussian absorption including disorder
+
+    Parameters
+    ----------
+    x : list, required
+        List of energy values [eV]
+    f : float, required
+        Oscillator strength [eV^2]
+    l : float, required
+        Reorganization energy [eV]
+    E : float, required
+        Peak energy [eV]
+    sig : float, required
+        Peak disorder parameter [eV]
+    T : float or int, required
+        Temperature [K]
+        
+    Returns
+    -------
+    EQE : float
+        Calculated EQE value
     """
 
     # Define variables
@@ -52,16 +77,30 @@ def calculate_gaussian_disorder_absorption(x, f, l, E, sig, T):
 
     # Function to calculate absorption using MLJ theory
 
-def calculate_MLJ_absorption(x, f, l, E, T, S, hbarw): # Double check if this equation is correct
-    """
-    :param x: List of energy values [list]
-    :param f: Oscillator strength [float]
-    :param l: Reorganization Energy [float]
-    :param E: Peak Energy [float]
-    :param T: Temperature [float or int]
-    :param S: Huang-Rhys parameter [float]
-    :param hbarw: Vibrational Energy [float]
-    :return: EQE value [float]
+def calculate_MLJ_absorption(x, f, l, E, T, S, hbarw):
+    """Function to calculate absorption using MLJ equation
+
+    Parameters
+    ----------
+    x : list, required
+        List of energy values [eV]
+    f : float, required
+        Oscillator strength [eV^2]
+    l : float, required
+        Reorganization energy [eV]
+    E : float, required
+        Peak energy [eV]
+    T : float or int, required
+        Temperature [K]
+    S : float, required
+        Huang-Rhys parameter
+    hbarw : float, required
+        Vibrational energy [eV]
+        
+    Returns
+    -------
+    EQE : float
+        Calculated EQE value
     """
 
     # Define variables
@@ -80,17 +119,32 @@ def calculate_MLJ_absorption(x, f, l, E, T, S, hbarw): # Double check if this eq
 
     # Function to calculate absorption including disorder using MLJ theory
 
-def calculate_MLJ_disorder_absorption(x, f, l, E, T, sig, S, hbarw): # Double check if this equation is correct
-    """
-    :param x: List of energy values [list]
-    :param f: Oscillator strength [float]
-    :param l: Reorganization Energy [float]
-    :param E: Peak Energy [float]
-    :param T: Temperature [float or int]
-    :param sig: Peak disorder [float]
-    :param S: Huang Rhys parameter [float]
-    :param hbarw: Vibrational Energy [float]
-    :return: EQE value [float]
+def calculate_MLJ_disorder_absorption(x, f, l, E, T, sig, S, hbarw): 
+    """Function to calculate absorption using MLJ equation including disorder
+
+    Parameters
+    ----------
+    x : list, required
+        List of energy values [eV]
+    f : float, required
+        Oscillator strength [eV^2]
+    l : float, required
+        Reorganization energy [eV]
+    E : float, required
+        Peak energy [eV]
+    T : float or int, required
+        Temperature [K]
+    sig : float, required
+        Peak disorder parameter [eV]
+    S : float, required
+        Huang-Rhys parameter
+    hbarw : float, required
+        Vibrational energy [eV]
+        
+    Returns
+    -------
+    EQE : float
+        Calculated EQE value
     """
 
     # Define variables
@@ -121,35 +175,50 @@ def calculate_combined_fit(eqe,
                            tolerance=0,
                            range=1.05
                            ):
-    """
-    Function to compile combined fit for S1 and CT peak absorption after single peak fits
-    :param eqe: EQE values [list]
-    :param stopE: stop energy of fit [float]
-    :param best_vals_Opt: Opt fit values [list]
-    :param best_vals_CT: CT fit values [list]
-    :param T: Temperature [float]
-    :param R2_Opt: Opt fit R2 [float]
-    :param R2_CT: CT fit R2 [float]
-    :param include_disorder: boolean value to see whether to include disorder [bool]
-    :param bias: bias fit below data [boolean]
-    :param tolerance: tolerance accepted of fit above data [float]
-    :param range: defines upper bound of R2 calculation [float]
-    :return: result_dict : dictionary with fit results [dict]
-                Dict keys:
-                R2_Combined: R2 of sum of CT and Opt fit [float]
-                R2_CT: R2 of CT fit [float]
-                R2_Opt: R2 of Opt fit [float]
-                R2_Average: average R2 of CT / Opt / Combined fit [float]
-                Combined_Fit: sum of CT and Opt fit [list]
+    """Function to calculate parameters for double peak fit
+
+    Parameters
+    ----------
+    eqe : list, required
+        List of input EQE values [eV]
+    stopE : float, required
+        Stop energy of fit [eV]
+    best_vals_Opt : list, required
+        Optical gap/S1 peak fit values
+    best_vals_CT : list, required
+        CT state fit values
+    T : float, required
+        Temperature [K]
+    R2_Opt : float, optional
+        R squared of optical peak fit
+    R2_CT : float, optional
+        R squared of CT state fit
+    include_disorder : bool, optional
+        Boolean value specifying whether to include CT state disorder
+    bias : bool, optional
+        Boolean value specifying whether to bias fits above the data
+    range : float, optional
+        Defines upper bound of R2 calculation
+        
+    Returns
+    -------
+    result_dict : dict
+        Dictionary with fit results
+        Dict keys:
+                R2_Combined: R squared of sum of CT and Opt fit [float]
+                R2_CT: R squared of CT fit [float]
+                R2_Opt: R squared of Opt fit [float]
+                R2_Average: Average R squared of CT / Opt / Combined fit [float]
+                Combined_Fit: Sum of CT and Opt fit [list]
                 Opt_fit: Opt fit values [list]
                 CT_fit: CT fit values [list]
                 Energy: Energy values [list]
-                EQE: original EQE data [list]
+                EQE: Original EQE data [list]
     """
 
     wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe,
                                                                  min(eqe['Energy']),
-                                                                 stopE * range,  # Increase stop energy to expand fit!
+                                                                 stopE * range,  # NOTE: Increase stop energy to expand fit!
                                                                  1)
     # # Optional code to add interpolation to the data
     # int_func = interp1d(eqe['Energy'], eqe['EQE'])
@@ -218,9 +287,6 @@ def calculate_combined_fit(eqe,
 
     return result_dict
 
-    # # Old code to return a list instead of dictionary
-    # return [combined_R_Squared, combined_Fit, Opt_fit, CT_fit, energy_data, eqe_data]
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to calculate parameters for double peak MLJ fit
@@ -239,37 +305,56 @@ def calculate_combined_fit_MLJ(eqe,
                                tolerance=0,
                                range=1.05
                                ):
-    """
-    Function to compile combined fit for S1 and CT peak absorption after single peak fits
-    :param eqe: EQE values [list]
-    :param stopE: stop energy of fit [float]
-    :param best_vals_Opt: Opt fit values [list]
-    :param best_vals_CT: CT fit values [list]
-    :param T: Temperature [float]
-    :param S: Huang Rhy parameter [float]
-    :param hbarw: Vibrational Energy [float]
-    :param R2_Opt: Opt fit R2 [float]
-    :param R2_CT: CT fit R2 [float]
-    :param include_disorder: boolean value to see whether to include disorder [bool]
-    :param bias: bias fit below data [boolean]
-    :param tolerance: tolerance accepted of fit above data [float]
-    :param range: defines upper bound of R2 calculation [float]
-    :return: result_dict : dictionary with fit results [dict]
-                Dict keys:
-                R2_Combined: R2 of sum of CT and Opt fit [float]
-                R2_CT: R2 of CT fit [float]
-                R2_Opt: R2 of Opt fit [float]
-                R2_Average: average R2 of CT / Opt / Combined fit [float]
-                Combined_Fit: sum of CT and Opt fit [list]
+    """Function to calculate parameters for double peak MLJ fit
+
+    Parameters
+    ----------
+    eqe : list, required
+        List of input EQE values [eV]
+    stopE : float, required
+        Stop energy of fit [eV]
+    best_vals_Opt : list, required
+        Optical gap/S1 peak fit values
+    best_vals_CT : list, required
+        CT state fit values
+    T : float, required
+        Temperature [K]
+    S : float, required
+        Huang-Rhys parameter
+    hbarw : float, required
+        Vibrational energy [eV]
+    R2_Opt : float, optional
+        R squared of optical peak fit
+    R2_CT : float, optional
+        R squared of CT state fit
+    include_disorder : bool, optional
+        Boolean value specifying whether to include CT state disorder
+    bias : bool, optional
+        Boolean value specifying whether to bias fits above the data
+    tolerance : float, optional
+        Tolerance for fit above the data
+    range : float, optional
+        Defines upper bound of R2 calculation
+        
+    Returns
+    -------
+    result_dict : dict
+        Dictionary with fit results
+        Dict keys:
+                R2_Combined: R squared of sum of CT and Opt fit [float]
+                R2_CT: R squared of CT fit [float]
+                R2_Opt: R squared of Opt fit [float]
+                R2_Average: Average R squared of CT / Opt / Combined fit [float]
+                Combined_Fit: Sum of CT and Opt fit [list]
                 Opt_fit: Opt fit values [list]
                 CT_fit: CT fit values [list]
                 Energy: Energy values [list]
-                EQE: original EQE data [list]
+                EQE: Original EQE data [list]
     """
 
     wave_data, energy_data, eqe_data, log_eqe_data = compile_EQE(eqe,
                                                                  min(eqe['Energy']),
-                                                                 stopE * range,  # Increase stop energy to expand fit!
+                                                                 stopE * range,  # NOTE: Increase stop energy to expand fit!
                                                                  1)
     # # Optional code to add interpolation to the data
     # int_func = interp1d(eqe['Energy'], eqe['EQE'])
@@ -341,8 +426,5 @@ def calculate_combined_fit_MLJ(eqe,
                    }
 
     return result_dict
-
-    # # Old code to return a list instead of dictionary
-    # return [combined_R_Squared, combined_Fit, Opt_fit, CT_fit, energy_data, eqe_data]
 
 # -----------------------------------------------------------------------------------------------------------
