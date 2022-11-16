@@ -654,7 +654,7 @@ def map_fit(x,
     bias : bool, optional
         Boolean value specifying whether to bias fits above the data
     tolerance : float, optional
-        Tolerance for fit above the data
+        Tolerance (mean percent) allowed for fit above the data
     sub_fit : int, optional
         Number indicating whether Optical (S1) peak fit is substracted
         0 - Don't subtract

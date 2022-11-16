@@ -332,7 +332,7 @@ def calculate_combined_fit_MLJ(eqe,
     bias : bool, optional
         Boolean value specifying whether to bias fits above the data
     tolerance : float, optional
-        Tolerance for fit above the data
+        Tolerance (mean percent) allowed for fit above the data
     range : float, optional
         Defines upper bound of R2 calculation
         

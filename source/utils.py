@@ -9,12 +9,23 @@ from scipy.interpolate import interp1d
 # Function to interpolate values
 
 def interpolate(num, x, y):
+    """Function to interpolate values
+
+    Parameters
+    ----------
+    num : float, required
+        Value to interpolate
+    x : list or array, required
+        x data for interpolation
+    y : list or array, required
+        y data for interpolation
+    
+    Returns
+    -------
+    f(num) : float
+        Interpolated y value
     """
-    :param num: value to interpolate at [float]
-    :param x: x data [list or array]
-    :param y: y data [list or array]
-    :return: interpolated y-value at x-value of num [float]
-    """
+
     f = interp1d(x, y)
     return f(num)
 
@@ -28,13 +39,25 @@ def R_squared(y_data,
               bias=False,
               tolerance=None
               ):
-    """
-    :param y_data: original y data [list or array]
-    :param yfit_data: y data of fit [list or array]
-    :param bias: add bias to R-Squared if True [bool]
-    "param tolerance: allowed mean percent deviated above the data [float]
-    :return: r_squared: R Squared of fit to data [float]
-             r_squared_log: R Squared of the log of the fit to the data [float]
+    """Function to calculate R squared of fit
+
+    Parameters
+    ----------
+    y_data : list or array, required
+        Input y data
+    y_fit_data : list or array, required
+        y data of the fit
+    bias : bool, optional
+        Boolean value specifying whether to bias fits above the data
+    tolerance : float, optional
+        Tolerance (mean percent) allowed for fit above the data
+    
+    Returns
+    -------
+    r_squared: float
+        R squared of fit to data
+    r_squared_log: float
+        R squared of the logarithm of the fit to the data
     """
 
     if len(y_data) == len(yfit_data):
@@ -77,23 +100,39 @@ def R_squared(y_data,
 # Function to separate out elements from a list
 
 def sep_list(list_, n):
-    """
-    :param list_: list of values [list]
-    :param n: number of element to extract [int]
-    :return: nth element of list
+    """Function to separate out elements from a list
+
+    Parameters
+    ----------
+    list_ : list, required
+        List of values to separate
+    n : int, required
+        Number of element to extract
+
+    Returns
+    -------
+        nth element of list
     """
     return list_[n]
-
 
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to separate a list of lists
 
 def sep_list_list(list_list):
+    """Function to separate a list of lists
+
+    Parameters
+    ----------
+    list_list : list, required
+        List of lists
+
+    Returns
+    -------
+    one_list : list
+        List of all individual elements in list_list
     """
-    :param list_list: list of lists [list]
-    :return: one_list: list of all individual elements in list_list [list]
-    """
+
     one_list = []
 
     for list in list_list:
@@ -108,12 +147,18 @@ def sep_list_list(list_list):
 # Function to set up logger
 
 def get_logger():
-    """
-    Return a logger for current module
+    """Function to set up logger
+
+    Parameters
+    ----------
+    None
+
     Returns
     -------
     logger : logger instance
+        Logger to log terminal outputs to
     """
+
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter(fmt="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -128,7 +173,6 @@ def get_logger():
     logger.addHandler(console)
 
     return logger
-
 
 logger = get_logger()
 

@@ -25,7 +25,6 @@ def is_Colour(colour):
     -------
     Colour : bool
         Boolean value specifying whether colour is valid
-
     """
 
     try:
@@ -53,7 +52,6 @@ def pick_EQE_Color(colour_Box, file_no):
     -------
     Colour : HEX
         HEX code of randomly generated colour
-
     """
 
     colour = colour_Box.toPlainText()
