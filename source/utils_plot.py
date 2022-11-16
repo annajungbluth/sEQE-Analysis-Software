@@ -11,12 +11,21 @@ logger = get_logger()
 
 # -----------------------------------------------------------------------------------------------------------
 
-# Function to check if input is a color
+# Function to check if input is a colour
 
 def is_Colour(colour):
-    """
-    :param colour: colour input [string]
-    :return: True if colour is valide, False if it is not
+    """Function to check if input is a colour
+
+    Parameters
+    ----------
+    colour : str, required
+        Colour input
+
+    Returns
+    -------
+    Colour : bool
+        Boolean value specifying whether colour is valid
+
     """
 
     try:
@@ -28,13 +37,23 @@ def is_Colour(colour):
 
 # -----------------------------------------------------------------------------------------------------------
 
-# Function to pick plot color
+# Function to pick plot colour
 
 def pick_EQE_Color(colour_Box, file_no):
-    """
-    :param colour_Box: textbox with color information [from ui]
-    :param file_no: indicator of associated file [string or int
-    :return: HEX code of random color [string]
+    """Function to pick plot colour
+
+    Parameters
+    ----------
+    colour_Box : gui object, required
+        GUI textbox with colour information
+    file_no : str or int, required
+        Indicator of associated file 
+
+    Returns
+    -------
+    Colour : HEX
+        HEX code of randomly generated colour
+
     """
 
     colour = colour_Box.toPlainText()
@@ -62,10 +81,19 @@ def pick_EQE_Color(colour_Box, file_no):
 # Function to pick EQE plot label
 
 def pick_EQE_Label(label_Box, filename_Box):
-    """
-    :param label_Box: textbox with label information [from ui]
-    :param filename_Box: textbox with file name [from ui]
-    :return: filename: string of filename / label to plot [string]
+    """Function to pick EQE plot label
+
+    Parameters
+    ----------
+    label_Box : gui object, required
+        GUI textbox with label information
+    filename_Box : gui object, required
+        GUI textbox with filename information
+
+    Returns
+    -------
+    label/filename : str
+        Label or filename to plot
     """
 
     label = label_Box.toPlainText()
@@ -81,11 +109,21 @@ def pick_EQE_Label(label_Box, filename_Box):
 # Function to pick "Calculate EQE" plot label
 
 def pick_Label(range_no, startNM, stopNM):
-    """
-    :param range_no: number of range to plot [int]
-    :param startNM: start wavelength [float]
-    :param stopNM: stop wavelength [float
-    :return: label: string of the lable to plot [string]
+    """Function to pick "Calculate EQE" plot label
+
+    Parameters
+    ----------
+    range_no : int, required
+        Number of data range to plot
+    startNM : float, required
+        Start wavelength to plot [nm]
+    stopNM : float, required
+        Stop wavelength to plot [nm]
+
+    Returns
+    -------
+    label : str
+        Label to plot
     """
 
     label = str("Range") + str(range_no) + "_" + str(int(startNM)) + "nm" + "-" + str(
