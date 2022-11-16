@@ -15,18 +15,33 @@ def compile_EQE(eqe_df,
                 number,
                 precision=8
                 ):
-    """
-    :param eqe_df: dataFrame of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    :param start: start wavelength of energy [float or int]
-    :param stop: stop wavelength or energy [float or int]
-    :param number: number indicating wavelength or energy compilation [int]
-                   number = 0 => compile wavelength
-                   number = 1 => compile energy
-    :param precision: decimal point precision to compile data
-    :return: Wavelength: list of wavelength values [list]
-             Energy: list of energy values [list]
-             EQE: list of compiled EQE values [list]
-             log_EQE: list of compiled log EQE values [list]
+    """Function to compile EQE data based on start/stop values
+
+    Parameters
+    ----------
+    eqe_df : dataFrame
+        Dataframe of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
+    start : float
+        Start wavelength or energy
+    stop : float
+        Stop wavelength or energy
+    number : int
+        Number indicating wavelength or energy compilation
+        number = 0 => compile wavelength
+        number = 1 => compile energy
+    precision : int
+        Decimal point precision to compile data
+        
+    Returns
+    -------
+    Wavelength : list
+        Wavelength values corresponding to compiled EQE
+    Energy : list
+        Energy values corresponding to compiled EQE
+    EQE : list
+        EQE values of compiled EQE
+    log_EQE : list
+        Logarithmic EQE values of compiled EQE spectra
     """
 
     # Define variables
@@ -74,17 +89,31 @@ def compile_EL(el_df,
                number,
                precision=8
                ):
-    """
-    :param el_df: dataFrame of EL values
-    :param start: start wavelength or energy [float or int]
-    :param stop: stop wavelength or energy [float or int]
-    :param number: number indicating wavelength or energy compilation [int]
-                   number = 0 => compile wavelength
-                   number = 1 => compile energy
-    :param precision: decimal point precision to compile data
-    :return: Wavelength: list of compiled wavelength values [list]
-             Energy: list of compiled energy values [list]
-             EL: list of compiled EL values [list]
+    """Function to compile EL data based on start/stop values
+
+    Parameters
+    ----------
+    el_df : dataFrame
+        Dataframe of EL values 
+    start : float
+        Start wavelength or energy
+    stop : float
+        Stop wavelength or energy
+    number : int
+        Number indicating wavelength or energy compilation
+        number = 0 => compile wavelength
+        number = 1 => compile energy
+    precision : int
+        Decimal point precision to compile data
+        
+    Returns
+    -------
+    Wavelength : list
+        Wavelength values corresponding to compiled EL
+    Energy : list
+        Energy values corresponding to compiled EL
+    EL : list
+        EL values of compiled EL spectra
     """
 
     # Define variables
@@ -130,14 +159,27 @@ def compile_Data(energy,
                  stopE,
                  precision=8
                  ):
-    """
-    :param energy: list of energy values [list]
-    :param y: list of y values [list]
-    :param startE: start energy [float]
-    :param stopE: stop energy [float]
-    :param precision: decimal point precision to compile data
-    :return: Energy_comp: list of compiled energy values [list]
-             y_comp: list of compiled y values [float]
+    """Function to compile any data based on start/stop values
+
+    Parameters
+    ----------
+    energy : list
+        List of input energy values
+    y : list
+        List of input y values (e.g. EQE or EL)
+    startE : float
+        Start energy
+    stopE : float
+        Stop energy
+    precision : int
+        Decimal point precision to compile data
+        
+    Returns
+    -------
+    Energy_comp : list
+        List of compiled energy values
+    y_comp : list
+        List of compiled y values
     """
 
     # Define empty lists
