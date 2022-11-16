@@ -2,7 +2,6 @@ import numpy as np
 
 from source.gaussian import calculate_gaussian_absorption
 
-
 # -----------------------------------------------------------------------------------------------------------
 
 # Function to subtract optical fit from EQE
@@ -11,12 +10,19 @@ def subtract_Opt(eqe,
                  best_vals,
                  T
                  ):
-    """
-    Function to subtract optical fit from EQE data
-    :param eqe: EQE data [list]
-    :param best_vals: Gaussian fit values [list]
-    :param T: Temperature [float]
-    :return: eqe: subtracted EQE [list]
+    """Function to subtract optical peak fit from EQE data
+
+    Parameters
+    ----------
+    eqe : list
+        EQE input data
+    T : float
+        EQE Measurement Temperature
+        
+    Returns
+    -------
+    eqe : list
+        EQE with subtracted optical fit
     """
 
     eqe = eqe.copy()
