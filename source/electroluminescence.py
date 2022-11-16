@@ -8,10 +8,19 @@ import math
 def bb_spectrum(E_list,
                 T_EL
                 ):
-    """
-    :param E_list: list of energy values in eV [list]
-    :param T_EL: Temperature of EL measurement [float]
-    :return: phi_bb_dict: dictionary of calculated black body spectrum [dict]
+    """Function to calculate black body spectrum
+
+    Parameters
+    ----------
+    E_list : list, required
+        List of input energy values [eV]
+    T_EL : float, required
+        Temperature of EL measurement [K]
+        
+    Returns
+    -------
+    phi_bb_dict : dict
+        Dictionary of calculated black body spectrum
     """
 
     h_2 = 4.136 * math.pow(10, -15)  # [eV s]

@@ -14,10 +14,10 @@ def subtract_Opt(eqe,
 
     Parameters
     ----------
-    eqe : list
+    eqe : list, required
         EQE input data
-    T : float
-        EQE Measurement Temperature
+    T : float, required
+        EQE Measurement Temperature [K]
         
     Returns
     -------

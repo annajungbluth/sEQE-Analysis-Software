@@ -19,25 +19,25 @@ def compile_EQE(eqe_df,
 
     Parameters
     ----------
-    eqe_df : dataFrame
+    eqe_df : dataFrame, required
         Dataframe of EQE values with columns ['Wavelength', ' Energy', 'EQE', 'Log_EQE']
-    start : float
-        Start wavelength or energy
-    stop : float
-        Stop wavelength or energy
-    number : int
+    start : float, required
+        Start wavelength or energy [eV/nm]
+    stop : float, required
+        Stop wavelength or energy [eV/nm]
+    number : int, required
         Number indicating wavelength or energy compilation
         number = 0 => compile wavelength
         number = 1 => compile energy
-    precision : int
+    precision : int, optional
         Decimal point precision to compile data
         
     Returns
     -------
     Wavelength : list
-        Wavelength values corresponding to compiled EQE
+        Wavelength values corresponding to compiled EQE [nm]
     Energy : list
-        Energy values corresponding to compiled EQE
+        Energy values corresponding to compiled EQE [eV]
     EQE : list
         EQE values of compiled EQE
     log_EQE : list
@@ -93,25 +93,25 @@ def compile_EL(el_df,
 
     Parameters
     ----------
-    el_df : dataFrame
+    el_df : dataFrame, required
         Dataframe of EL values 
-    start : float
-        Start wavelength or energy
-    stop : float
-        Stop wavelength or energy
-    number : int
+    start : float, required
+        Start wavelength or energy [eV/nm]
+    stop : float, required
+        Stop wavelength or energy [eV/nm]
+    number : int, required
         Number indicating wavelength or energy compilation
         number = 0 => compile wavelength
         number = 1 => compile energy
-    precision : int
+    precision : int, optional
         Decimal point precision to compile data
         
     Returns
     -------
     Wavelength : list
-        Wavelength values corresponding to compiled EL
+        Wavelength values corresponding to compiled EL [nm]
     Energy : list
-        Energy values corresponding to compiled EL
+        Energy values corresponding to compiled EL [eV]
     EL : list
         EL values of compiled EL spectra
     """
@@ -163,21 +163,21 @@ def compile_Data(energy,
 
     Parameters
     ----------
-    energy : list
-        List of input energy values
-    y : list
+    energy : list, required
+        List of input energy values [eV]
+    y : list, required
         List of input y values (e.g. EQE or EL)
-    startE : float
-        Start energy
-    stopE : float
-        Stop energy
-    precision : int
+    startE : float, required
+        Start energy [eV]
+    stopE : float, required
+        Stop energy [eV]
+    precision : int, optional
         Decimal point precision to compile data
         
     Returns
     -------
     Energy_comp : list
-        List of compiled energy values
+        List of compiled energy values [eV]
     y_comp : list
         List of compiled y values
     """
