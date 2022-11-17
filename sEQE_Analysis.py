@@ -369,11 +369,18 @@ class MainWindow(QtWidgets.QMainWindow):
                   text_Box,
                   textBox_no
                   ):
-        """
-        Function to load data and update text box in GUI
-        :param text_Box: GUI text box to write filename into [ui object]
-        :param textBox_no: Internal name of text box to specify which data variable to define [int or str]
-        :return: None
+        """Function to load data and update text box in GUI
+
+        Parameters
+        ----------
+        text_Box : gui object, required
+            GUI text box to write filename into
+        textBox_no : int or str, required
+            GUI textbox with information on which variable to define
+
+        Returns
+        -------
+        None
         """
 
         os.chdir(self.data_dir)
@@ -533,14 +540,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 stop,
                 range_no
                 ):
-        """
-        Wrapper function to load variables and data for EQE calculation
-        :param ref_df: Reference data [dataFrame]
-        :param data_df: Measured signal [dataFrame]
-        :param start: GUI field with start wavelength [ui object]
-        :param stop: GUI field with stop wavelength [ui object]
-        :param range_no: Number to specify which data range to compile [int]
-        :return: None
+        """Wrapper function to load variables and data for EQE calculation
+
+        Parameters
+        ----------
+        ref_df : dataFrame, required
+            Dataframe with reference diode measurement
+        data_df : dataFrame, required
+            Dataframe with sample measurement
+        start : gui object, required
+            GUI field with start wavelength
+        stop : gui object, required
+            GUI field with stop wavelength
+        range_no : int, required
+            Number specifying which data range to compile
+
+        Returns
+        -------
+        None
         """
 
         startNM = start.value()
@@ -560,14 +577,24 @@ class MainWindow(QtWidgets.QMainWindow):
                       stopNM,
                       range_no
                       ):
-        """
-        Function to calculate EQE from signal and reference data
-        :param ref_df: Reference data [dataFrame]
-        :param data_df: Measured signal [dataFrame]
-        :param startNM: Start wavelength [float]
-        :param stopNM: Stop wavelength [float]
-        :param range_no: Number to specify which data range to compile [int]
-        :return: None
+        """Function to calculate EQE from signal and reference data
+
+        Parameters
+        ----------
+        ref_df : dataFrame, required
+            Dataframe with reference diode measurement
+        data_df : dataFrame, required
+            Dataframe with sample measurement
+        startNM : float, required
+            Start wavelength [nm]
+        stop : float, required
+            Stop wavelength [nm]
+        range_no : int, required
+            Number specifying which data range to compile
+
+        Returns
+        -------
+        None
         """
 
         power_dict = {}
@@ -725,9 +752,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to export EQE
 
     def export_EQE(self):
-        """
-        Functionm to export EQE to csv file
-        :return: None
+        """Function to export EQE to csv file
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         self.export = True
@@ -851,6 +884,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def pre_plot_EQE(self,
                      number
                      ):
+        
         """
         Wrapper function to select EQE for plotting
         :param number: Number of the EQE file to plot [int]
@@ -940,17 +974,32 @@ class MainWindow(QtWidgets.QMainWindow):
                  file_no,
                  number
                  ):
-        """
-        Function to plot EQE data
-        :param eqe_df: EQE data [dataFrame]
-        :param startNM: Start wavelength [float]
-        :param stopNM: Stop wavelength [float]
-        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
-        :param label_Box: GUI text box with plot label [ui object]
-        :param color_Box: GUI text box with plot color [ui object]
-        :param file_no: Number of EQE file to plot [int]
-        :param number: Number to specify whether to plot wavelength (0) or energy (1) [boolean int]
-        :return: None
+        """Function to plot EQE data
+
+        Parameters
+        ----------
+        eqe_df : dataFrame, required
+            Dataframe with EQE spectra
+        startNM : float, required
+            Start wavelength [nm]
+        stop : float, required
+            Stop wavelength [nm]
+        filename_Box : gui object, required
+            GUI textbox with filename information for plot labeling
+        label_Box : gui object, required
+            GUI textbox with plot label
+        color_Box : gui object, required
+            GUI textbox with plot color
+        file_no : int, required
+            Number of EQE file/data range to plot
+        number : int, required
+            Number specifying whether to plot wavelength or energy
+            0 -> Wavelength
+            1 -> Energy
+
+        Returns
+        -------
+        None
         """
 
         startNM = startNM.value()  # Pick start wavelength
