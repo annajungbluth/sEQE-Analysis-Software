@@ -3,7 +3,7 @@
 """
 Created on Fri Sep 28 11:59:40 2018
 
-@author: jungbluth
+@author: Anna Jungbluth
 """
 
 import math
@@ -884,11 +884,16 @@ class MainWindow(QtWidgets.QMainWindow):
     def pre_plot_EQE(self,
                      number
                      ):
-        
-        """
-        Wrapper function to select EQE for plotting
-        :param number: Number of the EQE file to plot [int]
-        :return: None
+        """Wrapper function to select EQE file for plotting
+
+        Parameters
+        ----------
+        number : int, required
+            Number of the EQE file to plot
+
+        Returns
+        -------
+        None
         """
 
         ok_EQE_1 = True
@@ -979,7 +984,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Parameters
         ----------
         eqe_df : dataFrame, required
-            Dataframe with EQE spectra
+            Dataframe with EQE data
         startNM : float, required
             Start wavelength [nm]
         stop : float, required
@@ -1060,20 +1065,36 @@ class MainWindow(QtWidgets.QMainWindow):
                     color_Box,
                     file_no
                     ):
-        """
-        Wrapper function to fit EQE
-        :param eqe_df: EQE data [dataFrame]
-        :param startE: Start energy to plot EQE [float]
-        :param stopE: Stop energy to plot EQE [float]
-        :param startFit: Start energy to fit [float]
-        :param stopFit: Stop energy to fit [float]
-        :param startPlotFit: Start energy to plot fit [float]
-        :param stopPlotFit: Stop energy to plot fit [float]
-        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
-        :param label_Box: GUI text box with plot label [ui object]
-        :param color_Box: GUI text box with plot color [ui object]
-        :param file_no: Number of EQE file to plot [int]
-        :return: None
+        """Wrapper function to fit EQE spectrum
+
+        Parameters
+        ----------
+        eqe_df : DataFrame, required
+            Dataframe with EQE data
+        startE : float, required
+            Start energy to plot EQE
+        stopE : float, required
+            Stop energy to plot EQE
+        startFit : float, required
+            Start energy to fit
+        stopFit : float, required
+            Stop energy to fit
+        startPlotFit : float, required
+            Start energy to plot fit
+        stopPlotFit : float, required
+            Stop energy to plot fit
+        filename_Box : gui object, required
+            GUI text box with filename to use for plot labeling
+        label_Box : gui object, required
+            GUI text box with plot label
+        color_Box : gui object, required
+            GUI text box with plot color
+        file_no : int, required
+            Number of EQE file to plot
+
+        Returns
+        -------
+        None
         """
 
         # Change this if you want to plot on the same graph 
@@ -1116,20 +1137,38 @@ class MainWindow(QtWidgets.QMainWindow):
                      color_Box,
                      file_no
                      ):
-        """
-        Function to fit and plot EQE
-        :param eqe_df: EQE data [dataFrame]
-        :param startE: Start energy to plot EQE [float]
-        :param stopE: Stop energy to plot EQE [float]
-        :param startFit: Start energy to fit [float]
-        :param stopFit: Stop energy to fit [float]
-        :param startPlotFit: Start energy to plot fit [float]
-        :param stopPlotFit: Stop energy to plot fit [float]
-        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
-        :param label_Box: GUI text box with plot label [ui object]
-        :param color_Box: GUI text box with plot color [ui object]
-        :param file_no: Number of EQE file to plot [int]
-        :return: True / False
+        """Function to fit and plot EQE
+
+        Parameters
+        ----------
+        eqe_df : DataFrame, required
+            Dataframe with EQE data
+        startE : float, required
+            Start energy to plot EQE
+        stopE : float, required
+            Stop energy to plot EQE
+        startFit : float, required
+            Start energy to fit
+        stopFit : float, required
+            Stop energy to fit
+        startPlotFit : float, required
+            Start energy to plot fit
+        stopPlotFit : float, required
+            Stop energy to plot fit
+        filename_Box : gui object, required
+            GUI text box with filename to use for plot labeling
+        label_Box : gui object, required
+            GUI text box with plot label
+        color_Box : gui object, required
+            GUI text box with plot color
+        file_no : int, required
+            Number of EQE file to plot
+
+        Returns
+        -------
+        Bool :
+            True if fit is successful, 
+            False otherwise
         """
 
         include_Disorder = False
@@ -1213,48 +1252,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                                              ) for value in x_gaussian]
                         fit_ok = True
 
-                    # NOTE: Old code that was replaced by guess fit function
-                    # Initialize parameters
-                    # p0 = None
-                    #
-                    # for ECT in ECT_guess:
-                    #     for sig in Sig_guess:
-                    #         try:
-                    #             best_vals, covar, y_fit, r_squared = fit_model(self.gaussian_disorder,
-                    #                                                            energy_fit,
-                    #                                                            eqe_fit,
-                    #                                                            p0=p0,
-                    #                                                            include_disorder=True
-                    #                                                            )
-                    #             if r_squared > 0:
-                    #                 y_gaussian = [self.gaussian_disorder(value,
-                    #                                                      best_vals[0],
-                    #                                                      best_vals[1],
-                    #                                                      best_vals[2],
-                    #                                                      best_vals[3]
-                    #                                                      ) for value in x_gaussian]
-                    #                 fit_ok = True
-                    #                 break
-                    #
-                    #             # if r_squared > 0: # Old code to loop through initial guesses and find best one
-                    #             #     p0_list.append(p0)
-                    #             #     R2_list.append(r_squared)
-                    #
-                    #                 # ECT_guess_list.append(ECT)
-                    #                 # sig_guess_list.append(sig)
-                    #                 # f_list.append(best_vals[0])
-                    #                 # l_list.append(best_vals[1])
-                    #                 # ECT_list.append(best_vals[2])
-                    #                 # sig_list.append(best_vals[3])
-                    #
-                    #             else:
-                    #                 raise Exception('Wrong fit determined.')
-                    #             p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
-                    #         except:
-                    #             p0 = [self.f_guess, self.l_guess, round(ECT, 3), round(sig, 3)]
-                    #     if r_squared > 0:
-                    #         break
-
                 else:  # If disorder is not included
                     best_vals, covar, p0, r_squared = guess_fit(eqe=eqe_df,
                                                                 startE=startFit,
@@ -1273,29 +1270,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                                     best_vals[2]
                                                     ) for value in x_gaussian]
                         fit_ok = True
-
-                    # NOTE: Old code that was replaced by guess fit function
-                    # Initialize parameters
-                    # p0 = None
-                    # for ECT in ECT_guess:
-                    #     try:
-                    #         best_vals, covar, y_fit, r_squared = fit_function(self.gaussian,
-                    #                                                           energy_fit,
-                    #                                                           eqe_fit,
-                    #                                                           p0=p0
-                    #                                                           )
-                    #         if r_squared > 0:
-                    #             y_gaussian = [self.gaussian(value,
-                    #                                             best_vals[0],
-                    #                                             best_vals[1],
-                    #                                             best_vals[2]
-                    #                                             ) for value in x_gaussian]
-                    #             fit_ok = True
-                    #             break  # This breaks the for loop
-                    #         else:
-                    #             raise Exception('Wrong fit determined.')
-                    #     except:
-                    #         p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
 
                 if fit_ok:
 
@@ -1424,7 +1398,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 r_squared = 0
                 p0 = None
                 # bounds = None  # First try without bounds and initial guesses
-                bounds = self.bounds_sig  # Tried without bounds and it didn't work
+                bounds = self.bounds_sig  # NOTE: Tried without bounds and it didn't work
 
                 if include_Disorder:
                     # NOTE: This code could be replaced by the guess fit function
@@ -1474,27 +1448,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                                           best_vals[2]
                                                           ) for value in x_MLJ_theory]
                         fit_ok = True
-
-                    # NOTE: Old code that was replaced by guess fit function
-                    # for ECT in ECT_guess:
-                    #     try:
-                    #         best_vals, covar, y_fit, r_squared = fit_function(self.MLJ_gaussian,
-                    #                                                           energy_fit,
-                    #                                                           eqe_fit,
-                    #                                                           p0=p0
-                    #                                                           )
-                    #         if r_squared > 0:
-                    #             y_MLJ_theory = [self.MLJ_gaussian(value,
-                    #                                               best_vals[0],
-                    #                                               best_vals[1],
-                    #                                               best_vals[2]
-                    #                                               ) for value in x_MLJ_theory]
-                    #             fit_ok = True
-                    #             break
-                    #         else:
-                    #             raise Exception('Wrong fit determined.')
-                    #     except:
-                    #         p0 = [self.f_guess, self.l_guess, round(ECT, 3)]
 
                 # Save fit data
                 if self.ui.save_extraFit.isChecked():
@@ -1613,19 +1566,33 @@ class MainWindow(QtWidgets.QMainWindow):
                 color_Box,
                 file_no
                 ):
-        """
-        Function to generate heatmap for standard Marcus theory fitting
-        :param eqe_df: EQE data [dataFrame]
-        :param startStartE: Start of the start fit energy range [float]
-        :param startStopE: Start of the stop fit energy range [float]
-        :param stopStartE: Stop of the start fit energy range [float]
-        :param stopStopE: Stop of the stop fit energy range [float]
-        :param filename_Box: GUI text box with filename to use for plot labeling [ui object]
-        :param label_Box: GUI text box with plot label [ui object]
-        :param color_Box: GUI text box with plot color [ui object]
-        :param file_no: Number of EQE file to perform heatmap fits for [int]
-        :return: None
-        """
+        """Function to generate heatmap for fit values
+
+        Parameters
+        ----------
+        eqe_df : DataFrame, required
+            Dataframe with EQE data
+        startStartE : float, required
+            Start of the start fit energy range
+        startStopE : float, required
+            Start of the stop fit energy range
+        stopStartE : float, required
+            Stop of the start fit energy range
+        stopStopE : float, required
+            Stop of the stop fit energy range
+        filename_Box : gui object, required
+            GUI text box with filename to use for plot labeling
+        label_Box : gui object, required
+            GUI text box with plot label
+        color_Box : gui object, required
+            GUI text box with plot color
+        file_no : int, required
+            Number of EQE file to plot
+
+        Returns
+        -------
+        None
+        """            
 
         include_Disorder = False
         fit_opticalPeak = False
@@ -1657,7 +1624,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             while x <= float(startStopE):  # As long as start range start value is smaller than start range stop value
                 startEnergies.append(round(x, 3))  # Round to three digits
-                x += 0.005  # Adjust this number to change resolution
+                x += 0.005  # NOTE: Adjust this number to change resolution
 
             while y <= float(stopStopE):
                 stopEnergies.append(round(y, 3))
@@ -2007,42 +1974,50 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian function
 
     def gaussian(self, E, f, l, Ect):
-        """
-        Standard gaussian function
-        :param E: List of energy values [list of floats]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Charge Transfer State Energy [float]
-        :return: EQE value [float]
-        """
+        """Marcus theory
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            EQE value
+        """   
+
         return (f / (E * math.sqrt(4 * math.pi * l * self.T_CT * self.k))) * exp(
             -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_CT))
 
-    # Gaussian function including disorder
-
-    # NOTE: Old function that I believe is incorrect
-    # def gaussian_disorder(self, E, f, l, Ect):
-    #     """
-    #     Standard gaussian function including disorder
-    #     :param E: List of energy values [list of floats]
-    #     :param f: Oscillator strength [float]
-    #     :param l: Reorganization Energy [float]
-    #     :param Ect: Charge Transfer State Energy [float]
-    #     :return: EQE value [float]
-    #     """
-    #     return (f / (E * math.sqrt(4 * math.pi * l * self.T_CT * self.k + 2 * self.sig ** 2))) * exp(
-    #         -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_CT + 2 * self.sig ** 2))
-
     def gaussian_disorder(self, E, f, l, Ect, sig):
-        """
-        New gaussian function including disorder
-        :param E: List of energy values [list of floats]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Charge Transfer State Energy [float]
-        :param sig: Gaussian disorder [float]
-        :return: EQE value [float]
-        """
+        """Marcus theory including disorder
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+        sig : float, required
+            Gaussian disorder
+
+        Returns
+        -------
+        EQE : float
+            EQE value
+        """  
+
         return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_CT * self.k + sig ** 2)))) * exp(
             -((Ect - (sig ** 2 / (2 * self.k * self.T_CT)) + l + (sig ** 2 / (2 * self.k * self.T_CT)) - E) ** 2 / (
                     4 * l * self.k * self.T_CT + 2 * sig ** 2)))
@@ -2052,17 +2027,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function
 
-    def MLJ_gaussian(self, E, f, l, Ect):  # Double check if this equation is correct
-        """
-        MLJ function
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+    def MLJ_gaussian(self, E, f, l, Ect): 
+        """Marcus-Levich-Jortner theory
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            EQE value
+        """  
+
         EQE = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EQE_n = (f / (E * math.sqrt(4 * math.pi * l * self.T_x * self.k))) \
                     * (math.exp(-self.S_i) * self.S_i ** n / math.factorial(n)) \
                     * exp(-(Ect + l - E + n * self.hbarw_i) ** 2 \
@@ -2072,17 +2058,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function including disorder
 
-    def MLJ_gaussian_disorder(self, E, f, l, Ect, sig):  # Double check if this equation is correct
-        """
-        MLJ function including disorder
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Low frequency reorganization energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+    def MLJ_gaussian_disorder(self, E, f, l, Ect, sig):
+        """Marcus-Levich-Jortner theory including disorder
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+        sig : float, required
+            Gaussian disorder    
+
+        Returns
+        -------
+        EQE : float
+            EQE value
+        """ 
+
         EQE = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EQE_n = (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_x * self.k + sig ** 2))) \
                      * (math.exp(-self.S_i) * self.S_i ** n / math.factorial(n)) \
                      * exp(-(Ect + l - E + n * self.hbarw_i) ** 2 \
@@ -2098,7 +2097,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to scale and reduce EL and EQE
 
-    # TODO: Update function
+    # TODO: Check and update EL components
+
     def pre_plot_EL_EQE(self,
                         data_df,
                         startE,
@@ -2106,15 +2106,25 @@ class MainWindow(QtWidgets.QMainWindow):
                         data_no,
                         fit=False
                         ):
-        """
-        Wrapper function to plot and fit EQE and EL data
-        :param data_df: EQE or EL data [dataFrame]
-        :param startE: Start energy [float]
-        :param stopE: Stop energy [float]
-        :param data_no: Number of data file to plot and fit [int]
-        :param fit: Boolean value to specify whether to fit [bool]
-        :return: None
-        """
+        """Wrapper function to plot and fit EQE and EL data
+
+        Parameters
+        ----------
+        data_df : dataFrame, required
+            EQE or EL data
+        startE : float, required
+            Start energy to plot
+        stopE : float, required
+            Stop energy to plot
+        data_no : int, required
+            Number of data file to plot and fit
+        fit : bool, required
+            Boolean value specifying whether to perform fit
+
+        Returns
+        -------
+        None
+        """ 
 
         self.T_EL = self.ui.EL_Temperature.value()
 
@@ -2195,15 +2205,6 @@ class MainWindow(QtWidgets.QMainWindow):
                             label_ = '$\mathregular{Red. EQE_{cal}}$'
                             color_ = '#ff7716'  # Orange
 
-                            # Experiments
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled, label_, color_)
-
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, EL_abs_scaled,
-                            #      label_='EQE,cal with EL SF', color_='blue')
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, EL_abs_scaled_test,
-                            #      label_='EQE,cal with EQE,calc SF', color_='green')
-                            # plot(self.axEL_1, self.axEL_2, EL_energy, red_EL_abs_scaled,
-                            #      label_='Red. EQE,cal with EL SF', color_='orange')
                             plot(self.axEL_1,
                                  self.axEL_2,
                                  EL_energy,
@@ -2252,10 +2253,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Function to fit reduced EL and EQE
 
-    # TODO: Update function:
-    #       Add sigma as a fit parameter
-    #       Add guess fit function
-    #       Implement save fit function
+    # TODO: Check and update EL components
+    # TODO: Add sigma as a fit parameter
+    # TODO: Add guess fit function
+    # TODO: Implement save fit function
+
     def fit_EL_EQE(self,
                    energy,
                    y,
@@ -2263,15 +2265,25 @@ class MainWindow(QtWidgets.QMainWindow):
                    stopE,
                    data_no
                    ):
-        """
-        Function to fit EL and EQE data
-        :param energy: List of energy values to fit [list]
-        :param y: List of data values to fit [list]
-        :param startE: Start energy to fit [float]
-        :param stopE: Stop energy to fit [float]
-        :param data_no: Number of data file to fit [int]
-        :return: None
-        """
+        """Function to fit EL and EQE data
+
+        Parameters
+        ----------
+        energy : list, required
+            List of energy values to fit
+        y : list, required
+            List of data values to fit
+        startE : float, required
+            Start energy to fit
+        stopE : float, required
+            Stop energy to fit
+        data_no : int, required
+            Number of data file to plot and fit
+
+        Returns
+        -------
+        None
+        """ 
 
         include_Disorder = False
 
@@ -2299,7 +2311,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if data_no == 0:  # EL Data
                         # TODO: Add sigma as a fit parameter
                         if include_Disorder:  # Include Disorder in Fit
-                            # y_fit_smooth = savgol_filter(y_fit, 51, 3) # In case you need to smooth the data
+                            # y_fit_smooth = savgol_filter(y_fit, 51, 3) # NOTE: In case you need to smooth the data
                             # y_fit_smooth = [x for x in y_fit_smooth]
                             # log_y_fit = [math.log(x) for x in y_fit]
                             # plot(self.axEL_1, self.axEL_2, energy_fit, y_fit_smooth, 'Smoothed Data', '#330000')
@@ -2503,14 +2515,24 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian function for reduced EL
 
     def gaussian_EL(self, E, f, l, Ect):
-        """
-        Standard gaussian to fit EL
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: reduced EL value
-        """
+        """Marcus theory for reduced EL data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EL : float
+            Reduced EL value
+        """   
 
         return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) * exp(
             -(Ect - l - E) ** 2 / (4 * l * self.k * self.T_EL))
@@ -2518,15 +2540,26 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian function for reduced EL including disorder
 
     # TODO: Add sigma as a fit parameter
+
     def gaussian_EL_disorder(self, E, f, l, Ect):
-        """
-        Standard gaussian including disorder to fit EL
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: reduced EL value
-        """
+        """Marcus theory including disorder for reduced EL data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EL : float
+            Reduced EL value
+        """   
 
         return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL ** 2))) * exp(
             -(Ect - l - E) ** 2 / (4 * l * self.k * self.T_EL + 2 * self.sig_EL ** 2))
@@ -2535,18 +2568,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function for reduced EL
 
-    def MLJ_gaussian_EL(self, E, f, l, Ect):  # Double check if this equation is correct
-        """
-        MLJ function to fit EL
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: EL value
-        """
+    def MLJ_gaussian_EL(self, E, f, l, Ect):
+        """Marcus-Levich-Jortner theory for reduced EL data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EL : float
+            Reduced EL value
+        """   
 
         EL = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EL_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) \
                    * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
                    * exp(-(Ect - E - l - n * self.hbarw_i_EL) ** 2 \
@@ -2557,18 +2600,29 @@ class MainWindow(QtWidgets.QMainWindow):
     # MLJ function for reduced EL including disorder
 
     # TODO: Add sigma as a fit parameter
-    def MLJ_gaussian_EL_disorder(self, E, f, l, Ect):  # Double check if this equation is correct
-        """
-        MLJ function including disorder to fit EL
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+
+    def MLJ_gaussian_EL_disorder(self, E, f, l, Ect):
+        """Marcus-Levich-Jortner theory including disorder for reduced EL data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EL : float
+            Reduced EL value
+        """   
 
         EL = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EL_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL ** 2))) \
                    * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
                    * exp(-(Ect - E - l - n * self.hbarw_i_EL) ** 2 \
@@ -2581,14 +2635,24 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian function for reduced EQE
 
     def gaussian_EQE(self, E, f, l, Ect):
-        """
-        Standard gaussian function to fit reduced EQE
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: reduced EL value
-        """
+        """Marcus theory for reduced EQE data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            Reduced EQE value
+        """   
 
         return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) * exp(
             -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_EL))
@@ -2596,15 +2660,26 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian function for reduced EQE including disorder
 
     # TODO: Add sigma as a fit parameter
+
     def gaussian_EQE_disorder(self, E, f, l, Ect):
-        """
-        Standard gaussian function including disorder to fit reduced EQE
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: reduced EL value
-        """
+        """Marcus theory including disorder for reduced EQE data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            Reduced EQE value
+        """  
 
         return (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL ** 2))) * exp(
             -(Ect + l - E) ** 2 / (4 * l * self.k * self.T_EL + 2 * self.sig_EL ** 2))
@@ -2613,18 +2688,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function for reduced EQE
 
-    def MLJ_gaussian_EQE(self, E, f, l, Ect):  # Double check if this equation is correct
-        """
-        MLJ function to fit reduced EQE
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+    def MLJ_gaussian_EQE(self, E, f, l, Ect):
+        """Marcus-Levich-Jortner theory for reduced EQE data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            Reduced EQE value
+        """  
 
         EQE = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EQE_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k))) \
                     * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
                     * exp(-(Ect - E + l + n * self.hbarw_i_EL) ** 2 \
@@ -2635,18 +2720,29 @@ class MainWindow(QtWidgets.QMainWindow):
     # MLJ function for reduced EQE including disorder
 
     # TODO: Add sigma as a fit parameter
-    def MLJ_gaussian_EQE_disorder(self, E, f, l, Ect):  # Double check if this equation is correct
-        """
-        MLJ function including disorder to fit reduced EQE
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+
+    def MLJ_gaussian_EQE_disorder(self, E, f, l, Ect):
+        """Marcus-Levich-Jortner theory including for reduced EQE data
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            Reduced EQE value
+        """  
 
         EQE = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EQE_n = (f / (math.sqrt(4 * math.pi * l * self.T_EL * self.k + 2 * self.sig_EL ** 2))) \
                     * (math.exp(-self.S_i_EL) * self.S_i_EL ** n / math.factorial(n)) \
                     * exp(-(Ect - E + l + n * self.hbarw_i_EL) ** 2 \
@@ -2670,16 +2766,27 @@ class MainWindow(QtWidgets.QMainWindow):
                      color_Fit,
                      color_EQE
                      ):
-        """
-        Function to subtract fit from EQE data
-        :param data_Fit: Fit data to subtract [dataFrame]
-        :param data_EQE: EQE data to subtract fit from [dataFrame]
-        :param label_Fit: GUI text box with fit plot label [ui object]
-        :param label_EQE: GUI text box with EQE plot label [ui object]
-        :param color_Fit: GUI text box with fit plot color [ui object]
-        :param color_EQE: GUI text box with EQE plot color [ui object]
-        :return:
-        """
+        """Function to subtract fit from EQE data
+
+        Parameters
+        ----------
+        data_Fit : dataFrame, required
+            Fit data to subtract
+        data_EQE: dataFrame, required
+            EQE data to subtract fit from
+        label_Fit: gui object, required
+            GUI text box with fit plot label
+        label_EQE: gui object, required
+            GUI text box with EQE plot label
+        color_Fit: gui object, required
+            GUI text box with fit plot color
+        color_EQE: gui object, required
+            GUI text box with EQE plot color
+        
+        Returns
+        -------
+        None
+        """ 
 
         E_fit = 0
         sub_EQE = []
@@ -2794,18 +2901,27 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to add peak fits
 
     # TODO: Expand to plot MLJ fits
+
     def add_Fits(self,
                  data_OptFit,
                  data_CTFit,
                  data_EQE
                  ):
-        """
-        Function to add fit peaks
-        :param data_OptFit: Optical peak fit data [dataFrame]
-        :param data_CTFit: CT peak fit data [dataFrame]
-        :param data_EQE: EQE data [dataFrame]
-        :return: None
-        """
+        """Function to add peak fits
+
+        Parameters
+        ----------
+        data_OptFit: dataFrame, required
+            Optical peak fit data
+        data_CTFit: dataFrame, required
+            CT state fit data
+        data_EQE: dataFrame, required
+            EQE data
+        
+        Returns
+        -------
+        None
+        """ 
 
         include_disorder = False
 
@@ -2967,10 +3083,16 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to compile fits for separate double peak fitting
 
     def double_fit(self):
-        """
-        Function to perform separate double fit of S1 and CT peaks
-        :return: None
-        """
+        """Function to perform separate double fit of S1 and CT peaks
+
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None
+        """ 
 
         increase_factor = 1.05  # NOTE: Modify to increase data range for R2 calculation and fit selection
         include_disorder = False
@@ -3330,74 +3452,6 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.logger.info('Please select valid fit settings.')
 
-            # NOTE: The same code but using map functions
-            # # If Optical peak to be subtracted before CT fit
-            #
-            # if self.ui.subtract_DoubleFit.isChecked():
-            #
-            #     parameter_list = list(map(lambda x: map_fit(x=x,
-            #                                                 df_Opt=df_Opt,
-            #                                                 df_CT=df_CT,
-            #                                                 eqe=eqe,
-            #                                                 guessRange_CT=guessRange_CT,
-            #                                                 function=self.gaussian_double,
-            #                                                 T=self.T_double,
-            #                                                 bias=self.bias,
-            #                                                 tolerance=self.tolerance,
-            #                                                 sub_fit=1),
-            #                               tqdm(range(len(df_Opt)))))
-            #
-            #     best_vals_Opt = sep_list_list(list(map(lambda list_: sep_list(list_, 0), parameter_list)))
-            #     R2_Opt = sep_list_list(list(map(lambda list_: sep_list(list_, 1), parameter_list)))
-            #
-            #     best_vals_CT = sep_list_list(list(map(lambda list_: sep_list(list_, 2), parameter_list)))
-            #     R2_CT = sep_list_list(list(map(lambda list_: sep_list(list_, 3), parameter_list)))
-            #
-            #     start_Opt_list = sep_list_list(list(map(lambda list_: sep_list(list_, 4), parameter_list)))
-            #     stop_Opt_list = sep_list_list(list(map(lambda list_: sep_list(list_, 5), parameter_list)))
-            #
-            #     start_CT_list = sep_list_list(list(map(lambda list_: sep_list(list_, 6), parameter_list)))
-            #     stop_CT_list = sep_list_list(list(map(lambda list_: sep_list(list_, 7), parameter_list)))
-            #
-            #     combined_R2_list = sep_list_list(list(map(lambda list_: sep_list(list_, 8), parameter_list)))
-            #     combined_Fit_list = sep_list_list(list(map(lambda list_: sep_list(list_, 9), parameter_list)))
-            #     Opt_Fit_list = sep_list_list(list(map(lambda list_: sep_list(list_, 10), parameter_list)))
-            #     CT_Fit_list = sep_list_list(list(map(lambda list_: sep_list(list_, 11), parameter_list)))
-            #     Energy_list = sep_list_list(list(map(lambda list_: sep_list(list_, 12), parameter_list)))
-            #     EQE_list = sep_list_list(list(map(lambda list_: sep_list(list_, 13), parameter_list)))
-            #
-            # else:
-            #     parameter_list = list(map(lambda x: map_fit(x=x,
-            #                                                 df_Opt=df_Opt,
-            #                                                 df_CT=df_CT,
-            #                                                 eqe=eqe,
-            #                                                 guessRange_CT=guessRange_CT,
-            #                                                 function=self.gaussian_double,
-            #                                                 T=self.T_double,
-            #                                                 bias=self.bias,
-            #                                                 tolerance=self.tolerance,
-            #                                                 sub_fit=0),
-            #                               tqdm(range(len(df_Opt)))))
-            #
-            #     best_vals_Opt = sep_list_list(list(map(lambda list_: sep_list(list_, 0), parameter_list)))
-            #     R2_Opt = sep_list_list(list(map(lambda list_: sep_list(list_, 1), parameter_list)))
-            #
-            #     best_vals_CT = sep_list_list(list(map(lambda list_: sep_list(list_, 2), parameter_list)))
-            #     R2_CT = sep_list_list(list(map(lambda list_: sep_list(list_, 3), parameter_list)))
-            #
-            #     start_Opt_list = sep_list_list(list(map(lambda list_: sep_list(list_, 4), parameter_list)))
-            #     stop_Opt_list = sep_list_list(list(map(lambda list_: sep_list(list_, 5), parameter_list)))
-            #
-            #     start_CT_list = sep_list_list(list(map(lambda list_: sep_list(list_, 6), parameter_list)))
-            #     stop_CT_list = sep_list_list(list(map(lambda list_: sep_list(list_, 7), parameter_list)))
-            #
-            #     combined_R2_list = sep_list_list(list(map(lambda list_: sep_list(list_, 8), parameter_list)))
-            #     combined_Fit_list = sep_list_list(list(map(lambda list_: sep_list(list_, 9), parameter_list)))
-            #     Opt_Fit_list = sep_list_list(list(map(lambda list_: sep_list(list_, 10), parameter_list)))
-            #     CT_Fit_list = sep_list_list(list(map(lambda list_: sep_list(list_, 11), parameter_list)))
-            #     Energy_list = sep_list_list(list(map(lambda list_: sep_list(list_, 12), parameter_list)))
-            #     EQE_list = sep_list_list(list(map(lambda list_: sep_list(list_, 13), parameter_list)))
-
             if len(best_vals_Opt) == len(best_vals_CT) and len(best_vals_Opt) != 0:  # Confirm lists are acceptable
 
                 df_results['Start_Opt'] = start_Opt_list
@@ -3460,13 +3514,23 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian fitting function for double fit
 
     def gaussian_double(self, E, f, l, Ect):
-        """
-        Standard gaussian functions to separately fit double peaks
-        :param x: List of energy values [list]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Peak Energy [float]
-        :return: EQE value [list]
+        """Marcus theory to separately fit double peaks
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
 
         return (f / (E * math.sqrt(4 * math.pi * l * self.T_double * self.k))) * exp(
@@ -3474,15 +3538,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def gaussian_disorder_double(self, E, f, l, Ect, sig):
+        """Marcus theory including disorder to separately fit double peaks
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+        sig : float, required
+            Gaussian disorder
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
-        New gaussian function including disorder
-        :param E: List of energy values [list of floats]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Ect: Charge Transfer State Energy [float]
-        :param sig: Gaussian disorder [float]
-        :return: EQE value [float]
-        """
+
         return (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_double * self.k + sig ** 2)))) * exp(
             -((Ect - (sig ** 2 / (2 * self.k * self.T_double)) + l + (sig ** 2 / (2 * self.k * self.T_double)) - E) ** 2 / (
                     4 * l * self.k * self.T_double + 2 * sig ** 2)))
@@ -3494,9 +3570,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to perform simultaneous double peak fitting once
 
     def sim_double_fit_single(self):
-        """
-        Function to perform simultaneous double peak fitting once
-        :return: None
+        """Function to perform simultaneous double peak fitting for one energy range
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         # Import relevant parameters
@@ -3688,9 +3770,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to perform simultaneous double peak fitting multiple times
 
     def sim_double_fit(self):
-        """
-        Function to perform simultaneous double peak fitting multiple times to find best fit
-        :return: None
+        """Function to perform simultaneous double peak fitting for multiple energy ranges
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         # Import relevant parameters
@@ -3808,18 +3896,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                                                                   include_disorder=include_disorder,
                                                                                   print_report=False
                                                                                   )
-
-                            # NOTE: Old Code to test guess_fit function
-                            # best_vals, covar, p0, r_squared = guess_fit(eqe=eqe,
-                            #                                             startE=df['Start'][x],
-                            #                                             stopE=df['Stop'][x],
-                            #                                             function=self.gaussian_double_sim,
-                            #                                             guessRange=guessRange_CT,
-                            #                                             guessRange_opt=guessRange_Opt,
-                            #                                             bounds=bound_dict,
-                            #                                             simultaneous_double=True,
-                            #                                             )
-
                             best_CT = [
                                 best_vals[0],
                                 best_vals[1],
@@ -3928,9 +4004,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to load dictionary of fit bounds
 
     def load_sim_dict(self):
-        """
-        Function to load dictionary of fit bounds from GUI paramaters
-        :return: bound_dict: Dictionary of boundary values [dict]
+        """Function to load dictionary of fit bounds from GUI paramaters
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         start_fit = self.ui.startFit_Sim.value()
@@ -3992,16 +4074,29 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian fitting function for simultaneous double peak fit
 
     def gaussian_double_sim(self, E, fCT, lCT, ECT, fopt, lopt, Eopt):
-        """
-        Standard gaussian function to perform simultaneous double peak fitting
-        :param E: List of energy values [list]
-        :param fCT: CT Oscillator strength [float]
-        :param lCT: CT Reorganization Energy [float]
-        :param ECT: CT Peak Energy [float]
-        :param fopt: S1 Oscillator strength [float]
-        :param lopt: S1 Reorganization Energy [float]
-        :param Eopt: S1 Peak Energy [float]
-        :return: EQE value [list]
+        """Marcus theory to simultaneously fit double peaks
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        fCT : float, required
+            CT state oscillator strength
+        lCT : float, required
+            CT state reorganization energy
+        ECT : float, required
+            CT state energy
+        fopt : float, required
+            S1 peak oscillator strength
+        lopt : float, required
+            S1 peak reorganization energy
+        Eopt : float, required
+            S1 peak energy
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
 
         val_CT = (fCT / (E * math.sqrt(4 * math.pi * lCT * self.T_sim * self.k))) * exp(
@@ -4014,16 +4109,31 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian fitting function for simultaneous double peak fit including disorder
 
     def gaussian_disorder_double_sim(self, E, fCT, lCT, ECT, fopt, lopt, Eopt, sig):
-        """
-        Standard gaussian function including disorder to perform simultaneous double peak fitting
-        :param E: List of energy values [list]
-        :param fCT: CT Oscillator strength [float]
-        :param lCT: CT Reorganization Energy [float]
-        :param ECT: CT Peak Energy [float]
-        :param fopt: S1 Oscillator strength [float]
-        :param lopt: S1 Reorganization Energy [float]
-        :param Eopt: S1 Peak Energy [float]
-        :return: EQE value [list]
+        """Marcus theory including disorder to simultaneously fit double peaks
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        fCT : float, required
+            CT state oscillator strength
+        lCT : float, required
+            CT state reorganization energy
+        ECT : float, required
+            CT state energy
+        fopt : float, required
+            S1 peak oscillator strength
+        lopt : float, required
+            S1 peak reorganization energy
+        Eopt : float, required
+            S1 peak energy
+        sig : float, required
+            Gaussian disorder
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
 
         val_CT = (fCT / (E * math.sqrt(2 * math.pi * (2 * lCT * self.T_sim * self.k + sig ** 2)))) * exp(
@@ -4044,12 +4154,17 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to compile fits for separate double peak fitting
 
     def double_fit_MLJ(self):
-        """
-        Function to perform separate double fit of S1 and CT peaks using MLJ theory
-        :return: None
-        """
+        """Function for separate double peak fitting of S1 and CT state peaks using MLJ theory
 
-        print('Using new double function')
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        EQE : float
+            EQE value
+        """
 
         increase_factor = 1.05  # NOTE: Modify to increase data range for R2 calculation and fit selection
         include_disorder = False
@@ -4478,13 +4593,23 @@ class MainWindow(QtWidgets.QMainWindow):
     # Gaussian fitting function for double fit
 
     def MLJ_double_gaussian(self, E, f, l, Eopt):
-        """
-        Standard gaussian functions to separately fit double peaks
-        :param x: List of energy values [list]
-        :param f: Oscillator strength [float]
-        :param l: Reorganization Energy [float]
-        :param Eopt: Optical Peak Energy [float]
-        :return: EQE value [list]
+        """Marcus-Levich-Jortner theory to separately fit double peaks
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Eopt : float, required
+            S1 peak energy
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
 
         return (f / (E * math.sqrt(4 * math.pi * l * self.T_xDouble * self.k))) * exp(
@@ -4492,17 +4617,28 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function
 
-    def MLJ_double(self, E, f, l, Ect):  # Double check if this equation is correct
+    def MLJ_double(self, E, f, l, Ect): 
+        """Marcus-Levich-Jortner theory for double peak fitting
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
-        MLJ function
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Reorganization Energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+
         EQE = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EQE_n = (f / (E * math.sqrt(4 * math.pi * l * self.T_xDouble * self.k))) \
                     * (math.exp(-self.S_Double) * self.S_Double ** n / math.factorial(n)) \
                     * exp(-(Ect + l - E + n * self.hbarw_Double) ** 2 \
@@ -4512,17 +4648,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # MLJ function including disorder
 
-    def MLJ_double_disorder(self, E, f, l, Ect, sig):  # Double check if this equation is correct
+    def MLJ_double_disorder(self, E, f, l, Ect, sig):
+        """Marcus-Levich-Jortner theory including disorder for double peak fitting
+
+        Parameters
+        ----------
+        E : list, required
+            List of energy values
+        f : float, required
+            Oscillator strength
+        l : float, required
+            Reorganization energy
+        Ect : float, required
+            CT state energy
+        sig : float, required
+            Gaussian disorder
+
+        Returns
+        -------
+        EQE : float
+            EQE value
         """
-        MLJ function including disorder
-        :param E: List of energy values
-        :param f: Oscillator strength
-        :param l: Low frequency reorganization energy
-        :param Ect: Charge Transfer State Energy
-        :return: EQE value
-        """
+
         EQE = 0
-        for n in range(0, 6):
+        for n in range(0, 6): # TODO: Check line breaks
             EQE_n = (f / (E * math.sqrt(2 * math.pi * (2 * l * self.T_xDouble * self.k + sig ** 2))) \
                      * (math.exp(-self.S_Double) * self.S_Double ** n / math.factorial(n)) \
                      * exp(-(Ect + l - E + n * self.hbarw_Double) ** 2 \
@@ -4539,9 +4688,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to clear "Calculate EQE" plot
 
     def clear_plot(self):
-        """
-        Function to clear plot
-        :return: None
+        """Function to clear plot
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         plt.close()  # Close the current plot
@@ -4552,9 +4707,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to clear EQE plot
 
     def clear_EQE_plot(self):
-        """
-        Function to clear EQE fit plot
-        :return: None
+        """Function to clear EQE fit plot
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         plt.close()
@@ -4566,9 +4727,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Function to clear EL plot
 
     def clear_EL_plot(self):
-        """
-        Function to clear EL plot
-        :return: None
+        """Function to clear EL plot
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         plt.close()
